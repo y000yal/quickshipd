@@ -1,0 +1,576 @@
+/* QuickShip — Admin UI
+ * Modern card-based layout. Overrides WP form-table with flexbox rows.
+ * -------------------------------------------------------------------- */
+
+/* ── Variables ─────────────────────────────────────────────────────── */
+.quickship-settings-wrap {
+	--qs-green:        #16a34a;
+	--qs-green-light:  #dcfce7;
+	--qs-green-dark:   #15803d;
+	--qs-gray-50:      #f8fafc;
+	--qs-gray-100:     #f1f5f9;
+	--qs-gray-200:     #e2e8f0;
+	--qs-gray-400:     #94a3b8;
+	--qs-gray-500:     #64748b;
+	--qs-gray-700:     #334155;
+	--qs-gray-900:     #0f172a;
+	--qs-radius:       10px;
+	--qs-shadow:       0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+	--qs-shadow-md:    0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.04);
+
+	max-width: 1400px;
+	margin: 0 auto;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── Two-column layout ─────────────────────────────────────────────── */
+.quickship-layout {
+	display: flex;
+	align-items: flex-start;
+	gap: 24px;
+}
+
+.quickship-layout-left {
+	flex: 1;
+	min-width: 0;
+}
+
+.quickship-layout-right {
+	width: 300px;
+	flex-shrink: 0;
+	position: sticky;
+	top: 32px;
+}
+
+/* ── Page header ───────────────────────────────────────────────────── */
+.quickship-page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 16px 0 24px;
+}
+
+.quickship-page-title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--qs-gray-900);
+	line-height: 1.2;
+}
+
+.quickship-title-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	background: var(--qs-green);
+	border-radius: 8px;
+	color: #fff;
+	flex-shrink: 0;
+}
+
+.quickship-version-badge {
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--qs-green-dark);
+	background: var(--qs-green-light);
+	border: 1px solid #bbf7d0;
+	border-radius: 20px;
+	padding: 2px 10px;
+	letter-spacing: .03em;
+	align-self: flex-end;
+	margin-bottom: 3px;
+}
+
+/* ── Preview card ──────────────────────────────────────────────────── */
+.quickship-preview-card {
+	background: #fff;
+	border-radius: var(--qs-radius);
+	box-shadow: var(--qs-shadow-md);
+	border: 1px solid var(--qs-gray-200);
+	padding: 20px 24px;
+	position: relative;
+	overflow: hidden;
+}
+
+.quickship-preview-card::before {
+	content: '';
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	height: 3px;
+	background: linear-gradient(90deg, var(--qs-green), #34d399);
+}
+
+.quickship-preview-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 14px;
+}
+
+.quickship-preview-label {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--qs-gray-400);
+	margin: 0;
+}
+
+.quickship-preview-context {
+	font-size: 11px;
+	color: var(--qs-gray-400);
+	background: var(--qs-gray-100);
+	border-radius: 20px;
+	padding: 2px 10px;
+}
+
+.quickship-preview-stage {
+	background: var(--qs-gray-50);
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 8px;
+	padding: 16px 20px;
+	min-height: 52px;
+	display: flex;
+	align-items: center;
+}
+
+/* ── Tab navigation (minimal underline) ────────────────────────────── */
+.quickship-tab-nav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 2px 12px;
+	margin: 0 0 28px;
+	padding: 0;
+	border-bottom: 1px solid var(--qs-gray-200);
+	background: transparent;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.quickship-tab-btn {
+	-webkit-appearance: none;
+	appearance: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin: 0 0 -1px;
+	padding: 16px 24px;
+	border: none;
+	border-bottom: 2px solid transparent;
+	border-radius: 0;
+	background: transparent;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.35;
+	color: var(--qs-gray-500);
+	text-decoration: none;
+	cursor: pointer;
+	min-height: 0;
+	box-shadow: none;
+	transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.quickship-tab-btn:hover {
+	color: var(--qs-gray-700);
+	background: transparent;
+	text-decoration: none;
+}
+
+.quickship-tab-btn:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+.quickship-tab-btn:focus-visible {
+	outline: 2px solid var(--qs-green);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+.quickship-tab-btn.is-active {
+	color: var(--qs-green-dark);
+	font-weight: 600;
+	border-bottom-color: var(--qs-green);
+	background: transparent;
+	box-shadow: none;
+}
+
+.quickship-tab-btn svg {
+	width: 18px;
+	height: 18px;
+	opacity: 0.72;
+	flex-shrink: 0;
+}
+
+.quickship-tab-btn.is-active svg {
+	opacity: 1;
+}
+
+/* ── Settings form: override WP form-table ─────────────────────────── */
+.quickship-settings-form {
+	margin-top: 0;
+}
+
+/* Section heading → card header */
+.quickship-settings-form h2 {
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--qs-gray-500);
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	margin: 0 0 0;
+	padding: 16px 20px 14px;
+	border-bottom: 1px solid var(--qs-gray-100);
+}
+
+/* Wrap each section (h2 + table) in a card via adjacent-sibling trick */
+.quickship-settings-form h2 {
+	background: #fff;
+	border-radius: var(--qs-radius) var(--qs-radius) 0 0;
+	border: 1px solid var(--qs-gray-200);
+	border-bottom: none;
+	box-shadow: var(--qs-shadow);
+	margin-top: 20px;
+}
+
+.quickship-settings-form h2 + .form-table {
+	margin: 0 0 4px;
+	background: #fff;
+	border-radius: 0 0 var(--qs-radius) var(--qs-radius);
+	border: 1px solid var(--qs-gray-200);
+	border-top: none;
+	box-shadow: var(--qs-shadow);
+	width: 100%;
+}
+
+/* Make table rows look like flex rows */
+.quickship-settings-form .form-table,
+.quickship-settings-form .form-table tbody {
+	display: block;
+	width: 100%;
+}
+
+.quickship-settings-form .form-table tr {
+	display: flex;
+	align-items: flex-start;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--qs-gray-100);
+	gap: 20px;
+}
+
+.quickship-settings-form .form-table tr:last-child {
+	border-bottom: none;
+}
+
+.quickship-settings-form .form-table th {
+	display: block;
+	width: 200px;
+	min-width: 200px;
+	padding: 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--qs-gray-700);
+	padding-top: 6px;
+}
+
+.quickship-settings-form .form-table td {
+	display: block;
+	flex: 1;
+	padding: 0;
+}
+
+/* ── Form controls ─────────────────────────────────────────────────── */
+.quickship-settings-form input[type="text"],
+.quickship-settings-form input[type="number"],
+.quickship-settings-form select,
+.quickship-settings-form textarea {
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 7px;
+	padding: 7px 10px;
+	font-size: 13px;
+	color: var(--qs-gray-900);
+	background: #fff;
+	transition: border-color .15s, box-shadow .15s;
+	outline: none;
+}
+
+.quickship-settings-form input[type="text"]:focus,
+.quickship-settings-form input[type="number"]:focus,
+.quickship-settings-form select:focus,
+.quickship-settings-form textarea:focus {
+	border-color: var(--qs-green);
+	box-shadow: 0 0 0 3px rgba(22,163,74,.12);
+}
+
+.quickship-settings-form input[type="number"].small-text {
+	width: 80px;
+}
+
+.quickship-settings-form input[type="text"].regular-text {
+	width: 100%;
+	max-width: 360px;
+}
+
+.quickship-settings-form textarea.large-text {
+	width: 100%;
+	max-width: 420px;
+}
+
+.quickship-settings-form select {
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 10px center;
+	padding-right: 30px;
+	cursor: pointer;
+}
+
+/* Checkboxes */
+.quickship-settings-form input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	accent-color: var(--qs-green);
+	cursor: pointer;
+	margin-right: 6px;
+	vertical-align: middle;
+	position: relative;
+	top: -1px;
+}
+
+.quickship-settings-form label {
+	font-size: 13px;
+	color: var(--qs-gray-700);
+	cursor: pointer;
+}
+
+/* Description text */
+.quickship-settings-form .description {
+	font-size: 12px;
+	color: var(--qs-gray-400);
+	margin-top: 5px;
+	line-height: 1.5;
+}
+
+/* Fieldset (weekdays) */
+.quickship-settings-form fieldset {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
+.quickship-settings-form fieldset label {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	background: var(--qs-gray-50);
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 6px;
+	padding: 5px 10px;
+	font-size: 12px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background .12s, border-color .12s;
+	margin-right: 0;
+}
+
+.quickship-settings-form fieldset label:has(input:checked) {
+	background: var(--qs-green-light);
+	border-color: #86efac;
+	color: var(--qs-green-dark);
+}
+
+.quickship-settings-form fieldset input[type="checkbox"] {
+	width: 13px;
+	height: 13px;
+	margin: 0;
+	top: 0;
+}
+
+/* Cutoff time inline selects */
+.quickship-settings-form select#quickship_cutoff_hour,
+.quickship-settings-form select#quickship_cutoff_min {
+	width: auto;
+}
+
+/* ── Tab panes ─────────────────────────────────────────────────────── */
+.quickship-tab-pane {
+	display: none;
+}
+.quickship-tab-pane.is-active {
+	display: block;
+}
+
+/* ── Save bar ──────────────────────────────────────────────────────── */
+.quickship-save-bar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+#quickship-save-btn {
+	background: var(--qs-green) !important;
+	border-color: var(--qs-green-dark) !important;
+	color: #fff !important;
+	border-radius: 8px !important;
+	padding: 9px 24px !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	height: auto !important;
+	line-height: 1.4 !important;
+	box-shadow: 0 1px 2px rgba(0,0,0,.1) !important;
+	transition: background .15s, transform .1s !important;
+	cursor: pointer !important;
+}
+
+#quickship-save-btn:hover {
+	background: var(--qs-green-dark) !important;
+	transform: translateY(-1px) !important;
+}
+
+#quickship-save-btn:active {
+	transform: translateY(0) !important;
+}
+
+#quickship-save-btn:disabled,
+#quickship-restore-btn:disabled {
+	opacity: .75 !important;
+	cursor: not-allowed !important;
+	transform: none !important;
+}
+
+.qs-btn-spinner {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	border: 2px solid rgba(255,255,255,.4);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: qs-spin .6s linear infinite;
+	vertical-align: middle;
+	margin-right: 4px;
+}
+
+#quickship-restore-btn .qs-btn-spinner {
+	border-color: rgba(100,116,139,.3);
+	border-top-color: var(--qs-gray-500);
+}
+
+@keyframes qs-spin {
+	to { transform: rotate(360deg); }
+}
+
+.quickship-save-status {
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.quickship-save-status.is-success { color: var(--qs-green-dark); }
+.quickship-save-status.is-error   { color: #dc2626; }
+
+.qs-restore-btn {
+	margin-left: auto !important;
+	color: var(--qs-gray-500) !important;
+	border-color: var(--qs-gray-200) !important;
+	border-radius: 8px !important;
+	font-size: 12px !important;
+	display: inline-flex !important;
+	align-items: center !important;
+}
+
+.qs-restore-btn:hover {
+	color: #dc2626 !important;
+	border-color: #fca5a5 !important;
+	background: #fef2f2 !important;
+}
+
+/* ── Color picker override ─────────────────────────────────────────── */
+.wp-picker-container .wp-color-result.button {
+	border-radius: 7px !important;
+	border: 1px solid var(--qs-gray-200) !important;
+	height: 34px !important;
+}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+.quickship-settings-footer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	margin-top: 28px;
+	padding: 14px 20px;
+	background: #fff;
+	border: 1px solid var(--qs-gray-200);
+	border-radius: var(--qs-radius);
+	box-shadow: var(--qs-shadow);
+	font-size: 12px;
+	color: var(--qs-gray-400);
+}
+
+.quickship-settings-footer .qs-footer-left {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.quickship-settings-footer .qs-footer-logo {
+	width: 20px;
+	height: 20px;
+	color: var(--qs-green);
+}
+
+/* ── Product editor meta box ───────────────────────────────────────── */
+.quickship-product-options {
+	border-top: 1px solid var(--qs-gray-200);
+	padding-top: 12px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+	.quickship-layout {
+		flex-direction: column-reverse;
+	}
+	.quickship-layout-right {
+		width: 100%;
+		position: static;
+	}
+}
+
+@media (max-width: 600px) {
+	.quickship-settings-form .form-table tr {
+		flex-direction: column;
+		gap: 6px;
+	}
+	.quickship-settings-form .form-table th {
+		width: 100%;
+		min-width: 0;
+		padding-top: 0;
+	}
+	.quickship-tab-nav {
+		width: 100%;
+		gap: 0;
+		justify-content: stretch;
+	}
+	.quickship-tab-btn {
+		flex: 1 1 0;
+		min-width: 0;
+		padding: 14px 12px;
+		font-size: 13px;
+		gap: 8px;
+	}
+	.quickship-tab-btn svg {
+		width: 16px;
+		height: 16px;
+	}
+}

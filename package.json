@@ -1,0 +1,14 @@
+{
+  "name": "quickship-delivery-date",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "makepot": "wp i18n make-pot . languages/quickship-delivery-date.pot --slug=quickship-delivery-date --domain=quickship-delivery-date --exclude=node_modules,release,tests",
+    "dist": "gulp dist",
+    "release": "pnpm run makepot && pnpm run dist"
+  },
+  "devDependencies": {
+    "gulp": "^5.0.0",
+    "gulp-zip": "^5.1.0"
+  }
+}
