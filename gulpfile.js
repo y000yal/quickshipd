@@ -1,9 +1,9 @@
 /**
  * Build a WordPress.org–style installable zip:
- * quickship-delivery-date.zip → contains folder quickship-delivery-date/
+ * quickshipd.zip → contains folder quickshipd/
  *
  * Run from this directory: pnpm install && pnpm release (regenerates .pot + zip)
- * Output: release/quickship-delivery-date.zip
+ * Output: release/quickshipd.zip
  */
 
 const path = require( 'path' );

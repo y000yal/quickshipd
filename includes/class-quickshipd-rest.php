@@ -6,12 +6,12 @@
  * delivery dates after a variation is selected or a shipping method changes,
  * without a full page reload.
  *
- * Endpoint: GET /wp-json/quickship/v1/date
+ * Endpoint: GET /wp-json/quickshipd/v1/date
  *   ?product_id=123            — optional
  *   &variation_id=456          — optional
  *   &shipping_instance=flat_rate:3 — optional
  *
- * @package QuickShip
+ * @package QuickShipD
  * @since   1.0.0
  */
 
@@ -20,18 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class QuickShip_Rest
+ * Class QuickShipD_Rest
  *
  * @since 1.0.0
  */
-class QuickShip_Rest {
+class QuickShipD_Rest {
 
 	/**
 	 * REST namespace.
 	 *
 	 * @var string
 	 */
-	const NAMESPACE = 'quickship/v1';
+	const NAMESPACE = 'quickshipd/v1';
 
 	/**
 	 * Register REST routes.
@@ -83,14 +83,14 @@ class QuickShip_Rest {
 	}
 
 	/**
-	 * Handle GET /quickship/v1/date.
+	 * Handle GET /quickshipd/v1/date.
 	 *
 	 * @param  WP_REST_Request $request  REST request object.
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function handle_date_request( WP_REST_Request $request ) {
-		if ( 'yes' !== get_option( 'quickship_enabled', 'yes' ) ) {
-			return new WP_Error( 'quickship_disabled', __( 'QuickShip is disabled.', 'quickship-delivery-date' ), array( 'status' => 503 ) );
+		if ( 'yes' !== get_option( 'quickshipd_enabled', 'yes' ) ) {
+			return new WP_Error( 'quickshipd_disabled', __( 'QuickShipD is disabled.', 'quickshipd' ), array( 'status' => 503 ) );
 		}
 
 		$product_id        = $request->get_param( 'product_id' );
@@ -103,7 +103,7 @@ class QuickShip_Rest {
 
 		// Check disabled flag on the parent product.
 		$parent_id = $product_id ?: $variation_id;
-		if ( $parent_id && 'yes' === get_post_meta( $parent_id, '_quickship_disabled', true ) ) {
+		if ( $parent_id && 'yes' === get_post_meta( $parent_id, '_quickshipd_disabled', true ) ) {
 			return rest_ensure_response( array( 'html' => '', 'show' => false ) );
 		}
 
@@ -114,8 +114,8 @@ class QuickShip_Rest {
 			$method_slug = $parts[0];
 			$instance_id = isset( $parts[1] ) ? absint( $parts[1] ) : 0;
 			if ( $instance_id ) {
-				$min = get_option( 'woocommerce_' . $method_slug . '_' . $instance_id . '_quickship_min_days', '' );
-				$max = get_option( 'woocommerce_' . $method_slug . '_' . $instance_id . '_quickship_max_days', '' );
+				$min = get_option( 'woocommerce_' . $method_slug . '_' . $instance_id . '_quickshipd_min_days', '' );
+				$max = get_option( 'woocommerce_' . $method_slug . '_' . $instance_id . '_quickshipd_max_days', '' );
 				if ( '' !== $min ) {
 					$overrides['min_days'] = $min;
 				}
@@ -125,11 +125,11 @@ class QuickShip_Rest {
 			}
 		}
 
-		$calc   = QuickShip_Calculator::from_settings( $overrides, $effective_id );
+		$calc   = QuickShipD_Calculator::from_settings( $overrides, $effective_id );
 		$result = $calc->calculate();
-		$html   = QuickShip_Display::build_html( $result, $effective_id, $context );
+		$html   = QuickShipD_Display::build_html( $result, $effective_id, $context );
 
-		$date_fmt = get_option( 'quickship_date_format', 'D, M j' );
+		$date_fmt = get_option( 'quickshipd_date_format', 'D, M j' );
 
 		return rest_ensure_response(
 			array(
@@ -137,8 +137,8 @@ class QuickShip_Rest {
 				'show'               => $result['show'],
 				'min_date'           => $result['min_date']->format( 'Y-m-d' ),
 				'max_date'           => $result['max_date']->format( 'Y-m-d' ),
-				'min_date_formatted' => QuickShip_Calculator::format_date( $result['min_date'], $date_fmt ),
-				'max_date_formatted' => QuickShip_Calculator::format_date( $result['max_date'], $date_fmt ),
+				'min_date_formatted' => QuickShipD_Calculator::format_date( $result['min_date'], $date_fmt ),
+				'max_date_formatted' => QuickShipD_Calculator::format_date( $result['max_date'], $date_fmt ),
 				'is_range'           => $result['is_range'],
 				'countdown_seconds'  => $result['countdown_seconds'],
 			)

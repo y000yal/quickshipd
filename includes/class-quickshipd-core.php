@@ -2,7 +2,7 @@
 /**
  * Plugin bootstrap — singleton, hook registration, dependency loading.
  *
- * @package QuickShip
+ * @package QuickShipD
  * @since   1.0.0
  */
 
@@ -11,14 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class QuickShip_Core
+ * Class QuickShipD_Core
  *
  * The single entry point for the plugin. Loads all classes, registers
  * the shipping-method integration hooks, and wires up the other subsystems.
  *
  * @since 1.0.0
  */
-final class QuickShip_Core {
+final class QuickShipD_Core {
 
 	/**
 	 * Singleton instance.
@@ -30,30 +30,30 @@ final class QuickShip_Core {
 	/**
 	 * Admin handler instance.
 	 *
-	 * @var QuickShip_Admin
+	 * @var QuickShipD_Admin
 	 */
-	private QuickShip_Admin $admin;
+	private QuickShipD_Admin $admin;
 
 	/**
 	 * Display handler instance.
 	 *
-	 * @var QuickShip_Display
+	 * @var QuickShipD_Display
 	 */
-	private QuickShip_Display $display;
+	private QuickShipD_Display $display;
 
 	/**
 	 * Product meta handler instance.
 	 *
-	 * @var QuickShip_Product_Meta
+	 * @var QuickShipD_Product_Meta
 	 */
-	private QuickShip_Product_Meta $product_meta;
+	private QuickShipD_Product_Meta $product_meta;
 
 	/**
 	 * REST handler instance.
 	 *
-	 * @var QuickShip_Rest
+	 * @var QuickShipD_Rest
 	 */
-	private QuickShip_Rest $rest;
+	private QuickShipD_Rest $rest;
 
 	/**
 	 * Private constructor — use ::get_instance().
@@ -82,8 +82,6 @@ final class QuickShip_Core {
 		$this->load_dependencies();
 		$this->init_subsystems();
 		$this->register_shipping_method_hooks();
-
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 	}
 
 	/**
@@ -92,13 +90,13 @@ final class QuickShip_Core {
 	 * @return void
 	 */
 	private function load_dependencies(): void {
-		$includes = QUICKSHIP_PATH . 'includes/';
+		$includes = QUICKSHIPD_PATH . 'includes/';
 
-		require_once $includes . 'class-quickship-calculator.php';
-		require_once $includes . 'class-quickship-display.php';
-		require_once $includes . 'class-quickship-admin.php';
-		require_once $includes . 'class-quickship-product-meta.php';
-		require_once $includes . 'class-quickship-rest.php';
+		require_once $includes . 'class-quickshipd-calculator.php';
+		require_once $includes . 'class-quickshipd-display.php';
+		require_once $includes . 'class-quickshipd-admin.php';
+		require_once $includes . 'class-quickshipd-product-meta.php';
+		require_once $includes . 'class-quickshipd-rest.php';
 	}
 
 	/**
@@ -107,9 +105,9 @@ final class QuickShip_Core {
 	 * @return void
 	 */
 	private function init_subsystems(): void {
-		$this->display      = new QuickShip_Display();
-		$this->product_meta = new QuickShip_Product_Meta();
-		$this->rest         = new QuickShip_Rest();
+		$this->display      = new QuickShipD_Display();
+		$this->product_meta = new QuickShipD_Product_Meta();
+		$this->rest         = new QuickShipD_Rest();
 
 		$this->display->init();
 		$this->display->init_preview_ajax(); // always register, regardless of enabled state.
@@ -117,7 +115,7 @@ final class QuickShip_Core {
 		$this->rest->init();
 
 		if ( is_admin() ) {
-			$this->admin = new QuickShip_Admin();
+			$this->admin = new QuickShipD_Admin();
 			$this->admin->init();
 		}
 	}
@@ -125,7 +123,7 @@ final class QuickShip_Core {
 	/**
 	 * Register the shipping method integration hooks.
 	 *
-	 * Adds "QuickShip min/max days" fields to every shipping method instance
+	 * Adds "QuickShipD min/max days" fields to every shipping method instance
 	 * in WooCommerce Shipping Zones. Works for flat_rate, free_shipping,
 	 * local_pickup, and any custom method because we hook into the generic
 	 * woocommerce_shipping_instance_form_fields filter.
@@ -161,16 +159,16 @@ final class QuickShip_Core {
 	}
 
 	/**
-	 * Add QuickShip min/max fields to a shipping method's instance form.
+	 * Add QuickShipD min/max fields to a shipping method's instance form.
 	 *
 	 * @param  array $fields  Existing form fields.
 	 * @return array
 	 */
 	public function add_shipping_method_fields( array $fields ): array {
-		$fields['quickship_min_days'] = array(
-			'title'             => __( 'QuickShip: Min delivery days', 'quickship-delivery-date' ),
+		$fields['quickshipd_min_days'] = array(
+			'title'             => __( 'QuickShipD: Min delivery days', 'quickshipd' ),
 			'type'              => 'number',
-			'description'       => __( 'Override the global minimum. Leave blank to use global.', 'quickship-delivery-date' ),
+			'description'       => __( 'Override the global minimum. Leave blank to use global.', 'quickshipd' ),
 			'desc_tip'          => true,
 			'default'           => '',
 			'custom_attributes' => array(
@@ -180,10 +178,10 @@ final class QuickShip_Core {
 			),
 		);
 
-		$fields['quickship_max_days'] = array(
-			'title'             => __( 'QuickShip: Max delivery days', 'quickship-delivery-date' ),
+		$fields['quickshipd_max_days'] = array(
+			'title'             => __( 'QuickShipD: Max delivery days', 'quickshipd' ),
 			'type'              => 'number',
-			'description'       => __( 'Override the global maximum. Leave blank to use global.', 'quickship-delivery-date' ),
+			'description'       => __( 'Override the global maximum. Leave blank to use global.', 'quickshipd' ),
 			'desc_tip'          => true,
 			'default'           => '',
 			'custom_attributes' => array(
@@ -194,18 +192,5 @@ final class QuickShip_Core {
 		);
 
 		return $fields;
-	}
-
-	/**
-	 * Load plugin text domain for translations.
-	 *
-	 * @return void
-	 */
-	public function load_textdomain(): void {
-		load_plugin_textdomain(
-			'quickship-delivery-date',
-			false,
-			dirname( QUICKSHIP_BASENAME ) . '/languages'
-		);
 	}
 }

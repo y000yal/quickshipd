@@ -1,5 +1,5 @@
 /**
- * QuickShip Delivery Date — Admin JS
+ * QuickShipD Delivery Date — Admin JS
  *
  * - jQuery tab switching (no page reload)
  * - AJAX save (only saves the active tab's fields)
@@ -10,14 +10,14 @@
 (function ($) {
 	'use strict';
 
-	var cfg = window.quickshipAdmin || {};
+	var cfg = window.quickshipdAdmin || {};
 
 	/* ---------------------------------------------------------------- */
 	/* Color picker                                                      */
 	/* ---------------------------------------------------------------- */
 
 	function initColorPickers() {
-		$('.quickship-color-picker').wpColorPicker({
+		$('.quickshipd-color-picker').wpColorPicker({
 			change: function () { schedulePreview(); },
 			clear:  function () { schedulePreview(); }
 		});
@@ -28,12 +28,12 @@
 	/* ---------------------------------------------------------------- */
 
 	function initTabs() {
-		$(document).on('click', '.quickship-tab-btn', function () {
+		$(document).on('click', '.quickshipd-tab-btn', function () {
 			var tab = $(this).data('tab');
-			$('.quickship-tab-btn').removeClass('is-active');
+			$('.quickshipd-tab-btn').removeClass('is-active');
 			$(this).addClass('is-active');
-			$('.quickship-tab-pane').removeClass('is-active');
-			$('#quickship-tab-' + tab).addClass('is-active');
+			$('.quickshipd-tab-pane').removeClass('is-active');
+			$('#quickshipd-tab-' + tab).addClass('is-active');
 		});
 	}
 
@@ -52,20 +52,20 @@
 	}
 
 	function saveSettings() {
-		var $btn    = $('#quickship-save-btn');
-		var $status = $('#quickship-save-status');
-		var tab     = $('.quickship-tab-pane.is-active').data('tab');
+		var $btn    = $('#quickshipd-save-btn');
+		var $status = $('#quickshipd-save-status');
+		var tab     = $('.quickshipd-tab-pane.is-active').data('tab');
 
 		btnLoading( $btn, ' Saving…' );
 		$status.text('').removeClass('is-success is-error');
 
 		var data = {
-			action: 'quickship_save_settings',
+			action: 'quickshipd_save_settings',
 			nonce:  cfg.saveNonce || '',
 			tab:    tab
 		};
 
-		$('#quickship-tab-' + tab).find('input, select, textarea').each(function () {
+		$('#quickshipd-tab-' + tab).find('input, select, textarea').each(function () {
 			var name = $(this).attr('name');
 			if ( ! name ) return;
 
@@ -112,14 +112,14 @@
 	function restoreDefaults() {
 		if ( ! window.confirm( cfg.confirmText || 'Reset all settings to defaults?' ) ) return;
 
-		var $btn    = $('#quickship-restore-btn');
-		var $status = $('#quickship-save-status');
+		var $btn    = $('#quickshipd-restore-btn');
+		var $status = $('#quickshipd-save-status');
 
 		btnLoading( $btn, ' Restoring…' );
 		$status.text('').removeClass('is-success is-error');
 
 		$.post(cfg.ajaxUrl || ajaxurl, {
-			action: 'quickship_restore_defaults',
+			action: 'quickshipd_restore_defaults',
 			nonce:  cfg.restoreNonce || ''
 		}, function (response) {
 			btnReset( $btn );
@@ -140,8 +140,8 @@
 	/* ---------------------------------------------------------------- */
 
 	var QS_ICONS = {
-		truck: '<svg class="quickship-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M1 3h15v13H1V3z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M16 8h4l3 4v5h-7V8z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="5.5" cy="18.5" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="18.5" cy="18.5" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>',
-		box:   '<svg class="quickship-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="1.5" fill="none"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="1.5"/></svg>',
+		truck: '<svg class="quickshipd-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M1 3h15v13H1V3z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M16 8h4l3 4v5h-7V8z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="5.5" cy="18.5" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="18.5" cy="18.5" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>',
+		box:   '<svg class="quickshipd-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="1.5" fill="none"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="1.5"/></svg>',
 		none:  ''
 	};
 
@@ -206,21 +206,21 @@
 
 	function buildPreviewHtml() {
 		// ---- delivery settings ----
-		var minDays    = parseInt( field( 'input[name="quickship_min_days"]',    '0' ), 10 );
-		var maxDays    = parseInt( field( 'input[name="quickship_max_days"]',    '0' ), 10 );
-		var cutoffH    = parseInt( field( 'select[name="quickship_cutoff_hour"]','0' ), 10 );
-		var cutoffM    = parseInt( field( 'select[name="quickship_cutoff_min"]', '0' ), 10 );
-		var excWeekend = checkbox( 'input[name="quickship_exclude_weekends"]' );
+		var minDays    = parseInt( field( 'input[name="quickshipd_min_days"]',    '0' ), 10 );
+		var maxDays    = parseInt( field( 'input[name="quickshipd_max_days"]',    '0' ), 10 );
+		var cutoffH    = parseInt( field( 'select[name="quickshipd_cutoff_hour"]','0' ), 10 );
+		var cutoffM    = parseInt( field( 'select[name="quickshipd_cutoff_min"]', '0' ), 10 );
+		var excWeekend = checkbox( 'input[name="quickshipd_exclude_weekends"]' );
 
 		// ---- style settings ----
-		var textSingle    = field( 'input[name="quickship_text_single"]',    'Get it by {date}' );
-		var textRange     = field( 'input[name="quickship_text_range"]',     'Get it {start} \u2013 {end}' );
-		var textCountdown = field( 'input[name="quickship_text_countdown"]', 'Order within {countdown} to get it by {date}' );
-		var dateFmt       = field( 'select[name="quickship_date_format"]',   'D, M j' );
-		var icon          = field( 'select[name="quickship_icon"]',          'truck' );
-		var textColor     = field( 'input[name="quickship_text_color"]',     '#16a34a' );
-		var bgColor       = field( 'input[name="quickship_bg_color"]',       '' );
-		var showCd        = checkbox( 'input[name="quickship_show_countdown"]' );
+		var textSingle    = field( 'input[name="quickshipd_text_single"]',    'Get it by {date}' );
+		var textRange     = field( 'input[name="quickshipd_text_range"]',     'Get it {start} \u2013 {end}' );
+		var textCountdown = field( 'input[name="quickshipd_text_countdown"]', 'Order within {countdown} to get it by {date}' );
+		var dateFmt       = field( 'select[name="quickshipd_date_format"]',   'D, M j' );
+		var icon          = field( 'select[name="quickshipd_icon"]',          'truck' );
+		var textColor     = field( 'input[name="quickshipd_text_color"]',     '#16a34a' );
+		var bgColor       = field( 'input[name="quickshipd_bg_color"]',       '' );
+		var showCd        = checkbox( 'input[name="quickshipd_show_countdown"]' );
 
 		// ---- current site time (adjusted UTC = UTC + siteUtcOffset) ----
 		var nowMs      = ( cfg.nowTimestamp || Math.floor( Date.now() / 1000 ) ) * 1000;
@@ -260,9 +260,9 @@
 
 		var iconSvg = QS_ICONS[ icon ] !== undefined ? QS_ICONS[ icon ] : QS_ICONS.truck;
 
-		var html  = '<div class="quickship-delivery quickship-context-product" style="' + style + '">';
-		html     += '<div class="quickship-estimate">' + iconSvg;
-		html     += '<span class="quickship-date-text">' + dateLabel + '</span>';
+		var html  = '<div class="quickshipd-delivery quickshipd-context-product" style="' + style + '">';
+		html     += '<div class="quickshipd-estimate">' + iconSvg;
+		html     += '<span class="quickshipd-date-text">' + dateLabel + '</span>';
 		html     += '</div>';
 
 		if ( showCd && countdownSecs > 0 ) {
@@ -270,7 +270,7 @@
 			var cdText = textCountdown
 				.replace( '{countdown}', '<strong>' + cdFmt + '</strong>' )
 				.replace( '{date}', maxFmt );
-			html += '<div class="quickship-countdown" data-seconds="' + countdownSecs + '">' + cdText + '</div>';
+			html += '<div class="quickshipd-countdown" data-seconds="' + countdownSecs + '">' + cdText + '</div>';
 		}
 
 		html += '</div>';
@@ -285,7 +285,7 @@
 	}
 
 	function refreshPreview() {
-		var $stage = $( '#quickship-live-preview .quickship-preview-stage' );
+		var $stage = $( '#quickshipd-live-preview .quickshipd-preview-stage' );
 		if ( ! $stage.length ) return;
 		$stage.html( buildPreviewHtml() );
 	}
@@ -298,12 +298,12 @@
 		initColorPickers();
 		initTabs();
 
-		$('#quickship-save-btn').on('click', saveSettings);
-		$('#quickship-restore-btn').on('click', restoreDefaults);
+		$('#quickshipd-save-btn').on('click', saveSettings);
+		$('#quickshipd-restore-btn').on('click', restoreDefaults);
 
 		$(document).on(
 			'change input',
-			'.quickship-tab-pane input, .quickship-tab-pane select, .quickship-tab-pane textarea',
+			'.quickshipd-tab-pane input, .quickshipd-tab-pane select, .quickshipd-tab-pane textarea',
 			schedulePreview
 		);
 

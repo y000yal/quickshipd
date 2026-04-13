@@ -1,9 +1,9 @@
-/* QuickShip — Admin UI
+/* QuickShipD — Admin UI
  * Modern card-based layout. Overrides WP form-table with flexbox rows.
  * -------------------------------------------------------------------- */
 
 /* ── Variables ─────────────────────────────────────────────────────── */
-.quickship-settings-wrap {
+.quickshipd-settings-wrap {
 	--qs-green:        #16a34a;
 	--qs-green-light:  #dcfce7;
 	--qs-green-dark:   #15803d;
@@ -24,18 +24,18 @@
 }
 
 /* ── Two-column layout ─────────────────────────────────────────────── */
-.quickship-layout {
+.quickshipd-layout {
 	display: flex;
 	align-items: flex-start;
 	gap: 24px;
 }
 
-.quickship-layout-left {
+.quickshipd-layout-left {
 	flex: 1;
 	min-width: 0;
 }
 
-.quickship-layout-right {
+.quickshipd-layout-right {
 	width: 300px;
 	flex-shrink: 0;
 	position: sticky;
@@ -43,14 +43,14 @@
 }
 
 /* ── Page header ───────────────────────────────────────────────────── */
-.quickship-page-header {
+.quickshipd-page-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	margin: 16px 0 24px;
 }
 
-.quickship-page-title {
+.quickshipd-page-title {
 	display: flex;
 	align-items: center;
 	gap: 10px;
@@ -61,7 +61,7 @@
 	line-height: 1.2;
 }
 
-.quickship-title-icon {
+.quickshipd-title-icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -73,7 +73,7 @@
 	flex-shrink: 0;
 }
 
-.quickship-version-badge {
+.quickshipd-version-badge {
 	font-size: 11px;
 	font-weight: 600;
 	color: var(--qs-green-dark);
@@ -87,7 +87,7 @@
 }
 
 /* ── Preview card ──────────────────────────────────────────────────── */
-.quickship-preview-card {
+.quickshipd-preview-card {
 	background: #fff;
 	border-radius: var(--qs-radius);
 	box-shadow: var(--qs-shadow-md);
@@ -97,7 +97,7 @@
 	overflow: hidden;
 }
 
-.quickship-preview-card::before {
+.quickshipd-preview-card::before {
 	content: '';
 	position: absolute;
 	top: 0; left: 0; right: 0;
@@ -105,14 +105,14 @@
 	background: linear-gradient(90deg, var(--qs-green), #34d399);
 }
 
-.quickship-preview-header {
+.quickshipd-preview-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: 14px;
 }
 
-.quickship-preview-label {
+.quickshipd-preview-label {
 	font-size: 10px;
 	font-weight: 700;
 	letter-spacing: .08em;
@@ -121,7 +121,7 @@
 	margin: 0;
 }
 
-.quickship-preview-context {
+.quickshipd-preview-context {
 	font-size: 11px;
 	color: var(--qs-gray-400);
 	background: var(--qs-gray-100);
@@ -129,7 +129,7 @@
 	padding: 2px 10px;
 }
 
-.quickship-preview-stage {
+.quickshipd-preview-stage {
 	background: var(--qs-gray-50);
 	border: 1px solid var(--qs-gray-200);
 	border-radius: 8px;
@@ -140,7 +140,7 @@
 }
 
 /* ── Tab navigation (minimal underline) ────────────────────────────── */
-.quickship-tab-nav {
+.quickshipd-tab-nav {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-end;
@@ -154,7 +154,7 @@
 	box-sizing: border-box;
 }
 
-.quickship-tab-btn {
+.quickshipd-tab-btn {
 	-webkit-appearance: none;
 	appearance: none;
 	display: inline-flex;
@@ -179,24 +179,24 @@
 	transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
-.quickship-tab-btn:hover {
+.quickshipd-tab-btn:hover {
 	color: var(--qs-gray-700);
 	background: transparent;
 	text-decoration: none;
 }
 
-.quickship-tab-btn:focus {
+.quickshipd-tab-btn:focus {
 	outline: none;
 	box-shadow: none;
 }
 
-.quickship-tab-btn:focus-visible {
+.quickshipd-tab-btn:focus-visible {
 	outline: 2px solid var(--qs-green);
 	outline-offset: 2px;
 	border-radius: 4px;
 }
 
-.quickship-tab-btn.is-active {
+.quickshipd-tab-btn.is-active {
 	color: var(--qs-green-dark);
 	font-weight: 600;
 	border-bottom-color: var(--qs-green);
@@ -204,24 +204,24 @@
 	box-shadow: none;
 }
 
-.quickship-tab-btn svg {
+.quickshipd-tab-btn svg {
 	width: 18px;
 	height: 18px;
 	opacity: 0.72;
 	flex-shrink: 0;
 }
 
-.quickship-tab-btn.is-active svg {
+.quickshipd-tab-btn.is-active svg {
 	opacity: 1;
 }
 
 /* ── Settings form: override WP form-table ─────────────────────────── */
-.quickship-settings-form {
+.quickshipd-settings-form {
 	margin-top: 0;
 }
 
 /* Section heading → card header */
-.quickship-settings-form h2 {
+.quickshipd-settings-form h2 {
 	font-size: 13px;
 	font-weight: 700;
 	color: var(--qs-gray-500);
@@ -233,7 +233,7 @@
 }
 
 /* Wrap each section (h2 + table) in a card via adjacent-sibling trick */
-.quickship-settings-form h2 {
+.quickshipd-settings-form h2 {
 	background: #fff;
 	border-radius: var(--qs-radius) var(--qs-radius) 0 0;
 	border: 1px solid var(--qs-gray-200);
@@ -242,7 +242,7 @@
 	margin-top: 20px;
 }
 
-.quickship-settings-form h2 + .form-table {
+.quickshipd-settings-form h2 + .form-table {
 	margin: 0 0 4px;
 	background: #fff;
 	border-radius: 0 0 var(--qs-radius) var(--qs-radius);
@@ -253,13 +253,13 @@
 }
 
 /* Make table rows look like flex rows */
-.quickship-settings-form .form-table,
-.quickship-settings-form .form-table tbody {
+.quickshipd-settings-form .form-table,
+.quickshipd-settings-form .form-table tbody {
 	display: block;
 	width: 100%;
 }
 
-.quickship-settings-form .form-table tr {
+.quickshipd-settings-form .form-table tr {
 	display: flex;
 	align-items: flex-start;
 	padding: 16px 20px;
@@ -267,11 +267,11 @@
 	gap: 20px;
 }
 
-.quickship-settings-form .form-table tr:last-child {
+.quickshipd-settings-form .form-table tr:last-child {
 	border-bottom: none;
 }
 
-.quickship-settings-form .form-table th {
+.quickshipd-settings-form .form-table th {
 	display: block;
 	width: 200px;
 	min-width: 200px;
@@ -282,17 +282,25 @@
 	padding-top: 6px;
 }
 
-.quickship-settings-form .form-table td {
+.quickshipd-settings-form .form-table td {
 	display: block;
 	flex: 1;
 	padding: 0;
 }
 
+.quickshipd-settings-form .form-table tr:has(> td > .quickshipd-toggle:first-child) {
+	align-items: center;
+}
+
+.quickshipd-settings-form .form-table tr:has(> td > .quickshipd-toggle:first-child) > th {
+	padding-top: 0;
+}
+
 /* ── Form controls ─────────────────────────────────────────────────── */
-.quickship-settings-form input[type="text"],
-.quickship-settings-form input[type="number"],
-.quickship-settings-form select,
-.quickship-settings-form textarea {
+.quickshipd-settings-form input[type="text"],
+.quickshipd-settings-form input[type="number"],
+.quickshipd-settings-form select,
+.quickshipd-settings-form textarea {
 	border: 1px solid var(--qs-gray-200);
 	border-radius: 7px;
 	padding: 7px 10px;
@@ -303,29 +311,29 @@
 	outline: none;
 }
 
-.quickship-settings-form input[type="text"]:focus,
-.quickship-settings-form input[type="number"]:focus,
-.quickship-settings-form select:focus,
-.quickship-settings-form textarea:focus {
+.quickshipd-settings-form input[type="text"]:focus,
+.quickshipd-settings-form input[type="number"]:focus,
+.quickshipd-settings-form select:focus,
+.quickshipd-settings-form textarea:focus {
 	border-color: var(--qs-green);
 	box-shadow: 0 0 0 3px rgba(22,163,74,.12);
 }
 
-.quickship-settings-form input[type="number"].small-text {
+.quickshipd-settings-form input[type="number"].small-text {
 	width: 80px;
 }
 
-.quickship-settings-form input[type="text"].regular-text {
+.quickshipd-settings-form input[type="text"].regular-text {
 	width: 100%;
 	max-width: 360px;
 }
 
-.quickship-settings-form textarea.large-text {
+.quickshipd-settings-form textarea.large-text {
 	width: 100%;
 	max-width: 420px;
 }
 
-.quickship-settings-form select {
+.quickshipd-settings-form select {
 	appearance: none;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 	background-repeat: no-repeat;
@@ -334,93 +342,127 @@
 	cursor: pointer;
 }
 
-/* Checkboxes */
-.quickship-settings-form input[type="checkbox"] {
-	width: 16px;
-	height: 16px;
-	accent-color: var(--qs-green);
+/* Toggle switches (yes/no + weekday multi-select) */
+.quickshipd-settings-form .quickshipd-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
 	cursor: pointer;
-	margin-right: 6px;
-	vertical-align: middle;
-	position: relative;
-	top: -1px;
-}
-
-.quickship-settings-form label {
+	user-select: none;
 	font-size: 13px;
 	color: var(--qs-gray-700);
+}
+
+.quickshipd-settings-form .quickshipd-toggle__switch {
+	position: relative;
+	display: inline-block;
+	flex-shrink: 0;
+	width: 36px;
+	height: 20px;
+	vertical-align: middle;
+}
+
+.quickshipd-settings-form .quickshipd-toggle__input {
+	position: absolute;
+	opacity: 0.001;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
 	cursor: pointer;
+	z-index: 2;
+}
+
+.quickshipd-settings-form .quickshipd-toggle__track {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	border-radius: 999px;
+	background: var(--qs-gray-200);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+	transition: background 0.2s ease, box-shadow 0.15s ease;
+}
+
+.quickshipd-settings-form .quickshipd-toggle__track::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+	transition: transform 0.2s ease;
+}
+
+.quickshipd-settings-form .quickshipd-toggle__input:checked + .quickshipd-toggle__track {
+	background: var(--qs-green);
+}
+
+.quickshipd-settings-form .quickshipd-toggle__input:checked + .quickshipd-toggle__track::after {
+	transform: translateX(16px);
+}
+
+.quickshipd-settings-form .quickshipd-toggle__input:focus-visible + .quickshipd-toggle__track {
+	box-shadow:
+		inset 0 1px 2px rgba(0, 0, 0, 0.06),
+		0 0 0 3px rgba(22, 163, 74, 0.35);
+}
+
+.quickshipd-settings-form .quickshipd-toggle__input:disabled + .quickshipd-toggle__track {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.quickshipd-settings-form .quickshipd-toggle__text {
+	font-weight: 500;
+	line-height: 1.35;
 }
 
 /* Description text */
-.quickship-settings-form .description {
+.quickshipd-settings-form .description {
 	font-size: 12px;
 	color: var(--qs-gray-400);
 	margin-top: 5px;
 	line-height: 1.5;
 }
 
-/* Fieldset (weekdays) */
-.quickship-settings-form fieldset {
+/* Fieldset (weekday toggles — plain inline row, no pill chrome) */
+.quickshipd-settings-form fieldset {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
+	align-items: center;
+	gap: 16px 20px;
 	border: none;
 	padding: 0;
 	margin: 0;
 }
 
-.quickship-settings-form fieldset label {
-	display: inline-flex;
-	align-items: center;
-	gap: 5px;
-	background: var(--qs-gray-50);
-	border: 1px solid var(--qs-gray-200);
-	border-radius: 6px;
-	padding: 5px 10px;
-	font-size: 12px;
-	font-weight: 500;
-	cursor: pointer;
-	transition: background .12s, border-color .12s;
-	margin-right: 0;
-}
-
-.quickship-settings-form fieldset label:has(input:checked) {
-	background: var(--qs-green-light);
-	border-color: #86efac;
-	color: var(--qs-green-dark);
-}
-
-.quickship-settings-form fieldset input[type="checkbox"] {
-	width: 13px;
-	height: 13px;
-	margin: 0;
-	top: 0;
-}
-
 /* Cutoff time inline selects */
-.quickship-settings-form select#quickship_cutoff_hour,
-.quickship-settings-form select#quickship_cutoff_min {
+.quickshipd-settings-form select#quickshipd_cutoff_hour,
+.quickshipd-settings-form select#quickshipd_cutoff_min {
 	width: auto;
 }
 
 /* ── Tab panes ─────────────────────────────────────────────────────── */
-.quickship-tab-pane {
+.quickshipd-tab-pane {
 	display: none;
 }
-.quickship-tab-pane.is-active {
+.quickshipd-tab-pane.is-active {
 	display: block;
 }
 
 /* ── Save bar ──────────────────────────────────────────────────────── */
-.quickship-save-bar {
+.quickshipd-save-bar {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	margin-top: 20px;
 }
 
-#quickship-save-btn {
+#quickshipd-save-btn {
 	background: var(--qs-green) !important;
 	border-color: var(--qs-green-dark) !important;
 	color: #fff !important;
@@ -435,17 +477,17 @@
 	cursor: pointer !important;
 }
 
-#quickship-save-btn:hover {
+#quickshipd-save-btn:hover {
 	background: var(--qs-green-dark) !important;
 	transform: translateY(-1px) !important;
 }
 
-#quickship-save-btn:active {
+#quickshipd-save-btn:active {
 	transform: translateY(0) !important;
 }
 
-#quickship-save-btn:disabled,
-#quickship-restore-btn:disabled {
+#quickshipd-save-btn:disabled,
+#quickshipd-restore-btn:disabled {
 	opacity: .75 !important;
 	cursor: not-allowed !important;
 	transform: none !important;
@@ -463,7 +505,7 @@
 	margin-right: 4px;
 }
 
-#quickship-restore-btn .qs-btn-spinner {
+#quickshipd-restore-btn .qs-btn-spinner {
 	border-color: rgba(100,116,139,.3);
 	border-top-color: var(--qs-gray-500);
 }
@@ -472,13 +514,13 @@
 	to { transform: rotate(360deg); }
 }
 
-.quickship-save-status {
+.quickshipd-save-status {
 	font-size: 13px;
 	font-weight: 500;
 }
 
-.quickship-save-status.is-success { color: var(--qs-green-dark); }
-.quickship-save-status.is-error   { color: #dc2626; }
+.quickshipd-save-status.is-success { color: var(--qs-green-dark); }
+.quickshipd-save-status.is-error   { color: #dc2626; }
 
 .qs-restore-btn {
 	margin-left: auto !important;
@@ -504,7 +546,7 @@
 }
 
 /* ── Footer ────────────────────────────────────────────────────────── */
-.quickship-settings-footer {
+.quickshipd-settings-footer {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -518,58 +560,58 @@
 	color: var(--qs-gray-400);
 }
 
-.quickship-settings-footer .qs-footer-left {
+.quickshipd-settings-footer .qs-footer-left {
 	display: flex;
 	align-items: center;
 	gap: 6px;
 }
 
-.quickship-settings-footer .qs-footer-logo {
+.quickshipd-settings-footer .qs-footer-logo {
 	width: 20px;
 	height: 20px;
 	color: var(--qs-green);
 }
 
 /* ── Product editor meta box ───────────────────────────────────────── */
-.quickship-product-options {
+.quickshipd-product-options {
 	border-top: 1px solid var(--qs-gray-200);
 	padding-top: 12px;
 }
 
 /* ── Responsive ────────────────────────────────────────────────────── */
 @media (max-width: 960px) {
-	.quickship-layout {
+	.quickshipd-layout {
 		flex-direction: column-reverse;
 	}
-	.quickship-layout-right {
+	.quickshipd-layout-right {
 		width: 100%;
 		position: static;
 	}
 }
 
 @media (max-width: 600px) {
-	.quickship-settings-form .form-table tr {
+	.quickshipd-settings-form .form-table tr {
 		flex-direction: column;
 		gap: 6px;
 	}
-	.quickship-settings-form .form-table th {
+	.quickshipd-settings-form .form-table th {
 		width: 100%;
 		min-width: 0;
 		padding-top: 0;
 	}
-	.quickship-tab-nav {
+	.quickshipd-tab-nav {
 		width: 100%;
 		gap: 0;
 		justify-content: stretch;
 	}
-	.quickship-tab-btn {
+	.quickshipd-tab-btn {
 		flex: 1 1 0;
 		min-width: 0;
 		padding: 14px 12px;
 		font-size: 13px;
 		gap: 8px;
 	}
-	.quickship-tab-btn svg {
+	.quickshipd-tab-btn svg {
 		width: 16px;
 		height: 16px;
 	}

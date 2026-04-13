@@ -6,7 +6,7 @@
  * WordPress helpers (wp_timezone, date_i18n) are injected at the call site
  * via the static factory method ::from_settings().
  *
- * @package QuickShip
+ * @package QuickShipD
  * @since   1.0.0
  */
 
@@ -15,13 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class QuickShip_Calculator
+ * Class QuickShipD_Calculator
  *
  * Calculates estimated delivery date ranges from a set of shipping parameters.
  *
  * @since 1.0.0
  */
-class QuickShip_Calculator {
+class QuickShipD_Calculator {
 
 	/**
 	 * Minimum business days for delivery.
@@ -103,15 +103,15 @@ class QuickShip_Calculator {
 	 * @return self
 	 */
 	public static function from_settings( array $overrides = array(), ?int $product_id = null ): self {
-		$min_days    = (int) get_option( 'quickship_min_days', 3 );
-		$max_days    = (int) get_option( 'quickship_max_days', 5 );
-		$cutoff_hour = (int) get_option( 'quickship_cutoff_hour', 14 );
-		$cutoff_min  = (int) get_option( 'quickship_cutoff_min', 0 );
+		$min_days    = (int) get_option( 'quickshipd_min_days', 3 );
+		$max_days    = (int) get_option( 'quickshipd_max_days', 5 );
+		$cutoff_hour = (int) get_option( 'quickshipd_cutoff_hour', 14 );
+		$cutoff_min  = (int) get_option( 'quickshipd_cutoff_min', 0 );
 
 		// Per-product meta overrides.
 		if ( $product_id ) {
-			$meta_min = get_post_meta( $product_id, '_quickship_min_days', true );
-			$meta_max = get_post_meta( $product_id, '_quickship_max_days', true );
+			$meta_min = get_post_meta( $product_id, '_quickshipd_min_days', true );
+			$meta_max = get_post_meta( $product_id, '_quickshipd_max_days', true );
 			if ( '' !== $meta_min && is_numeric( $meta_min ) ) {
 				$min_days = (int) $meta_min;
 			}
@@ -129,15 +129,15 @@ class QuickShip_Calculator {
 		}
 
 		// Excluded weekdays.
-		$exclude_weekends = 'yes' === get_option( 'quickship_exclude_weekends', 'yes' );
-		$excluded_days    = (array) get_option( 'quickship_excluded_days', array() );
+		$exclude_weekends = 'yes' === get_option( 'quickshipd_exclude_weekends', 'yes' );
+		$excluded_days    = (array) get_option( 'quickshipd_excluded_days', array() );
 		if ( $exclude_weekends ) {
 			// Ensure 0 (Sunday) and 6 (Saturday) are in the list.
 			$excluded_days = array_unique( array_merge( $excluded_days, array( 0, 6 ) ) );
 		}
 
 		// Holidays: one date per line in the textarea option.
-		$holidays_raw = get_option( 'quickship_holidays', '' );
+		$holidays_raw = get_option( 'quickshipd_holidays', '' );
 		$holidays     = self::parse_holidays( $holidays_raw );
 
 		return new self( $min_days, $max_days, $cutoff_hour, $cutoff_min, $excluded_days, $holidays );
@@ -312,7 +312,7 @@ class QuickShip_Calculator {
 		if ( $hours > 0 ) {
 			return sprintf(
 				/* translators: 1: hours, 2: minutes */
-				__( '%1$dh %2$dm', 'quickship-delivery-date' ),
+				__( '%1$dh %2$dm', 'quickshipd' ),
 				$hours,
 				$minutes
 			);
@@ -320,7 +320,7 @@ class QuickShip_Calculator {
 
 		return sprintf(
 			/* translators: 1: minutes */
-			__( '%1$dm', 'quickship-delivery-date' ),
+			__( '%1$dm', 'quickshipd' ),
 			$minutes
 		);
 	}

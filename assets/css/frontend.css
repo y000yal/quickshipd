@@ -1,49 +1,49 @@
-/* QuickShip Delivery Date — Frontend Styles
+/* QuickShipD Delivery Date — Frontend Styles
  * Target: <0.5 KB minified. No !important. Theme-agnostic.
  * Colors are set via inline style="" attributes in PHP so they
  * respect admin settings without extra CSS specificity wars.
  */
 
-.quickship-delivery {
+.quickshipd-delivery {
 	margin: 12px 0;
 	font-size: 14px;
 	line-height: 1.5;
 }
 
-.quickship-estimate {
+.quickshipd-estimate {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
 	font-weight: 600;
 }
 
-.quickship-icon {
+.quickshipd-icon {
 	width: 18px;
 	height: 18px;
 	flex-shrink: 0;
 }
 
-.quickship-countdown {
+.quickshipd-countdown {
 	font-size: 12px;
 	margin-top: 2px;
 	opacity: 0.85;
 }
 
-.quickship-countdown strong {
+.quickshipd-countdown strong {
 	font-weight: 700;
 }
 
 /* Shop / archive context — compact, no countdown */
-.quickship-context-shop {
+.quickshipd-context-shop {
 	font-size: 12px;
 	margin: 6px 0;
 }
 
-.quickship-context-shop .quickship-countdown {
+.quickshipd-context-shop .quickshipd-countdown {
 	display: none;
 }
 
 /* Checkout context */
-.quickship-context-checkout {
+.quickshipd-context-checkout {
 	margin: 8px 0;
 }

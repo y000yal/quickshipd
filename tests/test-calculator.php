@@ -1,6 +1,6 @@
 <?php
 /**
- * Unit tests for QuickShip_Calculator.
+ * Unit tests for QuickShipD_Calculator.
  *
  * Run from the plugin root with:
  *   composer require --dev phpunit/phpunit
@@ -10,7 +10,7 @@
  * are called (date_i18n, get_option, etc.) so no WordPress bootstrap is
  * required.
  *
- * @package QuickShip
+ * @package QuickShipD
  * @since   1.0.0
  */
 
@@ -44,21 +44,21 @@ if ( ! function_exists( '__' ) ) {
 	}
 }
 
-require_once dirname( __DIR__ ) . '/includes/class-quickship-calculator.php';
+require_once dirname( __DIR__ ) . '/includes/class-quickshipd-calculator.php';
 
 /**
- * Class Test_QuickShip_Calculator
+ * Class Test_QuickShipD_Calculator
  *
  * @since 1.0.0
  */
-class Test_QuickShip_Calculator extends TestCase {
+class Test_QuickShipD_Calculator extends TestCase {
 
 	// -----------------------------------------------------------------------
 	// Helper: build a calculator with standard settings.
 	// -----------------------------------------------------------------------
 
-	private function make( int $min = 3, int $max = 5, int $cutoff_hour = 14, int $cutoff_min = 0, array $excluded = array( 0, 6 ), array $holidays = array() ): QuickShip_Calculator {
-		return new QuickShip_Calculator( $min, $max, $cutoff_hour, $cutoff_min, $excluded, $holidays );
+	private function make( int $min = 3, int $max = 5, int $cutoff_hour = 14, int $cutoff_min = 0, array $excluded = array( 0, 6 ), array $holidays = array() ): QuickShipD_Calculator {
+		return new QuickShipD_Calculator( $min, $max, $cutoff_hour, $cutoff_min, $excluded, $holidays );
 	}
 
 	// -----------------------------------------------------------------------
@@ -164,7 +164,7 @@ class Test_QuickShip_Calculator extends TestCase {
 	 */
 	public function test_parse_holidays_filters_comments(): void {
 		$raw    = "2024-12-25\n# Christmas\nXXXX-01-01\n\n2024-11-28";
-		$result = QuickShip_Calculator::parse_holidays( $raw );
+		$result = QuickShipD_Calculator::parse_holidays( $raw );
 
 		$this->assertCount( 3, $result );
 		$this->assertContains( '2024-12-25', $result );
@@ -180,21 +180,21 @@ class Test_QuickShip_Calculator extends TestCase {
 	 * @test
 	 */
 	public function test_format_countdown_hours_and_minutes(): void {
-		$this->assertSame( '3h 34m', QuickShip_Calculator::format_countdown( 3 * 3600 + 34 * 60 ) );
+		$this->assertSame( '3h 34m', QuickShipD_Calculator::format_countdown( 3 * 3600 + 34 * 60 ) );
 	}
 
 	/**
 	 * @test
 	 */
 	public function test_format_countdown_minutes_only(): void {
-		$this->assertSame( '45m', QuickShip_Calculator::format_countdown( 45 * 60 ) );
+		$this->assertSame( '45m', QuickShipD_Calculator::format_countdown( 45 * 60 ) );
 	}
 
 	/**
 	 * @test
 	 */
 	public function test_format_countdown_zero_returns_empty(): void {
-		$this->assertSame( '', QuickShip_Calculator::format_countdown( 0 ) );
+		$this->assertSame( '', QuickShipD_Calculator::format_countdown( 0 ) );
 	}
 
 	// -----------------------------------------------------------------------

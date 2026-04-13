@@ -1,5 +1,5 @@
 /**
- * QuickShip Delivery Date — Frontend
+ * QuickShipD Delivery Date — Frontend
  * Countdown timers + variable-product AJAX. No jQuery. ES5-compatible.
  */
 (function () {
@@ -13,7 +13,7 @@
 	}
 
 	function tickAll() {
-		document.querySelectorAll('.quickship-countdown[data-seconds]').forEach(function (el) {
+		document.querySelectorAll('.quickshipd-countdown[data-seconds]').forEach(function (el) {
 			var s = parseInt(el.getAttribute('data-seconds'), 10) - 1;
 			if (s <= 0) { el.style.display = 'none'; return; }
 			el.setAttribute('data-seconds', s);
@@ -23,7 +23,7 @@
 	}
 
 	function startCountdown() {
-		if (document.querySelector('.quickship-countdown[data-seconds]')) {
+		if (document.querySelector('.quickshipd-countdown[data-seconds]')) {
 			setInterval(tickAll, 1000);
 		}
 	}
@@ -31,16 +31,16 @@
 	// -- Variation AJAX -----------------------------------------------------
 
 	function updateVariation(variationId) {
-		var el = document.querySelector('.quickship-variable');
+		var el = document.querySelector('.quickshipd-variable');
 		if (!el) return;
 
 		if (!variationId) { el.style.display = 'none'; el.innerHTML = ''; return; }
 
-		var url   = el.getAttribute('data-ajax') || (window.quickshipData && window.quickshipData.ajaxUrl) || '';
-		var nonce = el.getAttribute('data-nonce') || (window.quickshipData && window.quickshipData.nonce) || '';
+		var url   = el.getAttribute('data-ajax') || (window.quickshipdData && window.quickshipdData.ajaxUrl) || '';
+		var nonce = el.getAttribute('data-nonce') || (window.quickshipdData && window.quickshipdData.nonce) || '';
 		if (!url) return;
 
-		var body = 'action=quickship_variation_date&variation_id=' + variationId + '&nonce=' + encodeURIComponent(nonce);
+		var body = 'action=quickshipd_variation_date&variation_id=' + variationId + '&nonce=' + encodeURIComponent(nonce);
 
 		fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
 			.then(function (r) { return r.json(); })

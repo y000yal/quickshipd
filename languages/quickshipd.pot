@@ -1,0 +1,378 @@
+# Copyright (C) 2026 y0000el
+# This file is distributed under the GPL v3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: QuickShipD — Estimated Delivery Date for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/quickshipd\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-13T03:33:30+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: quickshipd\n"
+
+#. Plugin Name of the plugin
+#: quickshipd.php
+msgid "QuickShipD — Estimated Delivery Date for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: quickshipd.php
+msgid "https://quickshipd.com"
+msgstr ""
+
+#. Description of the plugin
+#: quickshipd.php
+msgid "Estimated delivery dates for WooCommerce on product, cart, and checkout — shipping-aware ranges, per-product overrides, optional countdown."
+msgstr ""
+
+#. Author of the plugin
+#: quickshipd.php
+msgid "y0000el"
+msgstr ""
+
+#. Author URI of the plugin
+#: quickshipd.php
+msgid "https://yoyallimbu.com.np"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:69
+msgid "QuickShipD — Delivery Dates"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:70
+#: includes/class-quickshipd-admin.php:370
+msgid "QuickShipD"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:86
+msgid "General"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:90
+msgid "Enable QuickShipD"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:96
+msgid "Show estimated delivery dates on your store"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:101
+msgid "Timing"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:105
+msgid "Minimum delivery days"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:114
+msgid "Minimum number of business days for delivery."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:120
+msgid "Maximum delivery days"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:129
+msgid "Maximum number of business days for delivery. Set equal to minimum for a single date."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:135
+msgid "Order cutoff time"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:142
+msgid "Orders placed after this time count as next-day."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:146
+msgid "Schedule"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:150
+msgid "Exclude weekends"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:156
+msgid "Skip Saturday and Sunday when counting delivery days"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:163
+#: includes/class-quickshipd-admin.php:615
+msgid "Non-delivery days"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:169
+msgid "Select specific days when you do not dispatch orders."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:175
+msgid "Holidays"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:182
+msgid "One date per line. Format: YYYY-MM-DD (one-off) or XXXX-MM-DD (recurring yearly). Lines starting with # are ignored."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:192
+msgid "Show on"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:196
+msgid "Product pages"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:200
+msgid "Shop / archive pages"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:204
+msgid "Cart page (per item)"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:208
+msgid "Checkout page"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:228
+msgid "Options"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:232
+msgid "Show countdown timer"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:238
+msgid "Show \"Order within Xh Ym\" countdown on product pages"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:246
+msgid "Text Templates"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:250
+msgid "Single-date text"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:252
+msgid "Available: {date}"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:255
+msgid "Date-range text"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:257
+msgid "Available: {start}, {end}"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:260
+msgid "Countdown text"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:262
+msgid "Available: {countdown}, {date}"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:281
+msgid "Date Format &amp; Icon"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:285
+msgid "Date format"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:294
+msgid "Icon"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:301
+msgid "Colors"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:305
+msgid "Text color"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:317
+msgid "Background color"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:324
+msgid "Leave blank for transparent."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:340
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:345
+msgid "Delivery"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:349
+msgid "Display"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:353
+msgid "Style"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:380
+msgid "Settings tabs"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:402
+msgid "Save Settings"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:407
+msgid "Restore Defaults"
+msgstr ""
+
+#. translators: plugin version
+#: includes/class-quickshipd-admin.php:431
+#, php-format
+msgid "QuickShipD v%s"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:454
+msgid "Live Preview"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:455
+msgid "Product page"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:603
+msgctxt "weekday"
+msgid "Sunday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:604
+msgctxt "weekday"
+msgid "Monday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:605
+msgctxt "weekday"
+msgid "Tuesday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:606
+msgctxt "weekday"
+msgid "Wednesday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:607
+msgctxt "weekday"
+msgid "Thursday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:608
+msgctxt "weekday"
+msgid "Friday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:609
+msgctxt "weekday"
+msgid "Saturday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:669
+msgid "Truck"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:670
+msgid "Box"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:671
+msgid "None"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:757
+msgid "Settings saved."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:758
+msgid "Defaults restored."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:759
+msgid "Could not save. Please try again."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:760
+msgid "Reset all settings to their default values?"
+msgstr ""
+
+#. translators: 1: hours, 2: minutes
+#: includes/class-quickshipd-calculator.php:315
+#, php-format
+msgid "%1$dh %2$dm"
+msgstr ""
+
+#. translators: 1: minutes
+#: includes/class-quickshipd-calculator.php:323
+#, php-format
+msgid "%1$dm"
+msgstr ""
+
+#: includes/class-quickshipd-core.php:169
+msgid "QuickShipD: Min delivery days"
+msgstr ""
+
+#: includes/class-quickshipd-core.php:171
+msgid "Override the global minimum. Leave blank to use global."
+msgstr ""
+
+#: includes/class-quickshipd-core.php:182
+msgid "QuickShipD: Max delivery days"
+msgstr ""
+
+#: includes/class-quickshipd-core.php:184
+msgid "Override the global maximum. Leave blank to use global."
+msgstr ""
+
+#: includes/class-quickshipd-display.php:178
+msgid "Est. Delivery"
+msgstr ""
+
+#: includes/class-quickshipd-product-meta.php:42
+msgid "QuickShipD — Delivery Estimate"
+msgstr ""
+
+#: includes/class-quickshipd-product-meta.php:47
+msgid "Disable delivery estimate"
+msgstr ""
+
+#: includes/class-quickshipd-product-meta.php:48
+msgid "Hide the delivery estimate for this product."
+msgstr ""
+
+#: includes/class-quickshipd-product-meta.php:55
+msgid "Min delivery days"
+msgstr ""
+
+#: includes/class-quickshipd-product-meta.php:56
+#: includes/class-quickshipd-product-meta.php:71
+msgid "Leave blank to use the global default."
+msgstr ""
+
+#: includes/class-quickshipd-product-meta.php:70
+msgid "Max delivery days"
+msgstr ""
+
+#: includes/class-quickshipd-rest.php:93
+msgid "QuickShipD is disabled."
+msgstr ""
+
+#. translators: link to WooCommerce plugin page
+#: quickshipd.php:200
+#, php-format
+msgid "<strong>QuickShipD</strong> requires WooCommerce to be installed and activated. <a href=\"%s\">Install WooCommerce</a>."
+msgstr ""
