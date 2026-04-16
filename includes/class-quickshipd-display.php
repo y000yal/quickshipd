@@ -223,7 +223,7 @@ class QuickShipD_Display {
 		}
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo self::build_html( $max_result, null, 'checkout' );
+		echo '<tr id="quickshipd-checkout-delivery"><td colspan="2">' . self::build_html( $max_result, null, 'checkout' ) . '</td></tr>';
 	}
 
 	// -----------------------------------------------------------------------
@@ -254,10 +254,13 @@ class QuickShipD_Display {
 			return '' !== $val ? $val : $default;
 		};
 
-		$text_color = $opt( 'quickshipd_text_color', '#16a34a' );
-		$bg_color   = $opt( 'quickshipd_bg_color', '' );
-		$date_fmt   = $opt( 'quickshipd_date_format', 'D, M j' );
-		$icon_type  = $opt( 'quickshipd_icon', 'truck' );
+		$primary_color   = $opt( 'quickshipd_text_color', '#16a34a' );
+		$secondary_color = $opt( 'quickshipd_secondary_color', '#6b7280' );
+		$bg_color        = $opt( 'quickshipd_bg_color', '#f0fdf4' );
+		$border_radius   = max( 0, (int) $opt( 'quickshipd_border_radius', '8' ) );
+		$padding         = max( 0, (int) $opt( 'quickshipd_padding', '10' ) );
+		$date_fmt        = $opt( 'quickshipd_date_format', 'D, M j' );
+		$icon_type       = $opt( 'quickshipd_icon', 'truck' );
 
 		$min_date_fmt = QuickShipD_Calculator::format_date( $result['min_date'], $date_fmt );
 		$max_date_fmt = QuickShipD_Calculator::format_date( $result['max_date'], $date_fmt );
@@ -275,14 +278,14 @@ class QuickShipD_Display {
 			$date_label = str_replace( '{date}', $max_date_fmt, $tpl );
 		}
 
-		// Inline style.
-		$style_parts = array( 'color:' . $text_color );
+		// Container inline style.
+		$style_parts = array();
 		if ( '' !== $bg_color ) {
 			$style_parts[] = 'background-color:' . $bg_color;
-			$style_parts[] = 'padding:4px 8px';
-			$style_parts[] = 'border-radius:4px';
+			$style_parts[] = 'padding:' . $padding . 'px ' . ( $padding + 4 ) . 'px';
+			$style_parts[] = 'border-radius:' . $border_radius . 'px';
 		}
-		$inline_style = implode( ';', $style_parts );
+		$container_style = implode( ';', $style_parts );
 
 		// Context CSS class.
 		$context_class = 'quickshipd-context-' . sanitize_html_class( $context );
@@ -290,8 +293,8 @@ class QuickShipD_Display {
 		// Icon SVG.
 		$icon_svg = self::get_icon_svg( $icon_type );
 
-		$html  = '<div class="quickshipd-delivery ' . esc_attr( $context_class ) . '" style="' . esc_attr( $inline_style ) . '">';
-		$html .= '<div class="quickshipd-estimate">';
+		$html  = '<div class="quickshipd-delivery ' . esc_attr( $context_class ) . '"' . ( $container_style ? ' style="' . esc_attr( $container_style ) . '"' : '' ) . '>';
+		$html .= '<div class="quickshipd-estimate" style="color:' . esc_attr( $primary_color ) . '">';
 		$html .= $icon_svg;
 		$html .= '<span class="quickshipd-date-text">' . esc_html( $date_label ) . '</span>';
 		$html .= '</div>';
@@ -302,15 +305,16 @@ class QuickShipD_Display {
 			'yes' === $opt( 'quickshipd_show_countdown', 'yes' ) &&
 			$result['countdown_seconds'] > 0
 		) {
-			$countdown_fmt = QuickShipD_Calculator::format_countdown( $result['countdown_seconds'] );
-			$countdown_tpl = $opt( 'quickshipd_text_countdown', 'Order within {countdown} to get it by {date}' );
+			$countdown_fmt  = QuickShipD_Calculator::format_countdown( $result['countdown_seconds'] );
+			$countdown_tpl  = $opt( 'quickshipd_text_countdown', 'Order within {countdown} to get it by {date}' );
+			// Bold time uses primary color; surrounding text uses secondary color.
+			$strong_html    = '<strong style="color:' . esc_attr( $primary_color ) . '">' . esc_html( $countdown_fmt ) . '</strong>';
 			$countdown_text = str_replace(
 				array( '{countdown}', '{date}' ),
-				array( '<strong>' . esc_html( $countdown_fmt ) . '</strong>', esc_html( $max_date_fmt ) ),
-				esc_html( $countdown_tpl )  // esc_html runs on template only; placeholders replaced after.
+				array( $strong_html, esc_html( $max_date_fmt ) ),
+				esc_html( $countdown_tpl )
 			);
-			// $countdown_text has only our own <strong> tags; safe.
-			$html .= '<div class="quickshipd-countdown" data-seconds="' . absint( $result['countdown_seconds'] ) . '">';
+			$html .= '<div class="quickshipd-countdown" style="color:' . esc_attr( $secondary_color ) . '" data-seconds="' . absint( $result['countdown_seconds'] ) . '">';
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$html .= $countdown_text;
 			$html .= '</div>';
@@ -484,15 +488,21 @@ class QuickShipD_Display {
 			return array();
 		}
 
-		$min = get_option( 'woocommerce_' . $parts[0] . '_' . $instance_id . '_quickshipd_min_days', '' );
-		$max = get_option( 'woocommerce_' . $parts[0] . '_' . $instance_id . '_quickshipd_max_days', '' );
+		// Use WooCommerce's own API to read instance settings (stored serialised, not as flat options).
+		$method = WC_Shipping_Zones::get_shipping_method( $instance_id );
+		if ( ! $method ) {
+			return array();
+		}
+
+		$min = $method->get_option( 'quickshipd_min_days', '' );
+		$max = $method->get_option( 'quickshipd_max_days', '' );
 
 		$overrides = array();
-		if ( '' !== $min ) {
-			$overrides['min_days'] = $min;
+		if ( '' !== $min && is_numeric( $min ) ) {
+			$overrides['min_days'] = (int) $min;
 		}
-		if ( '' !== $max ) {
-			$overrides['max_days'] = $max;
+		if ( '' !== $max && is_numeric( $max ) ) {
+			$overrides['max_days'] = (int) $max;
 		}
 		return $overrides;
 	}

@@ -40,7 +40,6 @@ $quickshipd_options_to_delete = array(
 	'quickshipd_icon',
 	'quickshipd_text_color',
 	'quickshipd_bg_color',
-	'quickshipd_legacy_migrated',
 	'quickshipd_db_repaired_v2',
 );
 
@@ -48,22 +47,18 @@ foreach ( $quickshipd_options_to_delete as $quickshipd_option_name ) {
 	delete_option( $quickshipd_option_name );
 }
 
-// Legacy keys from the quickship-delivery-date slug (pre-rename).
-foreach ( $quickshipd_options_to_delete as $quickshipd_option_name ) {
-	$legacy = str_replace( 'quickshipd_', 'quickship_', $quickshipd_option_name );
-	if ( $legacy !== $quickshipd_option_name ) {
-		delete_option( $legacy );
-	}
-}
-delete_option( 'quickship_db_repaired_v2' );
-
 global $wpdb;
+
+// -------------------------------------------------------------------------
+// Delete WooCommerce shipping instance options (quickshipd_min/max_days).
+// -------------------------------------------------------------------------
+
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 $wpdb->query(
 	$wpdb->prepare(
 		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-		'%' . $wpdb->esc_like( 'quickship_min_days' ),
-		'%' . $wpdb->esc_like( 'quickship_max_days' )
+		'%' . $wpdb->esc_like( 'quickshipd_min_days' ),
+		'%' . $wpdb->esc_like( 'quickshipd_max_days' )
 	)
 );
 
@@ -77,9 +72,6 @@ $wpdb->query(
 	 WHERE meta_key IN (
 	   '_quickshipd_disabled',
 	   '_quickshipd_min_days',
-	   '_quickshipd_max_days',
-	   '_quickship_disabled',
-	   '_quickship_min_days',
-	   '_quickship_max_days'
+	   '_quickshipd_max_days'
 	 )"
 );

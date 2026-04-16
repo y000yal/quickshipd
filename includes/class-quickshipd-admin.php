@@ -298,17 +298,31 @@ class QuickShipD_Admin {
 			array( 'id' => 'quickshipd_icon' )
 		);
 
-		$this->register_section( 'quickshipd_style_colors', __( 'Colors', 'quickshipd' ), 'style' );
+		$this->register_section( 'quickshipd_style_colors', __( 'Colors &amp; Background', 'quickshipd' ), 'style' );
 
 		$this->register_field(
 			'quickshipd_text_color',
-			__( 'Text color', 'quickshipd' ),
+			__( 'Primary text color', 'quickshipd' ),
 			'render_color',
 			'style',
 			'quickshipd_style_colors',
 			array(
-				'id'      => 'quickshipd_text_color',
-				'default' => '#16a34a',
+				'id'          => 'quickshipd_text_color',
+				'default'     => '#16a34a',
+				'description' => __( 'Delivery date line and bold countdown time.', 'quickshipd' ),
+			)
+		);
+
+		$this->register_field(
+			'quickshipd_secondary_color',
+			__( 'Secondary text color', 'quickshipd' ),
+			'render_color',
+			'style',
+			'quickshipd_style_colors',
+			array(
+				'id'          => 'quickshipd_secondary_color',
+				'default'     => '#6b7280',
+				'description' => __( '"Order within … to get it by" surrounding text.', 'quickshipd' ),
 			)
 		);
 
@@ -320,8 +334,38 @@ class QuickShipD_Admin {
 			'quickshipd_style_colors',
 			array(
 				'id'          => 'quickshipd_bg_color',
-				'default'     => '',
+				'default'     => '#f0fdf4',
 				'description' => __( 'Leave blank for transparent.', 'quickshipd' ),
+			)
+		);
+
+		$this->register_field(
+			'quickshipd_border_radius',
+			__( 'Border radius', 'quickshipd' ),
+			'render_range',
+			'style',
+			'quickshipd_style_colors',
+			array(
+				'id'      => 'quickshipd_border_radius',
+				'default' => 8,
+				'min'     => 0,
+				'max'     => 50,
+				'unit'    => 'px',
+			)
+		);
+
+		$this->register_field(
+			'quickshipd_padding',
+			__( 'Padding', 'quickshipd' ),
+			'render_range',
+			'style',
+			'quickshipd_style_colors',
+			array(
+				'id'      => 'quickshipd_padding',
+				'default' => 10,
+				'min'     => 0,
+				'max'     => 40,
+				'unit'    => 'px',
 			)
 		);
 	}
@@ -451,8 +495,8 @@ class QuickShipD_Admin {
 		?>
 		<div class="quickshipd-preview-card" id="quickshipd-live-preview">
 			<div class="quickshipd-preview-header">
-				<p class="quickshipd-preview-label"><?php esc_html_e( 'Live Preview', 'quickshipd' ); ?></p>
-				<span class="quickshipd-preview-context"><?php esc_html_e( 'Product page', 'quickshipd' ); ?></span>
+				<p class="quickshipd-preview-label"><?php esc_html_e( 'Live Preview For', 'quickshipd' ); ?></p>
+				<span class="quickshipd-preview-context"><?php esc_html_e( 'Product page/Shop Page', 'quickshipd' ); ?></span>
 			</div>
 			<div class="quickshipd-preview-stage">
 				<?php
@@ -505,6 +549,32 @@ class QuickShipD_Admin {
 			esc_attr( (string) $value ),
 			esc_attr( (string) $min ),
 			esc_attr( (string) $max )
+		);
+		if ( ! empty( $args['description'] ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
+		}
+	}
+
+	/**
+	 * Render a range slider with a live value badge.
+	 *
+	 * @param array $args Field arguments.
+	 * @return void
+	 */
+	public function render_range( array $args ): void {
+		$id      = esc_attr( $args['id'] );
+		$default = isset( $args['default'] ) ? (int) $args['default'] : 0;
+		$min     = isset( $args['min'] ) ? (int) $args['min'] : 0;
+		$max     = isset( $args['max'] ) ? (int) $args['max'] : 100;
+		$unit    = isset( $args['unit'] ) ? esc_html( $args['unit'] ) : '';
+		$value   = (int) get_option( $id, $default );
+		printf(
+			'<div class="qs-range-wrap"><input type="range" id="%1$s" name="%1$s" value="%2$s" min="%3$s" max="%4$s" class="qs-range" oninput="this.nextElementSibling.textContent=this.value+\'%5$s\'"><span class="qs-range-val">%2$s%5$s</span></div>',
+			esc_attr( $id ),
+			esc_attr( (string) $value ),
+			esc_attr( (string) $min ),
+			esc_attr( (string) $max ),
+			$unit
 		);
 		if ( ! empty( $args['description'] ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
@@ -847,9 +917,13 @@ class QuickShipD_Admin {
 				update_option( 'quickshipd_text_countdown', sanitize_text_field( wp_unslash( $_POST['quickshipd_text_countdown'] ?? 'Order within {countdown} to get it by {date}' ) ) );
 				update_option( 'quickshipd_date_format', sanitize_text_field( wp_unslash( $_POST['quickshipd_date_format'] ?? 'D, M j' ) ) );
 				update_option( 'quickshipd_icon', $this->sanitize_icon( sanitize_text_field( wp_unslash( $_POST['quickshipd_icon'] ?? 'truck' ) ) ) );
-				$quickshipd_text_color = sanitize_hex_color( wp_unslash( $_POST['quickshipd_text_color'] ?? '#16a34a' ) );
-				update_option( 'quickshipd_text_color', $quickshipd_text_color ? $quickshipd_text_color : '#16a34a' );
-				update_option( 'quickshipd_bg_color', $this->sanitize_maybe_color( sanitize_text_field( wp_unslash( $_POST['quickshipd_bg_color'] ?? '' ) ) ) );
+				$qs_primary = sanitize_hex_color( wp_unslash( $_POST['quickshipd_text_color'] ?? '#16a34a' ) );
+				update_option( 'quickshipd_text_color', $qs_primary ?: '#16a34a' );
+				$qs_secondary = sanitize_hex_color( wp_unslash( $_POST['quickshipd_secondary_color'] ?? '#6b7280' ) );
+				update_option( 'quickshipd_secondary_color', $qs_secondary ?: '#6b7280' );
+				update_option( 'quickshipd_bg_color', $this->sanitize_maybe_color( sanitize_text_field( wp_unslash( $_POST['quickshipd_bg_color'] ?? '#f0fdf4' ) ) ) );
+				update_option( 'quickshipd_border_radius', min( 50, max( 0, absint( wp_unslash( $_POST['quickshipd_border_radius'] ?? 8 ) ) ) ) );
+				update_option( 'quickshipd_padding', min( 40, max( 0, absint( wp_unslash( $_POST['quickshipd_padding'] ?? 10 ) ) ) ) );
 				break;
 
 			default:

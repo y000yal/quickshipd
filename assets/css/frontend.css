@@ -24,9 +24,8 @@
 }
 
 .quickshipd-countdown {
-	font-size: 12px;
-	margin-top: 2px;
-	opacity: 0.85;
+	font-size: 13px;
+	margin-top: 3px;
 }
 
 .quickshipd-countdown strong {
@@ -46,4 +45,40 @@
 /* Checkout context */
 .quickshipd-context-checkout {
 	margin: 8px 0;
+}
+
+/* Block checkout skeleton — sits inside .wc-block-components-product-details */
+.quickshipd-block-skeleton {
+	margin-top: 4px;
+}
+
+/* Skeleton loader — matches WC's own price placeholder pills */
+.quickshipd-checkout-skeleton {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 4px 0;
+}
+
+.quickshipd-skel-line {
+	display: block;
+	border-radius: 3px;
+	background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+	background-size: 200% 100%;
+	animation: qs-shimmer 1.4s ease-in-out infinite;
+}
+
+.quickshipd-skel-line--lg {
+	height: 14px;
+	width: 140px;
+}
+
+.quickshipd-skel-line--sm {
+	height: 12px;
+	width: 100px;
+}
+
+@keyframes qs-shimmer {
+	0%   { background-position: 200% 0; }
+	100% { background-position: -200% 0; }
 }

@@ -213,14 +213,17 @@
 		var excWeekend = checkbox( 'input[name="quickshipd_exclude_weekends"]' );
 
 		// ---- style settings ----
-		var textSingle    = field( 'input[name="quickshipd_text_single"]',    'Get it by {date}' );
-		var textRange     = field( 'input[name="quickshipd_text_range"]',     'Get it {start} \u2013 {end}' );
-		var textCountdown = field( 'input[name="quickshipd_text_countdown"]', 'Order within {countdown} to get it by {date}' );
-		var dateFmt       = field( 'select[name="quickshipd_date_format"]',   'D, M j' );
-		var icon          = field( 'select[name="quickshipd_icon"]',          'truck' );
-		var textColor     = field( 'input[name="quickshipd_text_color"]',     '#16a34a' );
-		var bgColor       = field( 'input[name="quickshipd_bg_color"]',       '' );
-		var showCd        = checkbox( 'input[name="quickshipd_show_countdown"]' );
+		var textSingle      = field( 'input[name="quickshipd_text_single"]',    'Get it by {date}' );
+		var textRange       = field( 'input[name="quickshipd_text_range"]',     'Get it {start} \u2013 {end}' );
+		var textCountdown   = field( 'input[name="quickshipd_text_countdown"]', 'Order within {countdown} to get it by {date}' );
+		var dateFmt         = field( 'select[name="quickshipd_date_format"]',   'D, M j' );
+		var icon            = field( 'select[name="quickshipd_icon"]',          'truck' );
+		var primaryColor    = field( 'input[name="quickshipd_text_color"]',     '#16a34a' );
+		var secondaryColor  = field( 'input[name="quickshipd_secondary_color"]','#6b7280' );
+		var bgColor         = field( 'input[name="quickshipd_bg_color"]',       '#f0fdf4' );
+		var borderRadius    = parseInt( field( 'input[name="quickshipd_border_radius"]', '8' ), 10 );
+		var padding         = parseInt( field( 'input[name="quickshipd_padding"]', '10' ), 10 );
+		var showCd          = checkbox( 'input[name="quickshipd_show_countdown"]' );
 
 		// ---- current site time (adjusted UTC = UTC + siteUtcOffset) ----
 		var nowMs      = ( cfg.nowTimestamp || Math.floor( Date.now() / 1000 ) ) * 1000;
@@ -255,22 +258,24 @@
 			? textRange.replace( '{start}', minFmt ).replace( '{end}', maxFmt )
 			: textSingle.replace( '{date}', maxFmt );
 
-		var style = 'color:' + textColor;
-		if ( bgColor ) style += ';background-color:' + bgColor + ';padding:4px 8px;border-radius:4px';
+		var containerStyle = '';
+		if ( bgColor ) {
+			containerStyle = 'background-color:' + bgColor + ';padding:' + padding + 'px ' + ( padding + 4 ) + 'px;border-radius:' + borderRadius + 'px';
+		}
 
 		var iconSvg = QS_ICONS[ icon ] !== undefined ? QS_ICONS[ icon ] : QS_ICONS.truck;
 
-		var html  = '<div class="quickshipd-delivery quickshipd-context-product" style="' + style + '">';
-		html     += '<div class="quickshipd-estimate">' + iconSvg;
+		var html  = '<div class="quickshipd-delivery quickshipd-context-product"' + ( containerStyle ? ' style="' + containerStyle + '"' : '' ) + '>';
+		html     += '<div class="quickshipd-estimate" style="color:' + primaryColor + '">' + iconSvg;
 		html     += '<span class="quickshipd-date-text">' + dateLabel + '</span>';
 		html     += '</div>';
 
 		if ( showCd && countdownSecs > 0 ) {
 			var cdFmt  = qsCountdownFmt( countdownSecs );
 			var cdText = textCountdown
-				.replace( '{countdown}', '<strong>' + cdFmt + '</strong>' )
+				.replace( '{countdown}', '<strong style="color:' + primaryColor + '">' + cdFmt + '</strong>' )
 				.replace( '{date}', maxFmt );
-			html += '<div class="quickshipd-countdown" data-seconds="' + countdownSecs + '">' + cdText + '</div>';
+			html += '<div class="quickshipd-countdown" style="color:' + secondaryColor + '" data-seconds="' + countdownSecs + '">' + cdText + '</div>';
 		}
 
 		html += '</div>';

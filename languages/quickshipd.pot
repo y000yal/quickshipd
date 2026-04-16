@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-13T03:33:30+00:00\n"
+"POT-Creation-Date: 2026-04-13T03:44:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: quickshipd\n"
@@ -372,7 +372,7 @@ msgid "QuickShipD is disabled."
 msgstr ""
 
 #. translators: link to WooCommerce plugin page
-#: quickshipd.php:200
+#: quickshipd.php:116
 #, php-format
 msgid "<strong>QuickShipD</strong> requires WooCommerce to be installed and activated. <a href=\"%s\">Install WooCommerce</a>."
 msgstr ""

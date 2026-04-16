@@ -76,9 +76,70 @@
 		}
 	}
 
+	// -- Checkout shipping skeleton -----------------------------------------
+	// Block checkout: capture click on shipping radios BEFORE React processes
+	// it, swap est-delivery content with skeleton. React re-render replaces
+	// the element entirely, clearing the skeleton naturally.
+	// Classic checkout: jQuery update_checkout event.
+
+	var SKELETON_HTML =
+		'<div class="quickshipd-checkout-skeleton">' +
+			'<span class="quickshipd-skel-line quickshipd-skel-line--lg"></span>' +
+			'<span class="quickshipd-skel-line quickshipd-skel-line--sm"></span>' +
+		'</div>';
+
+	function showBlockSkeletons() {
+		var els = document.querySelectorAll( '.wc-block-components-product-details__est-delivery' );
+		els.forEach( function ( el ) {
+			el.innerHTML = SKELETON_HTML;
+		} );
+	}
+
+	function initBlockCheckoutSkeleton() {
+		// Use capturing phase so we fire BEFORE React's synthetic event system.
+		document.addEventListener( 'click', function ( e ) {
+			// Match shipping rate radio inputs inside the shipping section.
+			var radio = e.target.closest && e.target.closest( '.wc-block-components-radio-control__input' );
+			if ( !radio ) return;
+
+			// Only care about radios inside the shipping rates section.
+			var shippingSection = radio.closest( '.wc-block-components-shipping-rates-control' );
+			if ( !shippingSection ) return;
+
+			// Small delay lets the click register, then we swap before React re-renders.
+			// requestAnimationFrame fires before the next paint — perfect timing.
+			requestAnimationFrame( function () {
+				showBlockSkeletons();
+			} );
+		}, true ); // <-- capturing phase
+	}
+
+	function initClassicCheckoutSkeleton() {
+		// Classic checkout: jQuery update_checkout event.
+		if ( !window.jQuery ) return;
+		var wrap = document.getElementById( 'quickshipd-checkout-delivery' );
+		if ( !wrap ) return;
+		jQuery( document.body ).on( 'update_checkout', function () {
+			var td = wrap.querySelector( 'td' );
+			if ( td && !td.querySelector( '.quickshipd-checkout-skeleton' ) ) {
+				td.setAttribute( 'data-qs-saved', td.innerHTML );
+				td.innerHTML = SKELETON_HTML;
+			}
+		} );
+	}
+
+	function initCheckoutSkeleton() {
+		// Block checkout.
+		if ( document.querySelector( '.wp-block-woocommerce-checkout' ) ) {
+			initBlockCheckoutSkeleton();
+		}
+		// Classic checkout.
+		initClassicCheckoutSkeleton();
+	}
+
 	// -- Boot ---------------------------------------------------------------
 
-	function init() { startCountdown(); initVariation(); }
+	function init() { startCountdown(); initVariation(); initCheckoutSkeleton(); }
 
 	document.readyState === 'loading'
 		? document.addEventListener('DOMContentLoaded', init)

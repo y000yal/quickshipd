@@ -107,20 +107,22 @@ class QuickShipD_Rest {
 			return rest_ensure_response( array( 'html' => '', 'show' => false ) );
 		}
 
-		// Shipping method overrides.
+		// Shipping method overrides — read from WC's serialised instance settings.
 		$overrides = array();
 		if ( '' !== $shipping_instance ) {
 			$parts       = explode( ':', $shipping_instance );
-			$method_slug = $parts[0];
 			$instance_id = isset( $parts[1] ) ? absint( $parts[1] ) : 0;
 			if ( $instance_id ) {
-				$min = get_option( 'woocommerce_' . $method_slug . '_' . $instance_id . '_quickshipd_min_days', '' );
-				$max = get_option( 'woocommerce_' . $method_slug . '_' . $instance_id . '_quickshipd_max_days', '' );
-				if ( '' !== $min ) {
-					$overrides['min_days'] = $min;
-				}
-				if ( '' !== $max ) {
-					$overrides['max_days'] = $max;
+				$method = WC_Shipping_Zones::get_shipping_method( $instance_id );
+				if ( $method ) {
+					$min = $method->get_option( 'quickshipd_min_days', '' );
+					$max = $method->get_option( 'quickshipd_max_days', '' );
+					if ( '' !== $min && is_numeric( $min ) ) {
+						$overrides['min_days'] = (int) $min;
+					}
+					if ( '' !== $max && is_numeric( $max ) ) {
+						$overrides['max_days'] = (int) $max;
+					}
 				}
 			}
 		}

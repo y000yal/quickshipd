@@ -83,7 +83,10 @@ register_activation_hook(
 			'quickshipd_date_format'      => 'D, M j',
 			'quickshipd_icon'             => 'truck',
 			'quickshipd_text_color'       => '#16a34a',
-			'quickshipd_bg_color'         => '',
+			'quickshipd_secondary_color'  => '#6b7280',
+			'quickshipd_bg_color'         => '#f0fdf4',
+			'quickshipd_border_radius'    => '8',
+			'quickshipd_padding'          => '10',
 		);
 
 		foreach ( $defaults as $key => $value ) {
@@ -94,88 +97,6 @@ register_activation_hook(
 	}
 );
 
-/**
- * One-time migration from the old slug (quickship_ / _quickship_) after rename to quickshipd.
- *
- * @return void
- */
-function quickshipd_migrate_legacy_from_quickship(): void {
-	if ( '1' === get_option( 'quickshipd_legacy_migrated', '' ) ) {
-		return;
-	}
-
-	$option_suffixes = array(
-		'enabled',
-		'min_days',
-		'max_days',
-		'cutoff_hour',
-		'cutoff_min',
-		'exclude_weekends',
-		'excluded_days',
-		'holidays',
-		'show_product',
-		'show_shop',
-		'show_cart',
-		'show_checkout',
-		'show_countdown',
-		'text_single',
-		'text_range',
-		'text_countdown',
-		'date_format',
-		'icon',
-		'text_color',
-		'bg_color',
-	);
-
-	foreach ( $option_suffixes as $suffix ) {
-		$old_key = 'quickship_' . $suffix;
-		$new_key = 'quickshipd_' . $suffix;
-		if ( null !== get_option( $old_key, null ) && null === get_option( $new_key, null ) ) {
-			update_option( $new_key, get_option( $old_key ) );
-		}
-	}
-
-	if ( get_option( 'quickship_db_repaired_v2' ) && ! get_option( 'quickshipd_db_repaired_v2' ) ) {
-		update_option( 'quickshipd_db_repaired_v2', '1' );
-	}
-
-	global $wpdb;
-
-	foreach (
-		array(
-			'quickship_min_days' => 'quickshipd_min_days',
-			'quickship_max_days' => 'quickshipd_max_days',
-		) as $old_tail => $new_tail
-	) {
-		$like = '%' . $wpdb->esc_like( $old_tail );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$names = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $like ) );
-		foreach ( (array) $names as $old_name ) {
-			$new_name = str_replace( $old_tail, $new_tail, $old_name );
-			if ( $new_name !== $old_name && null === get_option( $new_name, null ) ) {
-				update_option( $new_name, get_option( $old_name ) );
-			}
-		}
-	}
-
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-	$legacy_meta = $wpdb->get_results(
-		"SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ( '_quickship_disabled', '_quickship_min_days', '_quickship_max_days' )",
-		ARRAY_A
-	);
-
-	foreach ( (array) $legacy_meta as $row ) {
-		$post_id = (int) $row['post_id'];
-		$new_key = str_replace( '_quickship_', '_quickshipd_', $row['meta_key'] );
-		if ( ! metadata_exists( 'post', $post_id, $new_key ) ) {
-			update_post_meta( $post_id, $new_key, maybe_unserialize( $row['meta_value'] ) );
-		}
-		delete_post_meta( $post_id, $row['meta_key'] );
-	}
-
-	update_option( 'quickshipd_legacy_migrated', '1' );
-}
-
 // -------------------------------------------------------------------------
 // Boot the plugin after all plugins are loaded so WooCommerce is available.
 // -------------------------------------------------------------------------
@@ -183,8 +104,6 @@ function quickshipd_migrate_legacy_from_quickship(): void {
 add_action(
 	'plugins_loaded',
 	static function (): void {
-		quickshipd_migrate_legacy_from_quickship();
-
 		// Bail early if WooCommerce isn't active.
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			add_action(
@@ -253,7 +172,9 @@ function quickshipd_repair_options( bool $force = false ): void {
 		'quickshipd_date_format'      => 'D, M j',
 		'quickshipd_icon'             => 'truck',
 		'quickshipd_text_color'       => '#16a34a',
-		'quickshipd_bg_color'         => '',
+		'quickshipd_secondary_color'  => '#6b7280',
+		'quickshipd_bg_color'         => '#f0fdf4',
+		'quickshipd_border_radius'    => '8',
 	);
 
 	if ( $force ) {
@@ -289,10 +210,23 @@ function quickshipd_repair_options( bool $force = false ): void {
 	// Detect wiped style options (text_color or text_single became '').
 	if ( '' === get_option( 'quickshipd_text_color', '' ) || '' === get_option( 'quickshipd_text_single', '' ) ) {
 		update_option( 'quickshipd_text_color', '#16a34a' );
+		update_option( 'quickshipd_secondary_color', '#6b7280' );
+		update_option( 'quickshipd_bg_color', '#f0fdf4' );
+		update_option( 'quickshipd_border_radius', '8' );
 		update_option( 'quickshipd_text_single', 'Get it by {date}' );
 		update_option( 'quickshipd_text_range', 'Get it {start} – {end}' );
 		update_option( 'quickshipd_text_countdown', 'Order within {countdown} to get it by {date}' );
 		update_option( 'quickshipd_date_format', 'D, M j' );
 		update_option( 'quickshipd_icon', 'truck' );
+	}
+	// Seed new options for existing installs.
+	if ( false === get_option( 'quickshipd_secondary_color' ) ) {
+		update_option( 'quickshipd_secondary_color', '#6b7280' );
+	}
+	if ( false === get_option( 'quickshipd_border_radius' ) ) {
+		update_option( 'quickshipd_border_radius', '8' );
+	}
+	if ( '' === get_option( 'quickshipd_bg_color', 'x' ) ) {
+		update_option( 'quickshipd_bg_color', '#f0fdf4' );
 	}
 }
