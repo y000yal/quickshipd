@@ -189,10 +189,17 @@
 		return date;
 	}
 
-	function qsCountdownFmt( secs ) {
-		var h = Math.floor( secs / 3600 );
-		var m = Math.floor( ( secs % 3600 ) / 60 );
-		return h > 0 ? ( h + 'h ' + m + 'm' ) : ( m + 'm' );
+	function qsCountdownFmt( secs, showSecs ) {
+		var h  = Math.floor( secs / 3600 );
+		var m  = Math.floor( ( secs % 3600 ) / 60 );
+		var sc = secs % 60;
+		if ( showSecs ) {
+			if ( h > 0 ) return h + 'h ' + m + 'm ' + sc + 's';
+			if ( m > 0 ) return m + 'm ' + sc + 's';
+			return sc + 's';
+		}
+		if ( h > 0 ) return h + 'h ' + m + 'm';
+		return ( m > 0 ? m : 1 ) + 'm';
 	}
 
 	function field( selector, fallback ) {
@@ -208,8 +215,9 @@
 		// ---- delivery settings ----
 		var minDays    = parseInt( field( 'input[name="quickshipd_min_days"]',    '0' ), 10 );
 		var maxDays    = parseInt( field( 'input[name="quickshipd_max_days"]',    '0' ), 10 );
-		var cutoffH    = parseInt( field( 'select[name="quickshipd_cutoff_hour"]','0' ), 10 );
-		var cutoffM    = parseInt( field( 'select[name="quickshipd_cutoff_min"]', '0' ), 10 );
+		var cutoffRaw  = field( 'input[name="quickshipd_cutoff_time"]', '14:00' ).split( ':' );
+		var cutoffH    = parseInt( cutoffRaw[0] || '14', 10 );
+		var cutoffM    = parseInt( cutoffRaw[1] || '0',  10 );
 		var excWeekend = checkbox( 'input[name="quickshipd_exclude_weekends"]' );
 
 		// ---- style settings ----
@@ -224,6 +232,7 @@
 		var borderRadius    = parseInt( field( 'input[name="quickshipd_border_radius"]', '8' ), 10 );
 		var padding         = parseInt( field( 'input[name="quickshipd_padding"]', '10' ), 10 );
 		var showCd          = checkbox( 'input[name="quickshipd_show_countdown"]' );
+		var showCdSecs      = checkbox( 'input[name="quickshipd_show_countdown_seconds"]' );
 
 		// ---- current site time (adjusted UTC = UTC + siteUtcOffset) ----
 		var nowMs      = ( cfg.nowTimestamp || Math.floor( Date.now() / 1000 ) ) * 1000;
@@ -271,11 +280,12 @@
 		html     += '</div>';
 
 		if ( showCd && countdownSecs > 0 ) {
-			var cdFmt  = qsCountdownFmt( countdownSecs );
+			var cdFmt  = qsCountdownFmt( countdownSecs, showCdSecs );
 			var cdText = textCountdown
 				.replace( '{countdown}', '<strong style="color:' + primaryColor + '">' + cdFmt + '</strong>' )
 				.replace( '{date}', maxFmt );
-			html += '<div class="quickshipd-countdown" style="color:' + secondaryColor + '" data-seconds="' + countdownSecs + '">' + cdText + '</div>';
+			var cdSecsAttr = showCdSecs ? ' data-show-seconds="1"' : '';
+			html += '<div class="quickshipd-countdown" style="color:' + secondaryColor + '" data-seconds="' + countdownSecs + '"' + cdSecsAttr + '>' + cdText + '</div>';
 		}
 
 		html += '</div>';
@@ -290,9 +300,59 @@
 	}
 
 	function refreshPreview() {
+		clearInterval( previewTickTimer );
 		var $stage = $( '#quickshipd-live-preview .quickshipd-preview-stage' );
 		if ( ! $stage.length ) return;
 		$stage.html( buildPreviewHtml() );
+		startPreviewTick();
+	}
+
+	/* ---------------------------------------------------------------- */
+	/* Sub-setting visibility                                           */
+	/* ---------------------------------------------------------------- */
+
+	function initSubSettings() {
+		var $secsRow = $( 'input[name="quickshipd_show_countdown_seconds"]' ).closest( 'tr' );
+		$secsRow.addClass( 'qs-sub-setting' );
+
+		function syncSecsRow() {
+			if ( $( 'input[name="quickshipd_show_countdown"]' ).is( ':checked' ) ) {
+				$secsRow.show();
+			} else {
+				$secsRow.hide();
+			}
+		}
+
+		syncSecsRow();
+		$( 'input[name="quickshipd_show_countdown"]' ).on( 'change', syncSecsRow );
+	}
+
+	/* ---------------------------------------------------------------- */
+	/* Live preview countdown tick                                      */
+	/* ---------------------------------------------------------------- */
+
+	var previewTickTimer = null;
+
+	function startPreviewTick() {
+		clearInterval( previewTickTimer );
+		previewTickTimer = setInterval( function () {
+			var $cd = $( '#quickshipd-live-preview .quickshipd-countdown[data-seconds]' );
+			if ( ! $cd.length ) {
+				clearInterval( previewTickTimer );
+				return;
+			}
+			$cd.each( function () {
+				var $el  = $( this );
+				var secs = parseInt( $el.attr( 'data-seconds' ), 10 ) - 1;
+				if ( secs < 0 ) {
+					clearInterval( previewTickTimer );
+					return false;
+				}
+				$el.attr( 'data-seconds', secs );
+				var showSecs = $el.attr( 'data-show-seconds' ) === '1';
+				$el.find( 'strong' ).text( qsCountdownFmt( secs, showSecs ) );
+			} );
+		}, 1000 );
 	}
 
 	/* ---------------------------------------------------------------- */
@@ -302,6 +362,7 @@
 	$(function () {
 		initColorPickers();
 		initTabs();
+		initSubSettings();
 
 		$('#quickshipd-save-btn').on('click', saveSettings);
 		$('#quickshipd-restore-btn').on('click', restoreDefaults);

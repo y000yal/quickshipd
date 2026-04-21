@@ -4,11 +4,16 @@
   "packageManager": "pnpm@9.15.9",
   "scripts": {
     "makepot": "wp i18n make-pot . languages/quickshipd.pot --slug=quickshipd --domain=quickshipd --exclude=node_modules,release,tests",
-    "dist": "gulp dist",
-    "release": "pnpm run makepot && pnpm run dist"
+    "build": "gulp build",
+    "dist": "gulp release",
+    "release": "pnpm run makepot && gulp release"
   },
   "devDependencies": {
     "gulp": "^5.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-if": "^3.0.0",
+    "gulp-rename": "^2.1.0",
+    "gulp-terser": "^2.1.0",
     "gulp-zip": "^5.1.0"
   }
 }

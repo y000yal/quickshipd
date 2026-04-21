@@ -180,14 +180,28 @@ class Test_QuickShipD_Calculator extends TestCase {
 	 * @test
 	 */
 	public function test_format_countdown_hours_and_minutes(): void {
-		$this->assertSame( '3h 34m', QuickShipD_Calculator::format_countdown( 3 * 3600 + 34 * 60 ) );
+		$this->assertSame( '3h 34m 0s', QuickShipD_Calculator::format_countdown( 3 * 3600 + 34 * 60 ) );
+	}
+
+	/**
+	 * @test
+	 */
+	public function test_format_countdown_hours_minutes_seconds(): void {
+		$this->assertSame( '3h 34m 27s', QuickShipD_Calculator::format_countdown( 3 * 3600 + 34 * 60 + 27 ) );
 	}
 
 	/**
 	 * @test
 	 */
 	public function test_format_countdown_minutes_only(): void {
-		$this->assertSame( '45m', QuickShipD_Calculator::format_countdown( 45 * 60 ) );
+		$this->assertSame( '45m 0s', QuickShipD_Calculator::format_countdown( 45 * 60 ) );
+	}
+
+	/**
+	 * @test
+	 */
+	public function test_format_countdown_seconds_only(): void {
+		$this->assertSame( '42s', QuickShipD_Calculator::format_countdown( 42 ) );
 	}
 
 	/**

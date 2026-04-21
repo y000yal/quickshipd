@@ -93,8 +93,8 @@ class QuickShipD_Admin {
 			'quickshipd_delivery_general',
 			array(
 				'id'      => 'quickshipd_enabled',
-				'label'   => __( 'Show estimated delivery dates on your store', 'quickshipd' ),
 				'default' => 'yes',
+				'tooltip' => __( 'Enables or disables estimated delivery dates across your entire store', 'quickshipd' ),
 			)
 		);
 
@@ -107,11 +107,11 @@ class QuickShipD_Admin {
 			'delivery',
 			'quickshipd_delivery_timing',
 			array(
-				'id'          => 'quickshipd_min_days',
-				'default'     => 3,
-				'min'         => 0,
-				'max'         => 365,
-				'description' => __( 'Minimum number of business days for delivery.', 'quickshipd' ),
+				'id'      => 'quickshipd_min_days',
+				'default' => 3,
+				'min'     => 0,
+				'max'     => 365,
+				'tooltip' => __( 'Minimum number of business days between order and delivery', 'quickshipd' ),
 			)
 		);
 
@@ -122,11 +122,11 @@ class QuickShipD_Admin {
 			'delivery',
 			'quickshipd_delivery_timing',
 			array(
-				'id'          => 'quickshipd_max_days',
-				'default'     => 5,
-				'min'         => 0,
-				'max'         => 365,
-				'description' => __( 'Maximum number of business days for delivery. Set equal to minimum for a single date.', 'quickshipd' ),
+				'id'      => 'quickshipd_max_days',
+				'default' => 5,
+				'min'     => 0,
+				'max'     => 365,
+				'tooltip' => __( 'Maximum delivery days. Set equal to minimum to show a single date instead of a range', 'quickshipd' ),
 			)
 		);
 
@@ -137,9 +137,9 @@ class QuickShipD_Admin {
 			'delivery',
 			'quickshipd_delivery_timing',
 			array(
-				'id'          => 'quickshipd_cutoff_hour',
-				'default'     => 14,
-				'description' => __( 'Orders placed after this time count as next-day.', 'quickshipd' ),
+				'id'      => 'quickshipd_cutoff_hour',
+				'default' => 14,
+				'tooltip' => __( 'Orders placed after this time count as next-day for delivery calculation', 'quickshipd' ),
 			)
 		);
 
@@ -153,8 +153,8 @@ class QuickShipD_Admin {
 			'quickshipd_delivery_schedule',
 			array(
 				'id'      => 'quickshipd_exclude_weekends',
-				'label'   => __( 'Skip Saturday and Sunday when counting delivery days', 'quickshipd' ),
 				'default' => 'yes',
+				'tooltip' => __( 'Skip Saturday and Sunday when counting delivery days', 'quickshipd' ),
 			)
 		);
 
@@ -165,8 +165,8 @@ class QuickShipD_Admin {
 			'delivery',
 			'quickshipd_delivery_schedule',
 			array(
-				'id'          => 'quickshipd_excluded_days',
-				'description' => __( 'Select specific days when you do not dispatch orders.', 'quickshipd' ),
+				'id'      => 'quickshipd_excluded_days',
+				'tooltip' => __( 'Select specific days of the week when you do not dispatch orders', 'quickshipd' ),
 			)
 		);
 
@@ -177,10 +177,10 @@ class QuickShipD_Admin {
 			'delivery',
 			'quickshipd_delivery_schedule',
 			array(
-				'id'          => 'quickshipd_holidays',
-				'default'     => '',
-				'description' => __( 'One date per line. Format: YYYY-MM-DD (one-off) or XXXX-MM-DD (recurring yearly). Lines starting with # are ignored.', 'quickshipd' ),
-				'rows'        => 8,
+				'id'      => 'quickshipd_holidays',
+				'default' => '',
+				'rows'    => 8,
+				'tooltip' => __( 'One date per line. Use YYYY-MM-DD for a one-off date or XXXX-MM-DD to repeat yearly (e.g. XXXX-12-25 for Christmas). Lines starting with # are ignored.', 'quickshipd' ),
 			)
 		);
 
@@ -235,8 +235,21 @@ class QuickShipD_Admin {
 			'quickshipd_display_options',
 			array(
 				'id'      => 'quickshipd_show_countdown',
-				'label'   => __( 'Show "Order within Xh Ym" countdown on product pages', 'quickshipd' ),
 				'default' => 'yes',
+				'tooltip' => __( 'Shows an "Order within Xh Ym" countdown timer on product pages to encourage urgency', 'quickshipd' ),
+			)
+		);
+
+		$this->register_field(
+			'quickshipd_show_countdown_seconds',
+			__( 'Show live seconds', 'quickshipd' ),
+			'render_checkbox',
+			'display',
+			'quickshipd_display_options',
+			array(
+				'id'      => 'quickshipd_show_countdown_seconds',
+				'default' => 'yes',
+				'tooltip' => __( 'Tick seconds in real-time (e.g. 2h 30m 14s). When off, only hours and minutes are shown.', 'quickshipd' ),
 			)
 		);
 
@@ -247,19 +260,19 @@ class QuickShipD_Admin {
 
 		$text_fields = array(
 			'quickshipd_text_single'    => array(
-				'label'       => __( 'Single-date text', 'quickshipd' ),
-				'default'     => 'Get it by {date}',
-				'description' => __( 'Available: {date}', 'quickshipd' ),
+				'label'   => __( 'Single-date text', 'quickshipd' ),
+				'default' => 'Get it by {date}',
+				'tooltip' => __( 'Available placeholders: {date}', 'quickshipd' ),
 			),
 			'quickshipd_text_range'     => array(
-				'label'       => __( 'Date-range text', 'quickshipd' ),
-				'default'     => 'Get it {start} – {end}',
-				'description' => __( 'Available: {start}, {end}', 'quickshipd' ),
+				'label'   => __( 'Date-range text', 'quickshipd' ),
+				'default' => 'Get it {start} – {end}',
+				'tooltip' => __( 'Available placeholders: {start}, {end}', 'quickshipd' ),
 			),
 			'quickshipd_text_countdown' => array(
-				'label'       => __( 'Countdown text', 'quickshipd' ),
-				'default'     => 'Order within {countdown} to get it by {date}',
-				'description' => __( 'Available: {countdown}, {date}', 'quickshipd' ),
+				'label'   => __( 'Countdown text', 'quickshipd' ),
+				'default' => 'Order within {countdown} to get it by {date}',
+				'tooltip' => __( 'Available placeholders: {countdown}, {date}', 'quickshipd' ),
 			),
 		);
 
@@ -271,9 +284,9 @@ class QuickShipD_Admin {
 				'style',
 				'quickshipd_style_text',
 				array(
-					'id'          => $key,
-					'default'     => $args['default'],
-					'description' => $args['description'],
+					'id'      => $key,
+					'default' => $args['default'],
+					'tooltip' => $args['tooltip'],
 				)
 			);
 		}
@@ -307,9 +320,9 @@ class QuickShipD_Admin {
 			'style',
 			'quickshipd_style_colors',
 			array(
-				'id'          => 'quickshipd_text_color',
-				'default'     => '#16a34a',
-				'description' => __( 'Delivery date line and bold countdown time.', 'quickshipd' ),
+				'id'      => 'quickshipd_text_color',
+				'default' => '#16a34a',
+				'tooltip' => __( 'Applied to the delivery date line and the bold time in the countdown', 'quickshipd' ),
 			)
 		);
 
@@ -320,9 +333,9 @@ class QuickShipD_Admin {
 			'style',
 			'quickshipd_style_colors',
 			array(
-				'id'          => 'quickshipd_secondary_color',
-				'default'     => '#6b7280',
-				'description' => __( '"Order within … to get it by" surrounding text.', 'quickshipd' ),
+				'id'      => 'quickshipd_secondary_color',
+				'default' => '#6b7280',
+				'tooltip' => __( 'Applied to the "Order within … to get it by" surrounding text', 'quickshipd' ),
 			)
 		);
 
@@ -333,9 +346,9 @@ class QuickShipD_Admin {
 			'style',
 			'quickshipd_style_colors',
 			array(
-				'id'          => 'quickshipd_bg_color',
-				'default'     => '#f0fdf4',
-				'description' => __( 'Leave blank for transparent.', 'quickshipd' ),
+				'id'      => 'quickshipd_bg_color',
+				'default' => '#f0fdf4',
+				'tooltip' => __( 'Background behind the delivery widget. Leave blank for transparent.', 'quickshipd' ),
 			)
 		);
 
@@ -520,14 +533,12 @@ class QuickShipD_Admin {
 	 */
 	public function render_checkbox( array $args ): void {
 		$id      = esc_attr( $args['id'] );
-		$label   = isset( $args['label'] ) ? $args['label'] : '';
 		$default = isset( $args['default'] ) ? $args['default'] : 'no';
 		$value   = get_option( $id, $default );
 		printf(
-			'<label class="quickshipd-toggle"><span class="quickshipd-toggle__switch"><input type="checkbox" class="quickshipd-toggle__input" id="%1$s" name="%1$s" value="yes" %2$s><span class="quickshipd-toggle__track" aria-hidden="true"></span></span><span class="quickshipd-toggle__text">%3$s</span></label>',
+			'<label class="quickshipd-toggle"><span class="quickshipd-toggle__switch"><input type="checkbox" class="quickshipd-toggle__input" id="%1$s" name="%1$s" value="yes" %2$s><span class="quickshipd-toggle__track" aria-hidden="true"></span></span></label>',
 			esc_attr( $id ),
-			checked( 'yes', $value, false ),
-			esc_html( $label )
+			checked( 'yes', $value, false )
 		);
 	}
 
@@ -550,9 +561,6 @@ class QuickShipD_Admin {
 			esc_attr( (string) $min ),
 			esc_attr( (string) $max )
 		);
-		if ( ! empty( $args['description'] ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
-		}
 	}
 
 	/**
@@ -576,9 +584,6 @@ class QuickShipD_Admin {
 			esc_attr( (string) $max ),
 			$unit
 		);
-		if ( ! empty( $args['description'] ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
-		}
 	}
 
 	/**
@@ -596,9 +601,6 @@ class QuickShipD_Admin {
 			esc_attr( $id ),
 			esc_attr( $value )
 		);
-		if ( ! empty( $args['description'] ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
-		}
 	}
 
 	/**
@@ -618,9 +620,6 @@ class QuickShipD_Admin {
 			esc_attr( (string) $rows ),
 			esc_textarea( $value )
 		);
-		if ( ! empty( $args['description'] ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
-		}
 	}
 
 	/**
@@ -630,36 +629,20 @@ class QuickShipD_Admin {
 	 * @return void
 	 */
 	public function render_cutoff( array $args ): void {
-		$hour    = (int) get_option( 'quickshipd_cutoff_hour', 14 );
-		$min     = (int) get_option( 'quickshipd_cutoff_min', 0 );
-
-		echo '<select id="quickshipd_cutoff_hour" name="quickshipd_cutoff_hour">';
-		for ( $h = 0; $h <= 23; $h++ ) {
-			printf(
-				'<option value="%1$s" %2$s>%3$s</option>',
-				esc_attr( (string) $h ),
-				selected( $hour, $h, false ),
-				esc_html( sprintf( '%02d', $h ) )
-			);
-		}
-		echo '</select>';
-
-		echo ' : ';
-
-		echo '<select id="quickshipd_cutoff_min" name="quickshipd_cutoff_min">';
-		foreach ( array( 0, 15, 30, 45 ) as $m ) {
-			printf(
-				'<option value="%1$s" %2$s>%3$s</option>',
-				esc_attr( (string) $m ),
-				selected( $min, $m, false ),
-				esc_html( sprintf( '%02d', $m ) )
-			);
-		}
-		echo '</select>';
-
-		if ( ! empty( $args['description'] ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
-		}
+		$hour  = (int) get_option( 'quickshipd_cutoff_hour', 14 );
+		$min   = (int) get_option( 'quickshipd_cutoff_min', 0 );
+		$value = sprintf( '%02d:%02d', $hour, $min );
+		?>
+		<div class="qs-time-wrap">
+			<input
+				type="time"
+				id="quickshipd_cutoff_time"
+				name="quickshipd_cutoff_time"
+				value="<?php echo esc_attr( $value ); ?>"
+				class="qs-time-input"
+			>
+		</div>
+		<?php
 	}
 
 	/**
@@ -692,10 +675,6 @@ class QuickShipD_Admin {
 			);
 		}
 		echo '</fieldset>';
-
-		if ( ! empty( $args['description'] ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
-		}
 	}
 
 	/**
@@ -768,9 +747,6 @@ class QuickShipD_Admin {
 			esc_attr( $value ),
 			esc_attr( $default )
 		);
-		if ( ! empty( $args['description'] ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $args['description'] ) );
-		}
 	}
 
 	// -----------------------------------------------------------------------
@@ -791,24 +767,26 @@ class QuickShipD_Admin {
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'wp-color-picker' );
 
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 		// Frontend stylesheet is needed for the live preview card.
 		wp_enqueue_style(
 			'quickshipd-frontend',
-			QUICKSHIPD_URL . 'assets/css/frontend.css',
+			QUICKSHIPD_URL . 'assets/css/frontend' . $suffix . '.css',
 			array(),
 			QUICKSHIPD_VERSION
 		);
 
 		wp_enqueue_style(
 			'quickshipd-admin',
-			QUICKSHIPD_URL . 'assets/css/admin.css',
+			QUICKSHIPD_URL . 'assets/css/admin' . $suffix . '.css',
 			array( 'quickshipd-frontend' ),
 			QUICKSHIPD_VERSION
 		);
 
 		wp_enqueue_script(
 			'quickshipd-admin',
-			QUICKSHIPD_URL . 'assets/js/admin.js',
+			QUICKSHIPD_URL . 'assets/js/admin' . $suffix . '.js',
 			array( 'wp-color-picker', 'jquery' ),
 			QUICKSHIPD_VERSION,
 			true
@@ -861,8 +839,10 @@ class QuickShipD_Admin {
 				);
 				update_option( 'quickshipd_min_days', absint( wp_unslash( $_POST['quickshipd_min_days'] ?? 3 ) ) );
 				update_option( 'quickshipd_max_days', absint( wp_unslash( $_POST['quickshipd_max_days'] ?? 5 ) ) );
-				update_option( 'quickshipd_cutoff_hour', $this->sanitize_cutoff_hour( sanitize_text_field( wp_unslash( $_POST['quickshipd_cutoff_hour'] ?? '14' ) ) ) );
-				update_option( 'quickshipd_cutoff_min', $this->sanitize_cutoff_min( sanitize_text_field( wp_unslash( $_POST['quickshipd_cutoff_min'] ?? '0' ) ) ) );
+				$cutoff_raw   = sanitize_text_field( wp_unslash( $_POST['quickshipd_cutoff_time'] ?? '14:00' ) );
+				$cutoff_parts = explode( ':', $cutoff_raw );
+				update_option( 'quickshipd_cutoff_hour', $this->sanitize_cutoff_hour( $cutoff_parts[0] ?? '14' ) );
+				update_option( 'quickshipd_cutoff_min', $this->sanitize_cutoff_min( $cutoff_parts[1] ?? '0' ) );
 				update_option(
 					'quickshipd_exclude_weekends',
 					$this->sanitize_checkbox(
@@ -907,6 +887,12 @@ class QuickShipD_Admin {
 					'quickshipd_show_countdown',
 					$this->sanitize_checkbox(
 						isset( $_POST['quickshipd_show_countdown'] ) ? sanitize_text_field( wp_unslash( $_POST['quickshipd_show_countdown'] ) ) : null
+					)
+				);
+				update_option(
+					'quickshipd_show_countdown_seconds',
+					$this->sanitize_checkbox(
+						isset( $_POST['quickshipd_show_countdown_seconds'] ) ? sanitize_text_field( wp_unslash( $_POST['quickshipd_show_countdown_seconds'] ) ) : null
 					)
 				);
 				break;
@@ -980,13 +966,14 @@ class QuickShipD_Admin {
 	}
 
 	/**
-	 * Sanitize cutoff minute (0, 15, 30, or 45).
+	 * Sanitize cutoff minute (0–59).
 	 *
 	 * @param  mixed $value Raw value.
 	 * @return int
 	 */
 	public function sanitize_cutoff_min( $value ): int {
-		return in_array( (int) $value, array( 0, 15, 30, 45 ), true ) ? (int) $value : 0;
+		$min = (int) $value;
+		return ( $min >= 0 && $min <= 59 ) ? $min : 0;
 	}
 
 	/**
@@ -1068,6 +1055,16 @@ class QuickShipD_Admin {
 		string $section,
 		array $args = array()
 	): void {
+		if ( ! empty( $args['tooltip'] ) ) {
+			$tip    = esc_attr( $args['tooltip'] );
+			$title .= ' <span class="qs-tip" data-tip="' . $tip . '" tabindex="0" aria-label="' . $tip . '">'
+				. '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">'
+				. '<circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>'
+				. '<line x1="7" y1="6.5" x2="7" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
+				. '<circle cx="7" cy="4.25" r="0.85" fill="currentColor"/>'
+				. '</svg>'
+				. '</span>';
+		}
 		add_settings_field(
 			$id,
 			$title,

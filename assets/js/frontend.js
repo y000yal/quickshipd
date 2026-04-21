@@ -7,18 +7,27 @@
 
 	// -- Countdown ----------------------------------------------------------
 
-	function fmt(s) {
-		var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
-		return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+	function fmt(s, showSecs) {
+		var h  = Math.floor(s / 3600);
+		var m  = Math.floor((s % 3600) / 60);
+		var sc = s % 60;
+		if (showSecs) {
+			if (h > 0) return h + 'h ' + m + 'm ' + sc + 's';
+			if (m > 0) return m + 'm ' + sc + 's';
+			return sc + 's';
+		}
+		if (h > 0) return h + 'h ' + m + 'm';
+		return (m > 0 ? m : 1) + 'm';
 	}
 
 	function tickAll() {
 		document.querySelectorAll('.quickshipd-countdown[data-seconds]').forEach(function (el) {
-			var s = parseInt(el.getAttribute('data-seconds'), 10) - 1;
+			var s        = parseInt(el.getAttribute('data-seconds'), 10) - 1;
 			if (s <= 0) { el.style.display = 'none'; return; }
 			el.setAttribute('data-seconds', s);
-			var strong = el.querySelector('strong');
-			if (strong) strong.textContent = fmt(s);
+			var showSecs = el.getAttribute('data-show-seconds') === '1';
+			var strong   = el.querySelector('strong');
+			if (strong) strong.textContent = fmt(s, showSecs);
 		});
 	}
 

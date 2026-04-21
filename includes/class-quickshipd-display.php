@@ -305,7 +305,8 @@ class QuickShipD_Display {
 			'yes' === $opt( 'quickshipd_show_countdown', 'yes' ) &&
 			$result['countdown_seconds'] > 0
 		) {
-			$countdown_fmt  = QuickShipD_Calculator::format_countdown( $result['countdown_seconds'] );
+			$show_secs      = 'yes' === $opt( 'quickshipd_show_countdown_seconds', 'yes' );
+			$countdown_fmt  = QuickShipD_Calculator::format_countdown( $result['countdown_seconds'], $show_secs );
 			$countdown_tpl  = $opt( 'quickshipd_text_countdown', 'Order within {countdown} to get it by {date}' );
 			// Bold time uses primary color; surrounding text uses secondary color.
 			$strong_html    = '<strong style="color:' . esc_attr( $primary_color ) . '">' . esc_html( $countdown_fmt ) . '</strong>';
@@ -314,7 +315,8 @@ class QuickShipD_Display {
 				array( $strong_html, esc_html( $max_date_fmt ) ),
 				esc_html( $countdown_tpl )
 			);
-			$html .= '<div class="quickshipd-countdown" style="color:' . esc_attr( $secondary_color ) . '" data-seconds="' . absint( $result['countdown_seconds'] ) . '">';
+			$data_secs_attr = $show_secs ? ' data-show-seconds="1"' : '';
+			$html .= '<div class="quickshipd-countdown" style="color:' . esc_attr( $secondary_color ) . '" data-seconds="' . absint( $result['countdown_seconds'] ) . '"' . $data_secs_attr . '>';
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$html .= $countdown_text;
 			$html .= '</div>';
@@ -351,16 +353,18 @@ class QuickShipD_Display {
 			return;
 		}
 
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 		wp_enqueue_style(
 			'quickshipd-frontend',
-			QUICKSHIPD_URL . 'assets/css/frontend.css',
+			QUICKSHIPD_URL . 'assets/css/frontend' . $suffix . '.css',
 			array(),
 			QUICKSHIPD_VERSION
 		);
 
 		wp_enqueue_script(
 			'quickshipd-frontend',
-			QUICKSHIPD_URL . 'assets/js/frontend.js',
+			QUICKSHIPD_URL . 'assets/js/frontend' . $suffix . '.js',
 			array(),
 			QUICKSHIPD_VERSION,
 			true

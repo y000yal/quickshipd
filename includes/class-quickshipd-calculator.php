@@ -302,13 +302,40 @@ class QuickShipD_Calculator {
 	 * @param  int $seconds  Remaining seconds.
 	 * @return string
 	 */
-	public static function format_countdown( int $seconds ): string {
+	public static function format_countdown( int $seconds, bool $show_seconds = true ): string {
 		if ( $seconds <= 0 ) {
 			return '';
 		}
 		$hours   = (int) floor( $seconds / 3600 );
 		$minutes = (int) floor( ( $seconds % 3600 ) / 60 );
+		$secs    = $seconds % 60;
 
+		if ( $show_seconds ) {
+			if ( $hours > 0 ) {
+				return sprintf(
+					/* translators: 1: hours, 2: minutes, 3: seconds */
+					__( '%1$dh %2$dm %3$ds', 'quickshipd' ),
+					$hours,
+					$minutes,
+					$secs
+				);
+			}
+			if ( $minutes > 0 ) {
+				return sprintf(
+					/* translators: 1: minutes, 2: seconds */
+					__( '%1$dm %2$ds', 'quickshipd' ),
+					$minutes,
+					$secs
+				);
+			}
+			return sprintf(
+				/* translators: 1: seconds */
+				__( '%1$ds', 'quickshipd' ),
+				$secs
+			);
+		}
+
+		// Seconds hidden — show hours + minutes only.
 		if ( $hours > 0 ) {
 			return sprintf(
 				/* translators: 1: hours, 2: minutes */
@@ -317,11 +344,10 @@ class QuickShipD_Calculator {
 				$minutes
 			);
 		}
-
 		return sprintf(
 			/* translators: 1: minutes */
 			__( '%1$dm', 'quickshipd' ),
-			$minutes
+			$minutes > 0 ? $minutes : 1
 		);
 	}
 
