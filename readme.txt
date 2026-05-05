@@ -159,6 +159,7 @@ QuickShipD - WooCommerce Delivery Date & Shipping Estimate Plugin
 = Video Tutorial =
 
 Watch the QuickShipD setup and walkthrough video:
+
 https://youtu.be/bjN8RIzE6SY
 
 == Installation ==
