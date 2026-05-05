@@ -35,7 +35,6 @@ define( 'QUICKSHIPD_BASENAME', plugin_basename( __FILE__ ) );
 // -------------------------------------------------------------------------
 // Declare HPOS compatibility.
 // -------------------------------------------------------------------------
-
 add_action(
 	'before_woocommerce_init',
 	static function (): void {
