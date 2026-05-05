@@ -1,0 +1,58 @@
+name: Build release and Deploy to wordpress.org
+on:
+  release:
+    types: [published]
+jobs:
+  release:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and create release zip
+        id: build
+        run: |
+          pnpm run dist
+          echo "zip_path=release/quickshipd.zip" >> $GITHUB_OUTPUT
+
+      - name: WordPress Plugin Deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SLUG: quickshipd
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+
+      - name: Upload release asset
+        run: |
+          ASSET_NAME="$(basename "${{ steps.build.outputs.zip_path }}")"
+          UPLOAD_URL="${{ github.event.release.upload_url }}"
+          UPLOAD_URL="${UPLOAD_URL/\{?name,label\}/?name=${ASSET_NAME}}"
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/zip" \
+            --data-binary @"${{ steps.build.outputs.zip_path }}" \
+            "${UPLOAD_URL}"

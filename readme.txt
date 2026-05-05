@@ -11,66 +11,150 @@ Stable tag: 1.0.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-WooCommerce delivery estimates on product, cart & checkout. Shipping-aware ranges, overrides, optional countdown. Requires WooCommerce.
+Add delivery dates to WooCommerce. Show estimated shipping dates, countdown timers, and reduce cart abandonment with a free plugin.
 
 == Description ==
 
-**Your customers leave when they don't know when their order will arrive.**
+Add delivery dates to your WooCommerce store with clear, accurate shipping estimates.
 
-Multiple studies confirm it: displaying an estimated delivery date increases add-to-cart rates by 17–33%. QuickShipD puts that date front and centre — on your product pages, cart, and checkout — in a clean, fast, Amazon-style format.
+QuickShipD is a powerful yet lightweight WooCommerce shipping and delivery date plugin that helps you show **estimated delivery dates, shipping timelines, and order cutoffs** directly on your store. Instead of leaving customers guessing, you can display messages like:
 
-**"Get it by Wed, Apr 15"** — that's the kind of clear, single-line promise your customers want to see.
+* "Get it by Tue, Apr 22"
+* "Arrives Apr 21 - Apr 23"
+* "Order within 5h 30m 23s for same-day dispatch"
 
-= Why QuickShipD? =
+This improves transparency, builds trust, and helps customers make faster buying decisions.
 
-Every free alternative makes you pay for the features that actually matter. WPC Estimated Delivery Date locks shipping-method awareness behind a $29/year plan. PI Web Solution's plugin puts per-product overrides behind a $34–69 paywall. QuickShipD gives you all of that — **free, forever**.
+Whether you run a dropshipping store, local delivery business, or standard WooCommerce shop, QuickShipD makes it easy to **add delivery date functionality without coding or complex setup**.
 
-= Free tier features =
+Set your delivery rules once and automatically show accurate shipping estimates across product pages, cart, and checkout.
 
-* **Amazon-style delivery dates** — "Get it by Thu, Apr 17" or "Get it Mon, Apr 14 – Wed, Apr 16"
-* **Countdown timer** — "Order within 3h 34m to get it by Thu" with live JS ticking
-* **Shipping method–aware dates** — assign min/max days per shipping zone method (flat rate, free shipping, local pickup, custom methods). **Customers see the right date when they switch methods at checkout.**
-* **Per-product overrides** — set different min/max days per product, or disable the estimate entirely for specific products
-* **Recurring holiday support** — mark XXXX-MM-DD for yearly events like Christmas, New Year's Day
-* **Custom excluded weekdays** — runs on Saturdays but not Sundays? Sorted.
-* **Order cutoff time** — set a daily cutoff (e.g. 2 PM); orders after that count as next-day
-* **Configurable everywhere** — product pages, shop archives, cart, checkout
-* **Localized date names** — uses WordPress date_i18n() so "Thu" appears in your store's language
-* **Zero jQuery on the frontend** — vanilla JS only, under 1.5 KB minified
-* **Ultra-light CSS** — under 0.5 KB, fully theme-agnostic
-* **2-minute setup** — activate → set your days → done. No onboarding wizard.
-* **HPOS compatible** — works with WooCommerce High-Performance Order Storage
-* **Block checkout compatible** — does not break the Gutenberg checkout block
+= Key Features =
 
-= How it works =
+= Dynamic Delivery Dates =
 
-1. Install and activate **WooCommerce**, then install and activate **QuickShipD**
-2. Go to **WooCommerce → QuickShipD**
-3. Set your minimum and maximum delivery days and your daily order cutoff time
-4. Optionally mark any non-delivery days (weekends, holidays, specific weekdays)
-5. Done — the delivery estimate appears immediately on your store
+Show estimated delivery dates based on your shipping schedule:
 
-= Shipping method integration (free) =
+* Minimum and maximum delivery days
+* Automatic business day calculations
+* Clean delivery date ranges
 
-In **WooCommerce → Settings → Shipping**, each shipping method instance now has two new fields: "QuickShipD: Min delivery days" and "QuickShipD: Max delivery days". Set these on your Express (1–2 days) and Standard (5–7 days) methods. When a customer switches between methods at checkout, the delivery estimate updates automatically.
+Example:
 
-= Supported locations =
+"Get it Tue, Apr 22 - Wed, Apr 23"
 
-* Single product pages
-* Shop and archive pages (optional, off by default)
-* Cart page (per-item delivery estimate as a cart item data row)
-* Checkout page (combined estimate for the full order, updates on shipping method change)
+= Shipping-Aware Estimates =
 
-= Variable products =
+Delivery dates update based on selected shipping methods:
 
-For variable products, the delivery date is hidden until a variation is selected, then updated via a lightweight AJAX call. Each variation can have its own min/max days.
+* Standard shipping
+* Express shipping
+* Variable delivery speeds
 
-= Developer notes =
+Customers instantly see faster delivery options when switching methods.
 
-* All calculation logic lives in `QuickShipD_Calculator` — a pure class with no WordPress I/O, fully unit-testable
-* REST endpoint at `/wp-json/quickshipd/v1/date` for headless / external integrations
-* Full PHPDoc coverage
-* Follows WordPress Coding Standards (WPCS)
+= Countdown Timer (Order Cutoff) =
+
+Create real urgency with a live timer:
+
+* "Order within Xh Ym Zs"
+* Based on your actual cutoff time
+* Updates in real time
+
+= Display Across Your Store =
+
+Control where delivery dates appear:
+
+* Product pages
+* Cart (per item)
+* Checkout
+
+Maintain delivery visibility throughout the buying journey.
+
+= Smart Holidays & Non-Delivery Days =
+
+Handle real-world shipping constraints automatically:
+
+* Exclude weekends or custom non-delivery days
+* Add holidays once using recurring format
+* Automatically skip holidays every year
+* Ensure delivery dates remain accurate without manual updates
+
+No need to constantly adjust your schedule - QuickShipD handles it for you.
+
+= Custom Text & Styling =
+
+Match delivery messages to your store design:
+
+* Custom text templates ("Get it by {date}")
+* Flexible date formats
+* Color and style controls
+
+No coding required.
+
+= How It Works =
+
+QuickShipD uses a simple setup system:
+
+1. Install and activate the plugin
+2. Set delivery days and cutoff time
+3. Choose where to display delivery dates
+4. Save settings
+
+Delivery dates appear instantly across your store.
+
+= Easy Setup & Management =
+
+Manage your delivery settings without complexity:
+
+* Update delivery schedule anytime
+* Adjust cutoff times easily
+* Enable or disable display per page
+* Clean interface focused on quick setup
+
+No technical knowledge required.
+
+= What You Can Do with QuickShipD =
+
+QuickShipD is designed for practical WooCommerce use cases:
+
+* Show Delivery Dates on Product Pages -> help customers decide faster
+* Add Urgency with Countdown Timer -> increase conversions
+* Display Delivery Info in Cart & Checkout -> maintain trust
+* Set Realistic Delivery Ranges -> avoid overpromising
+* Automatically Handle Holidays & Non-Working Days -> keep estimates accurate
+
+= Who Is It For? =
+
+QuickShipD is ideal for:
+
+* WooCommerce store owners
+* Dropshipping businesses
+* Stores with variable delivery times
+* Local delivery businesses
+* Anyone wanting to improve conversions with better delivery visibility
+
+= Why Delivery Dates Matter =
+
+When customers don't know when their order will arrive, they hesitate.
+
+QuickShipD helps you:
+
+* Reduce cart abandonment
+* Build trust with clear expectations
+* Improve conversion rates
+* Provide a better shopping experience
+
+= Built for WooCommerce =
+
+* Designed specifically for WooCommerce
+* Works with product, cart, and checkout pages
+* Compatible with modern WooCommerce setups
+* Lightweight and performance-friendly
+
+= Plugin Title =
+
+QuickShipD - WooCommerce Delivery Date & Shipping Estimate Plugin
 
 == Installation ==
 
@@ -135,9 +219,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Screenshots ==
 
-1. **Product page** — Amazon-style delivery estimate with countdown timer below the Add to Cart button.
-2. **Cart page** — per-item estimated delivery dates displayed as a cart item data row.
-3. **Admin settings — Delivery tab** — min/max days, cutoff time, excluded weekdays, and holiday management.
+1. **Product page** — delivery estimate text with optional countdown timer below the Add to Cart button.
+2. **Admin settings — Delivery tab** — min/max days, cutoff time, excluded weekdays, and holiday management.
+3. **Cart page** — per-item estimated delivery dates displayed as a cart item data row.
 4. **Shipping method integration** — QuickShipD min/max day fields added to a flat rate shipping method instance inside WooCommerce Shipping Zones.
 
 == Changelog ==
