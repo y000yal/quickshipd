@@ -17,7 +17,7 @@ Add delivery dates to WooCommerce. Show estimated shipping dates, countdown time
 
 Add delivery dates to your WooCommerce store with clear, accurate shipping estimates.
 
-QuickShipD is a powerful yet lightweight WooCommerce shipping and delivery date plugin that helps you show **estimated delivery dates, shipping timelines, and order cutoffs** directly on your store. Instead of leaving customers guessing, you can display messages like:
+[QuickShipD](https://quickshipd.com/) is a powerful yet lightweight WooCommerce shipping and delivery date plugin that helps you show **estimated delivery dates, shipping timelines, and order cutoffs** directly on your store. Instead of leaving customers guessing, you can display messages like:
 
 * "Get it by Tue, Apr 22"
 * "Arrives Apr 21 - Apr 23"
