@@ -13,6 +13,12 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Add delivery dates to WooCommerce. Show estimated shipping dates, countdown timers, and reduce cart abandonment with a free plugin.
 
+= Video Tutorial =
+
+Watch the QuickShipD setup and walkthrough video:
+
+https://youtu.be/bjN8RIzE6SY
+
 == Description ==
 
 Add delivery dates to your WooCommerce store with clear, accurate shipping estimates.
@@ -155,12 +161,6 @@ QuickShipD helps you:
 = Plugin Title =
 
 QuickShipD - WooCommerce Delivery Date & Shipping Estimate Plugin
-
-= Video Tutorial =
-
-Watch the QuickShipD setup and walkthrough video:
-
-https://youtu.be/bjN8RIzE6SY
 
 == Installation ==
 
