@@ -652,14 +652,15 @@ class QuickShipD_Admin {
 	 * @return void
 	 */
 	public function render_weekdays( array $args ): void {
+		// Ordered Sat, Sun, Mon … so the weekend pair leads the list.
 		$days = array(
+			6 => _x( 'Saturday', 'weekday', 'quickshipd' ),
 			0 => _x( 'Sunday', 'weekday', 'quickshipd' ),
 			1 => _x( 'Monday', 'weekday', 'quickshipd' ),
 			2 => _x( 'Tuesday', 'weekday', 'quickshipd' ),
 			3 => _x( 'Wednesday', 'weekday', 'quickshipd' ),
 			4 => _x( 'Thursday', 'weekday', 'quickshipd' ),
 			5 => _x( 'Friday', 'weekday', 'quickshipd' ),
-			6 => _x( 'Saturday', 'weekday', 'quickshipd' ),
 		);
 
 		$selected = (array) get_option( 'quickshipd_excluded_days', array() );
@@ -667,11 +668,13 @@ class QuickShipD_Admin {
 
 		echo '<fieldset><legend class="screen-reader-text">' . esc_html__( 'Non-delivery days', 'quickshipd' ) . '</legend>';
 		foreach ( $days as $num => $label ) {
+			$is_weekend = ( 0 === $num || 6 === $num );
 			printf(
-				'<label class="quickshipd-toggle"><span class="quickshipd-toggle__switch"><input type="checkbox" class="quickshipd-toggle__input" id="quickshipd_excluded_day_%1$d" name="quickshipd_excluded_days[]" value="%1$d" %2$s><span class="quickshipd-toggle__track" aria-hidden="true"></span></span><span class="quickshipd-toggle__text">%3$s</span></label>',
+				'<label class="quickshipd-toggle"><span class="quickshipd-toggle__switch"><input type="checkbox" class="quickshipd-toggle__input%4$s" id="quickshipd_excluded_day_%1$d" name="quickshipd_excluded_days[]" value="%1$d" %2$s><span class="quickshipd-toggle__track" aria-hidden="true"></span></span><span class="quickshipd-toggle__text">%3$s</span></label>',
 				(int) $num,
 				checked( in_array( $num, $selected, true ), true, false ),
-				esc_html( $label )
+				esc_html( $label ),
+				$is_weekend ? ' quickshipd-weekend-day' : ''
 			);
 		}
 		echo '</fieldset>';

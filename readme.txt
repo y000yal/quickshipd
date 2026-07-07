@@ -2,12 +2,12 @@
 Contributors: y0000el
 Tags: woocommerce, delivery date, estimated delivery, shipping date, countdown
 Requires at least: 6.5
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0
 WC tested up to: 10.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -230,6 +230,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 4. **Shipping method integration** — QuickShipD min/max day fields added to a flat rate shipping method instance inside WooCommerce Shipping Zones.
 
 == Changelog ==
+
+= 1.0.1 - 08/07/2026=
+* Fix   - Exclude weekends and non delivery days data not saving.
 
 = 1.0.0 =
 * Initial release.

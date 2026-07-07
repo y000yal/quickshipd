@@ -3,10 +3,9 @@
  * Plugin Name:       QuickShipD — Estimated Delivery Date for WooCommerce
  * Plugin URI:        https://quickshipd.com
  * Description:       Estimated delivery dates for WooCommerce on product, cart, and checkout — shipping-aware ranges, per-product overrides, optional countdown.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.5
  * Requires PHP:      7.4
- * Requires Plugins: woocommerce
  * Author:            y0000el
  * Author URI:        https://yoyallimbu.com.np
  * License:           GPL v3 or later
@@ -27,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Constants.
 // -------------------------------------------------------------------------
 
-define( 'QUICKSHIPD_VERSION', '1.0.0' );
+define( 'QUICKSHIPD_VERSION', '1.0.1' );
 define( 'QUICKSHIPD_PATH', plugin_dir_path( __FILE__ ) );
 define( 'QUICKSHIPD_URL', plugin_dir_url( __FILE__ ) );
 define( 'QUICKSHIPD_BASENAME', plugin_basename( __FILE__ ) );

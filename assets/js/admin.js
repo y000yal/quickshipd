@@ -70,7 +70,15 @@
 			if ( ! name ) return;
 
 			if ( $(this).is('[type=checkbox]') ) {
-				data[name] = $(this).is(':checked') ? 'yes' : 'no';
+				if ( name.indexOf('[]') !== -1 ) {
+					// Multi-value checkbox group (e.g. non-delivery days): collect checked values.
+					var cbName = name.replace('[]', '');
+					if ( ! data[cbName] ) data[cbName] = [];
+					if ( $(this).is(':checked') ) data[cbName].push( $(this).val() );
+					delete data[name];
+				} else {
+					data[name] = $(this).is(':checked') ? 'yes' : 'no';
+				}
 			} else if ( $(this).is('[type=radio]') ) {
 				if ( $(this).is(':checked') ) data[name] = $(this).val();
 			} else {
@@ -328,6 +336,29 @@
 	}
 
 	/* ---------------------------------------------------------------- */
+	/* Weekend lock: "Exclude weekends" drives the Sat/Sun day toggles  */
+	/* ---------------------------------------------------------------- */
+
+	function initWeekendLock() {
+		var $weekend = $( 'input[name="quickshipd_exclude_weekends"]' );
+		var $days    = $( 'input.quickshipd-weekend-day' );
+		if ( ! $weekend.length || ! $days.length ) return;
+
+		function sync() {
+			if ( $weekend.is( ':checked' ) ) {
+				// Weekend exclusion dictates Sat/Sun: force on and lock.
+				$days.prop( 'checked', true ).prop( 'disabled', true );
+			} else {
+				// Independent again: clear the forced weekend selection.
+				$days.prop( 'checked', false ).prop( 'disabled', false );
+			}
+		}
+
+		sync();
+		$weekend.on( 'change', sync );
+	}
+
+	/* ---------------------------------------------------------------- */
 	/* Live preview countdown tick                                      */
 	/* ---------------------------------------------------------------- */
 
@@ -363,6 +394,7 @@
 		initColorPickers();
 		initTabs();
 		initSubSettings();
+		initWeekendLock();
 
 		$('#quickshipd-save-btn').on('click', saveSettings);
 		$('#quickshipd-restore-btn').on('click', restoreDefaults);
