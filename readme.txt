@@ -1,6 +1,6 @@
 === QuickShipD — Estimated Delivery Date for WooCommerce ===
 Contributors: y0000el
-Tags: woocommerce, delivery date, estimated delivery, shipping date, countdown
+Tags: estimated delivery date, delivery date, estimated delivery, delivery time, order cutoff
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 7.4
@@ -11,13 +11,15 @@ Stable tag: 1.0.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Add delivery dates to WooCommerce. Show estimated shipping dates, countdown timers, and reduce cart abandonment with a free plugin.
+Estimated delivery date plugin for WooCommerce. Show delivery dates, delivery time & cutoff countdown on product, cart & checkout.
 
 == Description ==
 
+https://youtu.be/bjN8RIzE6SY
+
 Add delivery dates to your WooCommerce store with clear, accurate shipping estimates.
 
-QuickShipD is a powerful yet lightweight WooCommerce shipping and delivery date plugin that helps you show **estimated delivery dates, shipping timelines, and order cutoffs** directly on your store. Instead of leaving customers guessing, you can display messages like:
+[QuickShipD](https://quickshipd.com/) is a powerful yet lightweight WooCommerce shipping and delivery date plugin that helps you show **estimated delivery dates, shipping timelines, and order cutoffs** directly on your store. Instead of leaving customers guessing, you can display messages like:
 
 * "Get it by Tue, Apr 22"
 * "Arrives Apr 21 - Apr 23"
