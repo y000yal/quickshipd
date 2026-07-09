@@ -11,7 +11,7 @@ Stable tag: 1.0.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Add delivery dates to WooCommerce. Show estimated shipping dates, countdown timers, and reduce cart abandonment with a free plugin.
+Estimated delivery date plugin for WooCommerce. Show delivery dates, delivery time & cutoff countdown on product, cart & checkout.
 
 == Description ==
 
