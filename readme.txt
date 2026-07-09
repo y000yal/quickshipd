@@ -1,6 +1,6 @@
 === QuickShipD — Estimated Delivery Date for WooCommerce ===
 Contributors: y0000el
-Tags: woocommerce, delivery date, estimated delivery, shipping date, countdown
+Tags: estimated delivery date, delivery date, estimated delivery, delivery time, order cutoff
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -228,6 +228,12 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Changelog ==
 
+<<<<<<< Updated upstream
+=======
+= 1.0.1 - 08/07/2026 =
+* Fix   - Exclude weekends and non delivery days data not saving.
+
+>>>>>>> Stashed changes
 = 1.0.0 =
 * Initial release.
 * Declares **WooCommerce** as a required plugin (`Requires Plugins: woocommerce`). Requires **WordPress 6.5+** so the dependency UI is available.
