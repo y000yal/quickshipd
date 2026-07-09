@@ -2,20 +2,18 @@
 Contributors: y0000el
 Tags: estimated delivery date, delivery date, estimated delivery, delivery time, order cutoff
 Requires at least: 6.5
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0
 WC tested up to: 10.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Estimated delivery date plugin for WooCommerce. Show delivery dates, delivery time & cutoff countdown on product, cart & checkout.
 
 == Description ==
-
-https://youtu.be/bjN8RIzE6SY
 
 Add delivery dates to your WooCommerce store with clear, accurate shipping estimates.
 
@@ -154,9 +152,10 @@ QuickShipD helps you:
 * Compatible with modern WooCommerce setups
 * Lightweight and performance-friendly
 
-= Plugin Title =
+= Video Tutorial =
 
-QuickShipD - WooCommerce Delivery Date & Shipping Estimate Plugin
+Watch the QuickShipD setup and walkthrough video:
+https://youtu.be/bjN8RIzE6SY
 
 == Installation ==
 
@@ -228,12 +227,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Changelog ==
 
-<<<<<<< Updated upstream
-=======
 = 1.0.1 - 08/07/2026 =
 * Fix   - Exclude weekends and non delivery days data not saving.
 
->>>>>>> Stashed changes
 = 1.0.0 =
 * Initial release.
 * Declares **WooCommerce** as a required plugin (`Requires Plugins: woocommerce`). Requires **WordPress 6.5+** so the dependency UI is available.
@@ -250,6 +246,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 * WordPress.org–compliant: no tracking, no external requests, GPLv3 or later.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Fixes weekend / non-delivery-day settings not saving. Recommended for all users.
 
 = 1.0.0 =
 Initial release. No upgrade needed.

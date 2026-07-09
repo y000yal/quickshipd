@@ -373,6 +373,8 @@ tr.qs-sub-setting > th {
 
 .quickshipd-settings-form .quickshipd-toggle__input {
 	position: absolute;
+	-webkit-appearance: none;
+	appearance: none;
 	opacity: 0.001;
 	width: 100%;
 	height: 100%;
@@ -422,6 +424,13 @@ tr.qs-sub-setting > th {
 
 .quickshipd-settings-form .quickshipd-toggle__input:disabled + .quickshipd-toggle__track {
 	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* Keep the overlay input hidden even when disabled — WP core bumps disabled
+   checkbox opacity, which would otherwise reveal the native blue checkmark. */
+.quickshipd-settings-form .quickshipd-toggle__input:disabled {
+	opacity: 0.001;
 	cursor: not-allowed;
 }
 
