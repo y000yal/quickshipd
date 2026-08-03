@@ -5,9 +5,9 @@ Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-WC requires at least: 7.0
-WC tested up to: 10.0
-Stable tag: 1.0.1
+WC requires at least: 7.0.2
+WC tested up to: 10.9.4
+Stable tag: 1.0.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -78,8 +78,8 @@ Maintain delivery visibility throughout the buying journey.
 Handle real-world shipping constraints automatically:
 
 * Exclude weekends or custom non-delivery days
-* Add holidays once using recurring format
-* Automatically skip holidays every year
+* Add single dates or same-year date ranges with date pickers
+* Mark holidays to repeat every year
 * Ensure delivery dates remain accurate without manual updates
 
 No need to constantly adjust your schedule - QuickShipD handles it for you.
@@ -190,7 +190,7 @@ Yes — set Min delivery days and Max delivery days to the same value in **WooCo
 
 = How do I add public holidays? =
 
-Go to **WooCommerce → QuickShipD → Delivery → Holidays**. Enter one date per line. Use `YYYY-MM-DD` for a one-off date or `XXXX-MM-DD` for a date that recurs every year. Lines starting with `#` are treated as comments.
+Go to **WooCommerce → QuickShipD → Delivery → Holidays**. Add a **single date** or a **date range** with the date pickers, optionally enable **Repeats every year** for annual holidays, then click Add. Ranges must stay within the same calendar year.
 
 = Can I customise the wording? =
 
@@ -233,7 +233,11 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Changelog ==
 
-= 1.0.1 - 08/07/2026=
+= 1.0.2 =
+* Feature - Holidays UI: add single dates or same-year ranges with optional yearly recurring (replaces textarea).
+* Fix     - Live admin preview now respects holidays and excluded weekdays.
+
+= 1.0.1 - 08/07/2026 =
 * Fix   - Exclude weekends and non delivery days data not saving.
 
 = 1.0.0 =

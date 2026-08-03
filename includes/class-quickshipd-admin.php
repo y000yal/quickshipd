@@ -173,14 +173,12 @@ class QuickShipD_Admin {
 		$this->register_field(
 			'quickshipd_holidays',
 			__( 'Holidays', 'quickshipd' ),
-			'render_textarea',
+			'render_holidays_builder',
 			'delivery',
 			'quickshipd_delivery_schedule',
 			array(
 				'id'      => 'quickshipd_holidays',
-				'default' => '',
-				'rows'    => 8,
-				'tooltip' => __( 'One date per line. Use YYYY-MM-DD for a one-off date or XXXX-MM-DD to repeat yearly (e.g. XXXX-12-25 for Christmas). Lines starting with # are ignored.', 'quickshipd' ),
+				'tooltip' => __( 'Add single dates or date ranges to skip. Enable “Repeats every year” for annual holidays like Christmas. Ranges must stay within the same calendar year.', 'quickshipd' ),
 			)
 		);
 
@@ -618,8 +616,54 @@ class QuickShipD_Admin {
 			'<textarea id="%1$s" name="%1$s" rows="%2$s" class="large-text code">%3$s</textarea>',
 			esc_attr( $id ),
 			esc_attr( (string) $rows ),
-			esc_textarea( $value )
+			esc_textarea( is_string( $value ) ? $value : '' )
 		);
+	}
+
+	/**
+	 * Render the holidays date / range row builder.
+	 *
+	 * @param  array $args Field arguments.
+	 * @return void
+	 */
+	public function render_holidays_builder( array $args ): void {
+		$entries = QuickShipD_Calculator::normalize_holiday_entries( get_option( 'quickshipd_holidays', array() ) );
+		$json    = wp_json_encode( array_values( $entries ) );
+		if ( false === $json ) {
+			$json = '[]';
+		}
+		?>
+		<div class="qs-holidays" id="qs-holidays-builder">
+			<div class="qs-holidays-add">
+				<div class="qs-holidays-top">
+					<select id="qs-holiday-type" class="qs-holiday-type" aria-label="<?php esc_attr_e( 'Holiday type', 'quickshipd' ); ?>">
+						<option value="single"><?php esc_html_e( 'Single date', 'quickshipd' ); ?></option>
+						<option value="range"><?php esc_html_e( 'Date range', 'quickshipd' ); ?></option>
+					</select>
+					<label class="quickshipd-toggle qs-holiday-recurring">
+						<span class="quickshipd-toggle__switch">
+							<input type="checkbox" id="qs-holiday-recurring" class="quickshipd-toggle__input">
+							<span class="quickshipd-toggle__track" aria-hidden="true"></span>
+						</span>
+						<span class="quickshipd-toggle__text"><?php esc_html_e( 'Repeats every year', 'quickshipd' ); ?></span>
+					</label>
+				</div>
+				<div class="qs-holidays-fields">
+					<input type="date" id="qs-holiday-start" class="qs-holiday-date" aria-label="<?php esc_attr_e( 'Start date', 'quickshipd' ); ?>">
+					<input type="date" id="qs-holiday-end" class="qs-holiday-date qs-holiday-end" aria-label="<?php esc_attr_e( 'End date', 'quickshipd' ); ?>" hidden>
+					<button type="button" class="qs-holiday-add-btn" id="qs-holiday-add" aria-label="<?php esc_attr_e( 'Add holiday', 'quickshipd' ); ?>" title="<?php esc_attr_e( 'Add holiday', 'quickshipd' ); ?>">
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+							<path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+						</svg>
+					</button>
+				</div>
+			</div>
+			<p class="qs-holidays-error" id="qs-holidays-error" hidden></p>
+			<ul class="qs-holidays-list" id="qs-holidays-list" aria-live="polite"></ul>
+			<p class="description qs-holidays-empty" id="qs-holidays-empty"><?php esc_html_e( 'No holidays added yet.', 'quickshipd' ); ?></p>
+			<input type="hidden" id="quickshipd_holidays" name="quickshipd_holidays" value="<?php echo esc_attr( $json ); ?>">
+		</div>
+		<?php
 	}
 
 	/**
@@ -811,6 +855,16 @@ class QuickShipD_Admin {
 				'confirmText'   => __( 'Reset all settings to their default values?', 'quickshipd' ),
 				'nowTimestamp'  => $now->getTimestamp(),
 				'siteUtcOffset' => $tz->getOffset( $now ),
+				'i18n'          => array(
+					'holidaySingle'     => __( 'Single', 'quickshipd' ),
+					'holidayRange'      => __( 'Range', 'quickshipd' ),
+					'holidayRecurring'  => __( 'every year', 'quickshipd' ),
+					'holidayRemove'     => __( 'Remove', 'quickshipd' ),
+					'holidayNeedStart'  => __( 'Choose a start date.', 'quickshipd' ),
+					'holidayNeedEnd'    => __( 'Choose an end date for the range.', 'quickshipd' ),
+					'holidayEndBefore'  => __( 'End date must be on or after the start date.', 'quickshipd' ),
+					'holidayCrossYear'  => __( 'Ranges must stay within the same calendar year.', 'quickshipd' ),
+				),
 			)
 		);
 	}
@@ -858,7 +912,9 @@ class QuickShipD_Admin {
 					$excluded_raw = map_deep( wp_unslash( $_POST['quickshipd_excluded_days'] ), 'sanitize_text_field' );
 				}
 				update_option( 'quickshipd_excluded_days', $this->sanitize_excluded_days( $excluded_raw ) );
-				update_option( 'quickshipd_holidays', sanitize_textarea_field( wp_unslash( $_POST['quickshipd_holidays'] ?? '' ) ) );
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded and sanitized via sanitize_holidays().
+				$holidays_json = isset( $_POST['quickshipd_holidays'] ) ? wp_unslash( $_POST['quickshipd_holidays'] ) : '[]';
+				update_option( 'quickshipd_holidays', $this->sanitize_holidays( $holidays_json ) );
 				break;
 
 			case 'display':
@@ -997,6 +1053,23 @@ class QuickShipD_Admin {
 				}
 			)
 		);
+	}
+
+	/**
+	 * Sanitize holidays JSON (or array) into structured entries.
+	 *
+	 * @param  mixed $value JSON string or array.
+	 * @return array<int, array{type: string, start: string, end: string, recurring: bool}>
+	 */
+	public function sanitize_holidays( $value ): array {
+		if ( is_string( $value ) ) {
+			$decoded = json_decode( $value, true );
+			if ( JSON_ERROR_NONE === json_last_error() && is_array( $decoded ) ) {
+				$value = $decoded;
+			}
+		}
+
+		return QuickShipD_Calculator::normalize_holiday_entries( $value );
 	}
 
 	/**

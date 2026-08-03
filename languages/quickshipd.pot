@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: QuickShipD — Estimated Delivery Date for WooCommerce 1.0.1\n"
+"Project-Id-Version: QuickShipD — Estimated Delivery Date for WooCommerce 1.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/quickshipd\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-07T11:14:29+00:00\n"
+"POT-Creation-Date: 2026-08-03T07:19:45+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: quickshipd\n"
@@ -44,7 +44,7 @@ msgid "QuickShipD — Delivery Dates"
 msgstr ""
 
 #: includes/class-quickshipd-admin.php:70
-#: includes/class-quickshipd-admin.php:427
+#: includes/class-quickshipd-admin.php:425
 msgid "QuickShipD"
 msgstr ""
 
@@ -101,7 +101,7 @@ msgid "Skip Saturday and Sunday when counting delivery days"
 msgstr ""
 
 #: includes/class-quickshipd-admin.php:163
-#: includes/class-quickshipd-admin.php:669
+#: includes/class-quickshipd-admin.php:713
 msgid "Non-delivery days"
 msgstr ""
 
@@ -113,257 +113,321 @@ msgstr ""
 msgid "Holidays"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:183
-msgid "One date per line. Use YYYY-MM-DD for a one-off date or XXXX-MM-DD to repeat yearly (e.g. XXXX-12-25 for Christmas). Lines starting with # are ignored."
+#: includes/class-quickshipd-admin.php:181
+msgid "Add single dates or date ranges to skip. Enable “Repeats every year” for annual holidays like Christmas. Ranges must stay within the same calendar year."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:192
+#: includes/class-quickshipd-admin.php:190
 msgid "Show on"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:196
+#: includes/class-quickshipd-admin.php:194
 msgid "Product pages"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:200
+#: includes/class-quickshipd-admin.php:198
 msgid "Shop / archive pages"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:204
+#: includes/class-quickshipd-admin.php:202
 msgid "Cart page (per item)"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:208
+#: includes/class-quickshipd-admin.php:206
 msgid "Checkout page"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:228
+#: includes/class-quickshipd-admin.php:226
 msgid "Options"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:232
+#: includes/class-quickshipd-admin.php:230
 msgid "Show countdown timer"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:239
+#: includes/class-quickshipd-admin.php:237
 msgid "Shows an \"Order within Xh Ym\" countdown timer on product pages to encourage urgency"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:245
+#: includes/class-quickshipd-admin.php:243
 msgid "Show live seconds"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:252
+#: includes/class-quickshipd-admin.php:250
 msgid "Tick seconds in real-time (e.g. 2h 30m 14s). When off, only hours and minutes are shown."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:259
+#: includes/class-quickshipd-admin.php:257
 msgid "Text Templates"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:263
+#: includes/class-quickshipd-admin.php:261
 msgid "Single-date text"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:265
+#: includes/class-quickshipd-admin.php:263
 msgid "Available placeholders: {date}"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:268
+#: includes/class-quickshipd-admin.php:266
 msgid "Date-range text"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:270
+#: includes/class-quickshipd-admin.php:268
 msgid "Available placeholders: {start}, {end}"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:273
+#: includes/class-quickshipd-admin.php:271
 msgid "Countdown text"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:275
+#: includes/class-quickshipd-admin.php:273
 msgid "Available placeholders: {countdown}, {date}"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:294
+#: includes/class-quickshipd-admin.php:292
 msgid "Date Format &amp; Icon"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:298
+#: includes/class-quickshipd-admin.php:296
 msgid "Date format"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:307
+#: includes/class-quickshipd-admin.php:305
 msgid "Icon"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:314
+#: includes/class-quickshipd-admin.php:312
 msgid "Colors &amp; Background"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:318
+#: includes/class-quickshipd-admin.php:316
 msgid "Primary text color"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:325
+#: includes/class-quickshipd-admin.php:323
 msgid "Applied to the delivery date line and the bold time in the countdown"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:331
+#: includes/class-quickshipd-admin.php:329
 msgid "Secondary text color"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:338
+#: includes/class-quickshipd-admin.php:336
 msgid "Applied to the \"Order within … to get it by\" surrounding text"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:344
+#: includes/class-quickshipd-admin.php:342
 msgid "Background color"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:351
+#: includes/class-quickshipd-admin.php:349
 msgid "Background behind the delivery widget. Leave blank for transparent."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:357
+#: includes/class-quickshipd-admin.php:355
 msgid "Border radius"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:372
+#: includes/class-quickshipd-admin.php:370
 msgid "Padding"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:397
+#: includes/class-quickshipd-admin.php:395
 msgid "You do not have permission to access this page."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:402
+#: includes/class-quickshipd-admin.php:400
 msgid "Delivery"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:406
+#: includes/class-quickshipd-admin.php:404
 msgid "Display"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:410
+#: includes/class-quickshipd-admin.php:408
 msgid "Style"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:437
+#: includes/class-quickshipd-admin.php:435
 msgid "Settings tabs"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:459
+#: includes/class-quickshipd-admin.php:457
 msgid "Save Settings"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:464
+#: includes/class-quickshipd-admin.php:462
 msgid "Restore Defaults"
 msgstr ""
 
 #. translators: plugin version
-#: includes/class-quickshipd-admin.php:488
+#: includes/class-quickshipd-admin.php:486
 #, php-format
 msgid "QuickShipD v%s"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:511
+#: includes/class-quickshipd-admin.php:509
 msgid "Live Preview For"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:512
+#: includes/class-quickshipd-admin.php:510
 msgid "Product page/Shop Page"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:657
+#: includes/class-quickshipd-admin.php:639
+msgid "Holiday type"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:640
+msgid "Single date"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:641
+msgid "Date range"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:648
+msgid "Repeats every year"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:652
+msgid "Start date"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:653
+msgid "End date"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:654
+msgid "Add holiday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:663
+msgid "No holidays added yet."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:701
 msgctxt "weekday"
 msgid "Saturday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:658
+#: includes/class-quickshipd-admin.php:702
 msgctxt "weekday"
 msgid "Sunday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:659
+#: includes/class-quickshipd-admin.php:703
 msgctxt "weekday"
 msgid "Monday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:660
+#: includes/class-quickshipd-admin.php:704
 msgctxt "weekday"
 msgid "Tuesday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:661
+#: includes/class-quickshipd-admin.php:705
 msgctxt "weekday"
 msgid "Wednesday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:662
+#: includes/class-quickshipd-admin.php:706
 msgctxt "weekday"
 msgid "Thursday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:663
+#: includes/class-quickshipd-admin.php:707
 msgctxt "weekday"
 msgid "Friday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:721
+#: includes/class-quickshipd-admin.php:765
 msgid "Truck"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:722
+#: includes/class-quickshipd-admin.php:766
 msgid "Box"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:723
+#: includes/class-quickshipd-admin.php:767
 msgid "None"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:808
+#: includes/class-quickshipd-admin.php:852
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:809
+#: includes/class-quickshipd-admin.php:853
 msgid "Defaults restored."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:810
+#: includes/class-quickshipd-admin.php:854
 msgid "Could not save. Please try again."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:811
+#: includes/class-quickshipd-admin.php:855
 msgid "Reset all settings to their default values?"
 msgstr ""
 
+#: includes/class-quickshipd-admin.php:859
+msgid "Single"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:860
+msgid "Range"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:861
+msgid "every year"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:862
+msgid "Remove"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:863
+msgid "Choose a start date."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:864
+msgid "Choose an end date for the range."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:865
+msgid "End date must be on or after the start date."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:866
+msgid "Ranges must stay within the same calendar year."
+msgstr ""
+
 #. translators: 1: hours, 2: minutes, 3: seconds
-#: includes/class-quickshipd-calculator.php:317
+#: includes/class-quickshipd-calculator.php:530
 #, php-format
 msgid "%1$dh %2$dm %3$ds"
 msgstr ""
 
 #. translators: 1: minutes, 2: seconds
-#: includes/class-quickshipd-calculator.php:326
+#: includes/class-quickshipd-calculator.php:539
 #, php-format
 msgid "%1$dm %2$ds"
 msgstr ""
 
 #. translators: 1: seconds
-#: includes/class-quickshipd-calculator.php:333
+#: includes/class-quickshipd-calculator.php:546
 #, php-format
 msgid "%1$ds"
 msgstr ""
 
 #. translators: 1: hours, 2: minutes
-#: includes/class-quickshipd-calculator.php:342
+#: includes/class-quickshipd-calculator.php:555
 #, php-format
 msgid "%1$dh %2$dm"
 msgstr ""
 
 #. translators: 1: minutes
-#: includes/class-quickshipd-calculator.php:349
+#: includes/class-quickshipd-calculator.php:562
 #, php-format
 msgid "%1$dm"
 msgstr ""

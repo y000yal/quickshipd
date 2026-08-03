@@ -435,9 +435,27 @@ class QuickShipD_Display {
 			? sanitize_text_field( wp_unslash( $_POST['quickshipd_exclude_weekends'] ) )
 			: get_option( 'quickshipd_exclude_weekends', 'yes' );
 
-		$excluded_days = 'yes' === $excl_weekends ? array( 0, 6 ) : array();
+		$excluded_days = array();
+		if ( isset( $_POST['quickshipd_excluded_days'] ) && is_array( $_POST['quickshipd_excluded_days'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Mapped via absint below.
+			$excluded_days = array_map( 'absint', wp_unslash( $_POST['quickshipd_excluded_days'] ) );
+		}
+		if ( 'yes' === $excl_weekends ) {
+			$excluded_days = array_unique( array_merge( $excluded_days, array( 0, 6 ) ) );
+		}
 
-		$calc   = new QuickShipD_Calculator( $min_days, $max_days, $cutoff_hour, $cutoff_min, $excluded_days, array() );
+		$holidays_raw = isset( $_POST['quickshipd_holidays'] )
+			? wp_unslash( $_POST['quickshipd_holidays'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Normalized via calculator.
+			: get_option( 'quickshipd_holidays', array() );
+		if ( is_string( $holidays_raw ) ) {
+			$decoded = json_decode( $holidays_raw, true );
+			$holidays_raw = ( JSON_ERROR_NONE === json_last_error() && is_array( $decoded ) ) ? $decoded : $holidays_raw;
+		}
+		$holidays = QuickShipD_Calculator::expand_holidays(
+			QuickShipD_Calculator::normalize_holiday_entries( $holidays_raw )
+		);
+
+		$calc   = new QuickShipD_Calculator( $min_days, $max_days, $cutoff_hour, $cutoff_min, $excluded_days, $holidays );
 		$result = $calc->calculate();
 
 		// ---- Style / display settings (for live preview) ----

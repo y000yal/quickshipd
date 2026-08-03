@@ -533,6 +533,128 @@ tr.qs-sub-setting > th {
 	margin-right: 2px;
 }
 
+/* Holidays row builder */
+.qs-holidays {
+	max-width: 640px;
+}
+
+.qs-holidays-add {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.qs-holidays-top {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 16px;
+}
+
+.qs-holidays-fields {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 10px;
+}
+
+.qs-holidays-add .qs-holiday-type,
+.qs-holidays-add .qs-holiday-date {
+	height: 30px;
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 4px;
+	padding: 0 8px;
+	font-size: 13px;
+	line-height: 2;
+	background: #fff;
+}
+
+.qs-holidays-add .qs-holiday-type:focus,
+.qs-holidays-add .qs-holiday-date:focus {
+	border-color: var(--qs-green);
+	box-shadow: 0 0 0 3px rgba(22,163,74,.12);
+	outline: 2px solid transparent;
+}
+
+.qs-holidays-add .qs-holiday-recurring {
+	margin: 0;
+}
+
+.qs-holidays-add .qs-holiday-add-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--qs-green);
+	border-radius: 4px;
+	background: var(--qs-green);
+	color: #fff;
+	cursor: pointer;
+	flex-shrink: 0;
+	line-height: 1;
+	transition: background .15s, border-color .15s;
+}
+
+.qs-holidays-add .qs-holiday-add-btn:hover,
+.qs-holidays-add .qs-holiday-add-btn:focus {
+	background: var(--qs-green-dark);
+	border-color: var(--qs-green-dark);
+	color: #fff;
+	outline: none;
+}
+
+.qs-holidays-add .qs-holiday-add-btn:focus-visible {
+	box-shadow: 0 0 0 3px rgba(22,163,74,.25);
+}
+
+.qs-holidays-error {
+	color: #b91c1c;
+	margin: 0 0 8px;
+	font-size: 13px;
+}
+
+.qs-holidays-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.qs-holidays-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 8px 10px;
+	background: var(--qs-gray-50);
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 6px;
+}
+
+.qs-holidays-item__label {
+	font-size: 13px;
+	color: var(--qs-gray-700);
+	line-height: 1.4;
+}
+
+.qs-holidays-item__remove {
+	color: #b91c1c !important;
+	text-decoration: none !important;
+	flex-shrink: 0;
+}
+
+.qs-holidays-empty {
+	margin: 4px 0 0;
+	color: var(--qs-gray-500);
+}
+
 /* Fieldset (weekday toggles — plain inline row, no pill chrome) */
 
 .quickshipd-settings-form fieldset {
