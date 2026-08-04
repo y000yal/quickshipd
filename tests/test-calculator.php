@@ -16,6 +16,10 @@
 
 use PHPUnit\Framework\TestCase;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
+
 // Stub wp_timezone() if running outside WordPress.
 if ( ! function_exists( 'wp_timezone' ) ) {
 	function wp_timezone(): \DateTimeZone {
@@ -170,6 +174,111 @@ class Test_QuickShipD_Calculator extends TestCase {
 		$this->assertContains( '2024-12-25', $result );
 		$this->assertContains( 'XXXX-01-01', $result );
 		$this->assertContains( '2024-11-28', $result );
+	}
+
+	/**
+	 * @test
+	 * Legacy textarea migrates into structured single entries.
+	 */
+	public function test_migrate_textarea_holidays(): void {
+		$raw     = "2024-12-25\n# skip\nXXXX-01-01\n";
+		$entries = QuickShipD_Calculator::migrate_textarea_holidays( $raw );
+
+		$this->assertCount( 2, $entries );
+		$this->assertSame( 'single', $entries[0]['type'] );
+		$this->assertSame( '2024-12-25', $entries[0]['start'] );
+		$this->assertFalse( $entries[0]['recurring'] );
+		$this->assertSame( '2024-01-01', $entries[1]['start'] );
+		$this->assertTrue( $entries[1]['recurring'] );
+	}
+
+	/**
+	 * @test
+	 * expand_holidays expands a one-off range into each Y-m-d day.
+	 */
+	public function test_expand_one_off_range(): void {
+		$keys = QuickShipD_Calculator::expand_holidays(
+			array(
+				array(
+					'type'      => 'range',
+					'start'     => '2024-12-24',
+					'end'       => '2024-12-26',
+					'recurring' => false,
+				),
+			)
+		);
+
+		$this->assertSame( array( '2024-12-24', '2024-12-25', '2024-12-26' ), $keys );
+	}
+
+	/**
+	 * @test
+	 * expand_holidays expands a recurring range into XXXX-m-d keys.
+	 */
+	public function test_expand_recurring_range(): void {
+		$keys = QuickShipD_Calculator::expand_holidays(
+			array(
+				array(
+					'type'      => 'range',
+					'start'     => '2024-12-24',
+					'end'       => '2024-12-26',
+					'recurring' => true,
+				),
+			)
+		);
+
+		$this->assertSame( array( 'XXXX-12-24', 'XXXX-12-25', 'XXXX-12-26' ), $keys );
+	}
+
+	/**
+	 * @test
+	 * Year-crossing ranges are rejected.
+	 */
+	public function test_year_crossing_range_rejected(): void {
+		$entry = QuickShipD_Calculator::sanitize_holiday_entry(
+			array(
+				'type'      => 'range',
+				'start'     => '2024-12-30',
+				'end'       => '2025-01-02',
+				'recurring' => false,
+			)
+		);
+		$this->assertNull( $entry );
+
+		$keys = QuickShipD_Calculator::expand_holidays(
+			array(
+				array(
+					'type'      => 'range',
+					'start'     => '2024-12-30',
+					'end'       => '2025-01-02',
+					'recurring' => false,
+				),
+			)
+		);
+		$this->assertSame( array(), $keys );
+	}
+
+	/**
+	 * @test
+	 * Expanded holiday range is skipped by the calculator.
+	 */
+	public function test_holiday_range_is_skipped(): void {
+		$keys = QuickShipD_Calculator::expand_holidays(
+			array(
+				array(
+					'type'      => 'range',
+					'start'     => '2024-01-09',
+					'end'       => '2024-01-10',
+					'recurring' => false,
+				),
+			)
+		);
+		$calc = $this->make( 1, 1, 14, 0, array(), $keys );
+		$now  = new \DateTime( '2024-01-08 09:00:00', new \DateTimeZone( 'UTC' ) );
+
+		$result = $calc->calculate( $now );
+		// Jan 9–10 holidays; +1 business day from Mon → Jan 11.
+		$this->assertSame( '2024-01-11', $result['min_date']->format( 'Y-m-d' ) );
 	}
 
 	// -----------------------------------------------------------------------

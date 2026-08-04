@@ -3,7 +3,7 @@
  * Plugin Name:       QuickShipD — Estimated Delivery Date for WooCommerce
  * Plugin URI:        https://quickshipd.com
  * Description:       Estimated delivery dates for WooCommerce on product, cart, and checkout — shipping-aware ranges, per-product overrides, optional countdown.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            y0000el
@@ -13,7 +13,7 @@
  * Text Domain:       quickshipd
  * Domain Path:       /languages
  * WC requires at least: 7.0
- * WC tested up to:   10.0
+ * WC tested up to:   10.9.4
  *
  * @package QuickShipD
  */
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Constants.
 // -------------------------------------------------------------------------
 
-define( 'QUICKSHIPD_VERSION', '1.0.1' );
+define( 'QUICKSHIPD_VERSION', '1.0.2' );
 define( 'QUICKSHIPD_PATH', plugin_dir_path( __FILE__ ) );
 define( 'QUICKSHIPD_URL', plugin_dir_url( __FILE__ ) );
 define( 'QUICKSHIPD_BASENAME', plugin_basename( __FILE__ ) );
@@ -69,7 +69,7 @@ register_activation_hook(
 			'quickshipd_cutoff_min'       => 0,
 			'quickshipd_exclude_weekends' => 'yes',
 			'quickshipd_excluded_days'    => array(),
-			'quickshipd_holidays'         => '',
+			'quickshipd_holidays'         => array(),
 			'quickshipd_show_product'     => 'yes',
 			'quickshipd_show_shop'        => 'no',
 			'quickshipd_show_cart'        => 'yes',
@@ -158,7 +158,7 @@ function quickshipd_repair_options( bool $force = false ): void {
 		'quickshipd_cutoff_min'       => 0,
 		'quickshipd_exclude_weekends' => 'yes',
 		'quickshipd_excluded_days'    => array(),
-		'quickshipd_holidays'         => '',
+		'quickshipd_holidays'         => array(),
 		'quickshipd_show_product'     => 'yes',
 		'quickshipd_show_shop'        => 'no',
 		'quickshipd_show_cart'        => 'yes',

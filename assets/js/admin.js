@@ -180,17 +180,69 @@
 		} );
 	}
 
-	function qsAddBizDays( startMs, days, excDows ) {
+	function qsPad2( n ) {
+		return ( '0' + n ).slice( -2 );
+	}
+
+	function qsYmd( date ) {
+		return date.getUTCFullYear() + '-' + qsPad2( date.getUTCMonth() + 1 ) + '-' + qsPad2( date.getUTCDate() );
+	}
+
+	function qsExpandHolidays( entries ) {
+		var keys = [];
+		if ( ! Array.isArray( entries ) ) return keys;
+
+		entries.forEach( function ( entry ) {
+			if ( ! entry || ! entry.start ) return;
+			var type      = entry.type === 'range' ? 'range' : 'single';
+			var start     = String( entry.start );
+			var end       = String( entry.end || '' );
+			var recurring = !! entry.recurring;
+
+			if ( ! /^\d{4}-\d{2}-\d{2}$/.test( start ) ) return;
+
+			if ( type === 'single' ) {
+				keys.push( recurring ? ( 'XXXX-' + start.slice( 5 ) ) : start );
+				return;
+			}
+
+			if ( ! /^\d{4}-\d{2}-\d{2}$/.test( end ) || end < start ) return;
+			if ( start.slice( 0, 4 ) !== end.slice( 0, 4 ) ) return;
+
+			var parts = start.split( '-' ).map( Number );
+			var cursor = new Date( Date.UTC( parts[0], parts[1] - 1, parts[2] ) );
+			var endParts = end.split( '-' ).map( Number );
+			var last = new Date( Date.UTC( endParts[0], endParts[1] - 1, endParts[2] ) );
+			var safety = 366;
+
+			while ( cursor.getTime() <= last.getTime() && safety-- > 0 ) {
+				var ymd = qsYmd( cursor );
+				keys.push( recurring ? ( 'XXXX-' + ymd.slice( 5 ) ) : ymd );
+				cursor.setUTCDate( cursor.getUTCDate() + 1 );
+			}
+		} );
+
+		return keys.filter( function ( k, i, arr ) { return arr.indexOf( k ) === i; } );
+	}
+
+	function qsIsExcludedDay( date, excDows, holidayKeys ) {
+		if ( excDows.indexOf( date.getUTCDay() ) !== -1 ) return true;
+		var ymd = qsYmd( date );
+		return holidayKeys.indexOf( ymd ) !== -1 || holidayKeys.indexOf( 'XXXX-' + ymd.slice( 5 ) ) !== -1;
+	}
+
+	function qsAddBizDays( startMs, days, excDows, holidayKeys ) {
+		holidayKeys = holidayKeys || [];
 		var date  = new Date( startMs );
 		var added = 0;
 		var max   = days + 365;
 		while ( added < days && max-- > 0 ) {
 			date.setUTCDate( date.getUTCDate() + 1 );
-			if ( excDows.indexOf( date.getUTCDay() ) === -1 ) added++;
+			if ( ! qsIsExcludedDay( date, excDows, holidayKeys ) ) added++;
 		}
 		if ( days === 0 ) {
 			var safety = 365;
-			while ( excDows.indexOf( date.getUTCDay() ) !== -1 && safety-- > 0 ) {
+			while ( qsIsExcludedDay( date, excDows, holidayKeys ) && safety-- > 0 ) {
 				date.setUTCDate( date.getUTCDate() + 1 );
 			}
 		}
@@ -219,6 +271,28 @@
 		return $( selector ).is( ':checked' );
 	}
 
+	function getExcludedDows() {
+		var excDows = [];
+		$( 'input[name="quickshipd_excluded_days[]"]:checked' ).each( function () {
+			excDows.push( parseInt( $( this ).val(), 10 ) );
+		} );
+		if ( checkbox( 'input[name="quickshipd_exclude_weekends"]' ) ) {
+			if ( excDows.indexOf( 0 ) === -1 ) excDows.push( 0 );
+			if ( excDows.indexOf( 6 ) === -1 ) excDows.push( 6 );
+		}
+		return excDows;
+	}
+
+	function getHolidayEntries() {
+		try {
+			var raw = $( '#quickshipd_holidays' ).val() || '[]';
+			var parsed = JSON.parse( raw );
+			return Array.isArray( parsed ) ? parsed : [];
+		} catch ( e ) {
+			return [];
+		}
+	}
+
 	function buildPreviewHtml() {
 		// ---- delivery settings ----
 		var minDays    = parseInt( field( 'input[name="quickshipd_min_days"]',    '0' ), 10 );
@@ -226,7 +300,6 @@
 		var cutoffRaw  = field( 'input[name="quickshipd_cutoff_time"]', '14:00' ).split( ':' );
 		var cutoffH    = parseInt( cutoffRaw[0] || '14', 10 );
 		var cutoffM    = parseInt( cutoffRaw[1] || '0',  10 );
-		var excWeekend = checkbox( 'input[name="quickshipd_exclude_weekends"]' );
 
 		// ---- style settings ----
 		var textSingle      = field( 'input[name="quickshipd_text_single"]',    'Get it by {date}' );
@@ -264,9 +337,10 @@
 			countdownSecs = 9000; // 2h 30m demo
 		}
 
-		var excDows  = excWeekend ? [ 0, 6 ] : [];
-		var minDate  = qsAddBizDays( startMs, minDays, excDows );
-		var maxDate  = qsAddBizDays( startMs, maxDays, excDows );
+		var excDows     = getExcludedDows();
+		var holidayKeys = qsExpandHolidays( getHolidayEntries() );
+		var minDate     = qsAddBizDays( startMs, minDays, excDows, holidayKeys );
+		var maxDate     = qsAddBizDays( startMs, maxDays, excDows, holidayKeys );
 		var isRange  = minDate.getTime() !== maxDate.getTime();
 		var minFmt   = qsDateFmt( minDate, dateFmt );
 		var maxFmt   = qsDateFmt( maxDate, dateFmt );
@@ -313,6 +387,134 @@
 		if ( ! $stage.length ) return;
 		$stage.html( buildPreviewHtml() );
 		startPreviewTick();
+	}
+
+	/* ---------------------------------------------------------------- */
+	/* Holidays row builder                                              */
+	/* ---------------------------------------------------------------- */
+
+	function initHolidaysBuilder() {
+		var $root = $( '#qs-holidays-builder' );
+		if ( ! $root.length ) return;
+
+		var i18n = cfg.i18n || {};
+		var $type       = $( '#qs-holiday-type' );
+		var $start      = $( '#qs-holiday-start' );
+		var $end        = $( '#qs-holiday-end' );
+		var $recurring  = $( '#qs-holiday-recurring' );
+		var $list       = $( '#qs-holidays-list' );
+		var $empty      = $( '#qs-holidays-empty' );
+		var $error      = $( '#qs-holidays-error' );
+		var $hidden     = $( '#quickshipd_holidays' );
+
+		function showError( msg ) {
+			if ( ! msg ) {
+				$error.prop( 'hidden', true ).text( '' );
+				return;
+			}
+			$error.prop( 'hidden', false ).text( msg );
+		}
+
+		function syncType() {
+			var isRange = $type.val() === 'range';
+			$end.prop( 'hidden', ! isRange );
+			if ( ! isRange ) $end.val( '' );
+		}
+
+		function readEntries() {
+			return getHolidayEntries();
+		}
+
+		function writeEntries( entries ) {
+			$hidden.val( JSON.stringify( entries ) );
+			renderList( entries );
+			schedulePreview();
+		}
+
+		function formatLabel( entry ) {
+			var parts = [];
+			if ( entry.type === 'range' ) {
+				parts.push( ( i18n.holidayRange || 'Range' ) + ': ' + entry.start + ' \u2013 ' + entry.end );
+			} else {
+				parts.push( ( i18n.holidaySingle || 'Single' ) + ': ' + entry.start );
+			}
+			if ( entry.recurring ) {
+				parts.push( '(' + ( i18n.holidayRecurring || 'every year' ) + ')' );
+			}
+			return parts.join( ' ' );
+		}
+
+		function renderList( entries ) {
+			$list.empty();
+			if ( ! entries.length ) {
+				$empty.show();
+				return;
+			}
+			$empty.hide();
+			entries.forEach( function ( entry, index ) {
+				var $li = $( '<li class="qs-holidays-item"/>' );
+				$li.append( $( '<span class="qs-holidays-item__label"/>' ).text( formatLabel( entry ) ) );
+				$li.append(
+					$( '<button type="button" class="button-link qs-holidays-item__remove"/>' )
+						.text( i18n.holidayRemove || 'Remove' )
+						.attr( 'data-index', index )
+				);
+				$list.append( $li );
+			} );
+		}
+
+		$type.on( 'change', syncType );
+
+		$( '#qs-holiday-add' ).on( 'click', function () {
+			showError( '' );
+			var type  = $type.val() === 'range' ? 'range' : 'single';
+			var start = ( $start.val() || '' ).trim();
+			var end   = ( $end.val() || '' ).trim();
+			var recurring = $recurring.is( ':checked' );
+
+			if ( ! start ) {
+				showError( i18n.holidayNeedStart || 'Choose a start date.' );
+				return;
+			}
+			if ( type === 'range' ) {
+				if ( ! end ) {
+					showError( i18n.holidayNeedEnd || 'Choose an end date for the range.' );
+					return;
+				}
+				if ( end < start ) {
+					showError( i18n.holidayEndBefore || 'End date must be on or after the start date.' );
+					return;
+				}
+				if ( start.slice( 0, 4 ) !== end.slice( 0, 4 ) ) {
+					showError( i18n.holidayCrossYear || 'Ranges must stay within the same calendar year.' );
+					return;
+				}
+			}
+
+			var entries = readEntries();
+			entries.push( {
+				type: type,
+				start: start,
+				end: type === 'range' ? end : '',
+				recurring: recurring
+			} );
+			writeEntries( entries );
+
+			$start.val( '' );
+			$end.val( '' );
+			$recurring.prop( 'checked', false );
+		} );
+
+		$list.on( 'click', '.qs-holidays-item__remove', function () {
+			var index = parseInt( $( this ).attr( 'data-index' ), 10 );
+			var entries = readEntries();
+			if ( isNaN( index ) || index < 0 || index >= entries.length ) return;
+			entries.splice( index, 1 );
+			writeEntries( entries );
+		} );
+
+		syncType();
+		renderList( readEntries() );
 	}
 
 	/* ---------------------------------------------------------------- */
@@ -395,6 +597,7 @@
 		initTabs();
 		initSubSettings();
 		initWeekendLock();
+		initHolidaysBuilder();
 
 		$('#quickshipd-save-btn').on('click', saveSettings);
 		$('#quickshipd-restore-btn').on('click', restoreDefaults);

@@ -136,9 +136,9 @@ class QuickShipD_Calculator {
 			$excluded_days = array_unique( array_merge( $excluded_days, array( 0, 6 ) ) );
 		}
 
-		// Holidays: one date per line in the textarea option.
-		$holidays_raw = get_option( 'quickshipd_holidays', '' );
-		$holidays     = self::parse_holidays( $holidays_raw );
+		// Holidays: structured entries (or legacy textarea string — migrated on read).
+		$holidays_raw = get_option( 'quickshipd_holidays', array() );
+		$holidays     = self::expand_holidays( self::normalize_holiday_entries( $holidays_raw ) );
 
 		return new self( $min_days, $max_days, $cutoff_hour, $cutoff_min, $excluded_days, $holidays );
 	}
@@ -270,6 +270,8 @@ class QuickShipD_Calculator {
 	/**
 	 * Parse a newline-separated holidays string into an array of date strings.
 	 *
+	 * Kept for legacy textarea values and unit tests.
+	 *
 	 * @param  string $raw  Raw textarea value.
 	 * @return string[]
 	 */
@@ -277,12 +279,223 @@ class QuickShipD_Calculator {
 		if ( '' === trim( $raw ) ) {
 			return array();
 		}
-		return array_filter(
-			array_map( 'trim', explode( "\n", $raw ) ),
-			static function ( string $line ): bool {
-				return '' !== $line && '#' !== $line[0];
-			}
+		return array_values(
+			array_filter(
+				array_map( 'trim', explode( "\n", $raw ) ),
+				static function ( string $line ): bool {
+					return '' !== $line && '#' !== $line[0];
+				}
+			)
 		);
+	}
+
+	/**
+	 * Normalize stored holidays into structured entries.
+	 *
+	 * Accepts a legacy textarea string, a list of flat date strings, or an
+	 * array of structured entries. Invalid / year-crossing ranges are dropped.
+	 *
+	 * @param  mixed $raw  Option value.
+	 * @return array<int, array{type: string, start: string, end: string, recurring: bool}>
+	 */
+	public static function normalize_holiday_entries( $raw ): array {
+		if ( is_string( $raw ) ) {
+			return self::migrate_textarea_holidays( $raw );
+		}
+
+		if ( ! is_array( $raw ) || empty( $raw ) ) {
+			return array();
+		}
+
+		// Legacy flat list of Y-m-d / XXXX-m-d strings (no 'type' key).
+		$first = reset( $raw );
+		if ( is_string( $first ) ) {
+			$entries = array();
+			foreach ( $raw as $line ) {
+				$entry = self::line_to_entry( (string) $line );
+				if ( null !== $entry ) {
+					$entries[] = $entry;
+				}
+			}
+			return $entries;
+		}
+
+		$entries = array();
+		foreach ( $raw as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$sanitized = self::sanitize_holiday_entry( $item );
+			if ( null !== $sanitized ) {
+				$entries[] = $sanitized;
+			}
+		}
+
+		return $entries;
+	}
+
+	/**
+	 * Expand structured holiday entries into flat day keys for matching.
+	 *
+	 * @param  array $entries  Structured entries from normalize_holiday_entries().
+	 * @return string[]        Keys like '2026-12-25' or 'XXXX-12-25'.
+	 */
+	public static function expand_holidays( array $entries ): array {
+		$keys = array();
+
+		foreach ( $entries as $entry ) {
+			$sanitized = self::sanitize_holiday_entry( $entry );
+			if ( null === $sanitized ) {
+				continue;
+			}
+
+			$type      = $sanitized['type'];
+			$start     = $sanitized['start'];
+			$end       = $sanitized['end'];
+			$recurring = $sanitized['recurring'];
+
+			if ( 'single' === $type ) {
+				$keys[] = $recurring ? self::to_recurring_key( $start ) : $start;
+				continue;
+			}
+
+			// Range: walk day-by-day (same calendar year only).
+			try {
+				$cursor = new \DateTimeImmutable( $start );
+				$last   = new \DateTimeImmutable( $end );
+			} catch ( \Exception $e ) {
+				continue;
+			}
+
+			if ( $cursor > $last ) {
+				continue;
+			}
+
+			$safety = 366;
+			while ( $cursor <= $last && $safety-- > 0 ) {
+				$ymd    = $cursor->format( 'Y-m-d' );
+				$keys[] = $recurring ? self::to_recurring_key( $ymd ) : $ymd;
+				$cursor = $cursor->modify( '+1 day' );
+			}
+		}
+
+		return array_values( array_unique( $keys ) );
+	}
+
+	/**
+	 * Sanitize a single holiday entry array.
+	 *
+	 * @param  array $item  Raw entry.
+	 * @return array{type: string, start: string, end: string, recurring: bool}|null
+	 */
+	public static function sanitize_holiday_entry( array $item ): ?array {
+		$type = isset( $item['type'] ) ? strtolower( trim( (string) $item['type'] ) ) : 'single';
+		if ( ! in_array( $type, array( 'single', 'range' ), true ) ) {
+			$type = 'single';
+		}
+
+		$start = isset( $item['start'] ) ? self::normalize_ymd( (string) $item['start'] ) : '';
+		if ( '' === $start ) {
+			return null;
+		}
+
+		$recurring = ! empty( $item['recurring'] );
+		$end       = '';
+
+		if ( 'range' === $type ) {
+			$end = isset( $item['end'] ) ? self::normalize_ymd( (string) $item['end'] ) : '';
+			if ( '' === $end || $end < $start ) {
+				return null;
+			}
+			// Same-year only (no year-crossing ranges).
+			if ( substr( $start, 0, 4 ) !== substr( $end, 0, 4 ) ) {
+				return null;
+			}
+		}
+
+		return array(
+			'type'      => $type,
+			'start'     => $start,
+			'end'       => $end,
+			'recurring' => $recurring,
+		);
+	}
+
+	/**
+	 * Migrate a legacy textarea value into structured entries.
+	 *
+	 * @param  string $raw  Textarea contents.
+	 * @return array<int, array{type: string, start: string, end: string, recurring: bool}>
+	 */
+	public static function migrate_textarea_holidays( string $raw ): array {
+		$entries = array();
+		foreach ( self::parse_holidays( $raw ) as $line ) {
+			$entry = self::line_to_entry( $line );
+			if ( null !== $entry ) {
+				$entries[] = $entry;
+			}
+		}
+		return $entries;
+	}
+
+	/**
+	 * Convert a flat date line into a structured single entry.
+	 *
+	 * @param  string $line  Y-m-d or XXXX-m-d.
+	 * @return array{type: string, start: string, end: string, recurring: bool}|null
+	 */
+	private static function line_to_entry( string $line ): ?array {
+		$line = trim( $line );
+		if ( '' === $line ) {
+			return null;
+		}
+
+		$recurring = false;
+		if ( 0 === strpos( $line, 'XXXX-' ) ) {
+			$recurring = true;
+			// Use a leap year so Feb 29 is valid during migration.
+			$line = '2024-' . substr( $line, 5 );
+		}
+
+		$ymd = self::normalize_ymd( $line );
+		if ( '' === $ymd ) {
+			return null;
+		}
+
+		return array(
+			'type'      => 'single',
+			'start'     => $ymd,
+			'end'       => '',
+			'recurring' => $recurring,
+		);
+	}
+
+	/**
+	 * Validate and normalize a Y-m-d date string.
+	 *
+	 * @param  string $value  Candidate date.
+	 * @return string         Normalized Y-m-d or empty string.
+	 */
+	private static function normalize_ymd( string $value ): string {
+		$value = trim( $value );
+		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
+			return '';
+		}
+		$dt = \DateTimeImmutable::createFromFormat( 'Y-m-d', $value );
+		if ( ! $dt || $dt->format( 'Y-m-d' ) !== $value ) {
+			return '';
+		}
+		return $value;
+	}
+
+	/**
+	 * Convert a Y-m-d date to a recurring XXXX-m-d key.
+	 *
+	 * @param  string $ymd  Y-m-d date.
+	 * @return string
+	 */
+	private static function to_recurring_key( string $ymd ): string {
+		return 'XXXX-' . substr( $ymd, 5 );
 	}
 
 	/**
