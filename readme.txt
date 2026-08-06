@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0.2
 WC tested up to: 10.9.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -229,6 +229,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 4. **Shipping method integration** — QuickShipD min/max day fields added to a flat rate shipping method instance inside WooCommerce Shipping Zones.
 
 == Changelog ==
+
+= 1.0.3   - 06/08/2026 =
+* Feature - Delivery estimate now shows in order emails, admin orders, and My Account.
 
 = 1.0.2   - 04/08/2026 =
 * Feature - Holidays UI: add single dates or same-year ranges with optional yearly recurring (replaces textarea).
