@@ -51,6 +51,11 @@ class QuickShipD_Display {
 			add_action( 'woocommerce_review_order_before_shipping', array( $this, 'render_checkout' ) );
 		}
 
+		// Persist the estimate on order line items so it appears in emails,
+		// the admin order screen, and My Account. Fires for both the classic
+		// and block checkout (the Store API delegates to WC_Checkout).
+		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'save_order_item_date' ), 10, 3 );
+
 		// Assets.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
@@ -168,11 +173,7 @@ class QuickShipD_Display {
 			return $item_data;
 		}
 
-		$date_fmt_val = (string) get_option( 'quickshipd_date_format', 'D, M j' );
-		$date_fmt     = '' !== $date_fmt_val ? $date_fmt_val : 'D, M j';
-		$date_label   = $result['is_range']
-			? QuickShipD_Calculator::format_date( $result['min_date'], $date_fmt ) . ' – ' . QuickShipD_Calculator::format_date( $result['max_date'], $date_fmt )
-			: QuickShipD_Calculator::format_date( $result['max_date'], $date_fmt );
+		$date_label = self::format_date_label( $result );
 
 		$item_data[] = array(
 			'name'    => esc_html__( 'Est. Delivery', 'quickshipd' ),
@@ -181,6 +182,43 @@ class QuickShipD_Display {
 		);
 
 		return $item_data;
+	}
+
+	// -----------------------------------------------------------------------
+	// Order line item persistence.
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Store the delivery estimate on the order line item at checkout.
+	 *
+	 * WooCommerce renders non-underscore item meta automatically in every
+	 * order email, the admin order screen, and the customer order view, so no
+	 * template overrides are needed.
+	 *
+	 * @param  WC_Order_Item $item          Order line item being created.
+	 * @param  string        $cart_item_key Cart item key (unused).
+	 * @param  array         $values        Cart item data.
+	 * @return void
+	 */
+	public function save_order_item_date( $item, $cart_item_key, $values ): void {
+		if ( ! is_array( $values ) || empty( $values['product_id'] ) || ! is_callable( array( $item, 'add_meta_data' ) ) ) {
+			return;
+		}
+
+		if ( 'yes' === get_post_meta( $values['product_id'], '_quickshipd_disabled', true ) ) {
+			return;
+		}
+
+		$product_id = ! empty( $values['variation_id'] ) ? $values['variation_id'] : $values['product_id'];
+
+		$calc   = QuickShipD_Calculator::from_settings( $this->get_selected_shipping_method_overrides(), (int) $product_id );
+		$result = $calc->calculate();
+
+		if ( ! $result['show'] ) {
+			return;
+		}
+
+		$item->add_meta_data( __( 'Est. Delivery', 'quickshipd' ), self::format_date_label( $result ), true );
 	}
 
 	// -----------------------------------------------------------------------
@@ -482,6 +520,21 @@ class QuickShipD_Display {
 	// -----------------------------------------------------------------------
 	// Helpers.
 	// -----------------------------------------------------------------------
+
+	/**
+	 * Format a calculator result as a plain-text date label.
+	 *
+	 * @param  array $result Output from QuickShipD_Calculator::calculate().
+	 * @return string
+	 */
+	private static function format_date_label( array $result ): string {
+		$date_fmt_val = (string) get_option( 'quickshipd_date_format', 'D, M j' );
+		$date_fmt     = '' !== $date_fmt_val ? $date_fmt_val : 'D, M j';
+
+		return $result['is_range']
+			? QuickShipD_Calculator::format_date( $result['min_date'], $date_fmt ) . ' – ' . QuickShipD_Calculator::format_date( $result['max_date'], $date_fmt )
+			: QuickShipD_Calculator::format_date( $result['max_date'], $date_fmt );
+	}
 
 	/**
 	 * Get the days overrides for the currently selected shipping method, if any.

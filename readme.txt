@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0.2
 WC tested up to: 10.9.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -154,9 +154,11 @@ QuickShipD helps you:
 * Compatible with modern WooCommerce setups
 * Lightweight and performance-friendly
 
-= Plugin Title =
+= Video Tutorial =
 
-QuickShipD - WooCommerce Delivery Date & Shipping Estimate Plugin
+Watch the QuickShipD setup and walkthrough video:
+
+https://youtu.be/bjN8RIzE6SY
 
 = Video Tutorial =
 
@@ -233,14 +235,17 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Changelog ==
 
-= 1.0.2 =
+= 1.0.3   - 06/08/2026 =
+* Feature - Delivery estimate now shows in order emails, admin orders, and My Account.
+
+= 1.0.2   - 04/08/2026 =
 * Feature - Holidays UI: add single dates or same-year ranges with optional yearly recurring (replaces textarea).
 * Fix     - Live admin preview now respects holidays and excluded weekdays.
 
-= 1.0.1 - 08/07/2026 =
-* Fix   - Exclude weekends and non delivery days data not saving.
+= 1.0.1   - 08/07/2026 =
+* Fix     - Exclude weekends and non delivery days data not saving.
 
-= 1.0.0 =
+= 1.0.0   - 08/07/2026 =
 * Initial release.
 * Declares **WooCommerce** as a required plugin (`Requires Plugins: woocommerce`). Requires **WordPress 6.5+** so the dependency UI is available.
 * Product page, cart, and checkout display.
@@ -256,6 +261,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 * WordPress.org–compliant: no tracking, no external requests, GPLv3 or later.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Fixes weekend / non-delivery-day settings not saving. Recommended for all users.
 
 = 1.0.0 =
 Initial release. No upgrade needed.
