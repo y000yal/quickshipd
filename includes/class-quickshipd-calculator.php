@@ -3,7 +3,7 @@
  * Delivery date calculation engine.
  *
  * Pure logic class — no WordPress I/O in the core math so it stays testable.
- * WordPress helpers (wp_timezone, date_i18n) are injected at the call site
+ * WordPress helpers (wp_timezone, wp_date) are injected at the call site
  * via the static factory method ::from_settings().
  *
  * @package QuickShipD
@@ -506,7 +506,10 @@ class QuickShipD_Calculator {
 	 * @return string
 	 */
 	public static function format_date( \DateTimeInterface $date, string $format = 'D, M j' ): string {
-		return date_i18n( $format, $date->getTimestamp() );
+		// wp_date(), not date_i18n(): date_i18n() expects a legacy offset-summed
+		// timestamp and shifts a real one back by the site's UTC offset, which
+		// rolled midnight dates onto the previous day in UTC+ timezones.
+		return wp_date( $format, $date->getTimestamp() );
 	}
 
 	/**

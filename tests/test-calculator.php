@@ -7,7 +7,7 @@
  *   vendor/bin/phpunit tests/
  *
  * These tests exercise pure calculation logic only — no WordPress functions
- * are called (date_i18n, get_option, etc.) so no WordPress bootstrap is
+ * are called (wp_date, get_option, etc.) so no WordPress bootstrap is
  * required.
  *
  * @package QuickShipD
@@ -27,9 +27,9 @@ if ( ! function_exists( 'wp_timezone' ) ) {
 	}
 }
 
-// Stub date_i18n() if running outside WordPress.
-if ( ! function_exists( 'date_i18n' ) ) {
-	function date_i18n( string $format, ?int $timestamp = null ): string {
+// Stub wp_date() if running outside WordPress.
+if ( ! function_exists( 'wp_date' ) ) {
+	function wp_date( string $format, ?int $timestamp = null ): string {
 		return $timestamp !== null ? date( $format, $timestamp ) : date( $format );
 	}
 }
