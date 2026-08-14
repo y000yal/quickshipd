@@ -2,16 +2,16 @@
 Contributors: y0000el
 Tags: estimated delivery date, delivery date, estimated delivery, delivery time, order cutoff
 Requires at least: 6.5
-Tested up to: 7.0
+Tested up to: 7.0.4
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0.2
 WC tested up to: 10.9.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Estimated delivery date plugin for WooCommerce. Show delivery dates, delivery time & cutoff countdown on product, cart & checkout.
+Estimated delivery date for WooCommerce. Show delivery date, estimated delivery, delivery time & order cutoff on product, cart & checkout.
 
 == Description ==
 
@@ -230,7 +230,11 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Changelog ==
 
-= 1.0.3   - 06/08/2026 =
+= 1.0.4   - 14/08/2026 =
+* Fix     - Delivery dates showed one day early on sites in UTC+ timezones.
+* Fix     - Uninstall now removes the style options and shipping method overrides it previously left behind.
+
+= 1.0.3   - 04/08/2026 =
 * Feature - Delivery estimate now shows in order emails, admin orders, and My Account.
 
 = 1.0.2   - 04/08/2026 =
@@ -256,6 +260,15 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 * WordPress.org–compliant: no tracking, no external requests, GPLv3 or later.
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+Fixes delivery dates showing one day early on sites in UTC+ timezones. Recommended for all users.
+
+= 1.0.3 =
+Adds the delivery estimate to order emails, admin orders, and My Account.
+
+= 1.0.2 =
+Adds the holidays date picker with yearly recurring ranges. Recommended for all users.
 
 = 1.0.1 =
 Fixes weekend / non-delivery-day settings not saving. Recommended for all users.
