@@ -160,11 +160,6 @@ Watch the QuickShipD setup and walkthrough video:
 
 https://youtu.be/bjN8RIzE6SY
 
-= Video Tutorial =
-
-Watch the QuickShipD setup and walkthrough video:
-https://youtu.be/bjN8RIzE6SY
-
 == Installation ==
 
 1. Install and activate **WooCommerce** (this plugin depends on it). If WooCommerce is not installed, WordPress will prompt you to install it when you activate QuickShipD.
