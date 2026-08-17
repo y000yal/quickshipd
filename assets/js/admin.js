@@ -34,6 +34,8 @@
 			$(this).addClass('is-active');
 			$('.quickshipd-tab-pane').removeClass('is-active');
 			$('#quickshipd-tab-' + tab).addClass('is-active');
+			// Help is documentation, not settings: nothing to save or preview.
+			$('.quickshipd-save-bar, .quickshipd-layout-right').toggle( tab !== 'help' );
 		});
 	}
 
@@ -71,7 +73,7 @@
 
 			if ( $(this).is('[type=checkbox]') ) {
 				if ( name.indexOf('[]') !== -1 ) {
-					// Multi-value checkbox group (e.g. non-delivery days): collect checked values.
+					// Multi-value checkbox group (e.g. non-dispatch days): collect checked values.
 					var cbName = name.replace('[]', '');
 					if ( ! data[cbName] ) data[cbName] = [];
 					if ( $(this).is(':checked') ) data[cbName].push( $(this).val() );
@@ -240,12 +242,6 @@
 			date.setUTCDate( date.getUTCDate() + 1 );
 			if ( ! qsIsExcludedDay( date, excDows, holidayKeys ) ) added++;
 		}
-		if ( days === 0 ) {
-			var safety = 365;
-			while ( qsIsExcludedDay( date, excDows, holidayKeys ) && safety-- > 0 ) {
-				date.setUTCDate( date.getUTCDate() + 1 );
-			}
-		}
 		return date;
 	}
 
@@ -276,10 +272,6 @@
 		$( 'input[name="quickshipd_excluded_days[]"]:checked' ).each( function () {
 			excDows.push( parseInt( $( this ).val(), 10 ) );
 		} );
-		if ( checkbox( 'input[name="quickshipd_exclude_weekends"]' ) ) {
-			if ( excDows.indexOf( 0 ) === -1 ) excDows.push( 0 );
-			if ( excDows.indexOf( 6 ) === -1 ) excDows.push( 6 );
-		}
 		return excDows;
 	}
 
@@ -325,20 +317,27 @@
 		var pastCutoff = siteNow.getUTCHours() > cutoffH ||
 			( siteNow.getUTCHours() === cutoffH && siteNow.getUTCMinutes() >= cutoffM );
 
-		var startMs = todayStart.getTime() + ( pastCutoff ? 86400000 : 0 );
+		var excDows     = getExcludedDows();
+		var holidayKeys = qsExpandHolidays( getHolidayEntries() );
 
+		// Same roll-forward as the PHP calculator: counting starts on the
+		// dispatch day, never on an excluded day.
+		var startDate   = new Date( todayStart.getTime() + ( pastCutoff ? 86400000 : 0 ) );
+		var startSafety = 365;
+		while ( qsIsExcludedDay( startDate, excDows, holidayKeys ) && startSafety-- > 0 ) {
+			startDate.setUTCDate( startDate.getUTCDate() + 1 );
+		}
+		var startMs       = startDate.getTime();
+		var dispatchToday = startMs === todayStart.getTime();
+
+		// Mirrors the PHP calculator exactly: no countdown once the cutoff has
+		// passed, and none at all on a day nothing is dispatched.
 		var countdownSecs = 0;
-		if ( ! pastCutoff ) {
+		if ( ! pastCutoff && dispatchToday ) {
 			var cutoffMs = todayStart.getTime() + cutoffH * 3600000 + cutoffM * 60000;
 			countdownSecs = Math.max( 0, Math.floor( ( cutoffMs - siteNow.getTime() ) / 1000 ) );
 		}
-		// Preview: always demo the countdown when enabled, even if past cutoff.
-		if ( showCd && countdownSecs === 0 ) {
-			countdownSecs = 9000; // 2h 30m demo
-		}
 
-		var excDows     = getExcludedDows();
-		var holidayKeys = qsExpandHolidays( getHolidayEntries() );
 		var minDate     = qsAddBizDays( startMs, minDays, excDows, holidayKeys );
 		var maxDate     = qsAddBizDays( startMs, maxDays, excDows, holidayKeys );
 		var isRange  = minDate.getTime() !== maxDate.getTime();
@@ -538,26 +537,24 @@
 	}
 
 	/* ---------------------------------------------------------------- */
-	/* Weekend lock: "Exclude weekends" drives the Sat/Sun day toggles  */
+	/* Help tab: copy a shortcode to the clipboard                      */
 	/* ---------------------------------------------------------------- */
 
-	function initWeekendLock() {
-		var $weekend = $( 'input[name="quickshipd_exclude_weekends"]' );
-		var $days    = $( 'input.quickshipd-weekend-day' );
-		if ( ! $weekend.length || ! $days.length ) return;
+	function initHelpCopy() {
+		$( document ).on( 'click', '.qs-copy', function () {
+			var $btn = $( this );
+			var text = String( $btn.data( 'copy' ) || '' );
+			if ( ! text || ! navigator.clipboard ) return;
 
-		function sync() {
-			if ( $weekend.is( ':checked' ) ) {
-				// Weekend exclusion dictates Sat/Sun: force on and lock.
-				$days.prop( 'checked', true ).prop( 'disabled', true );
-			} else {
-				// Independent again: clear the forced weekend selection.
-				$days.prop( 'checked', false ).prop( 'disabled', false );
-			}
-		}
-
-		sync();
-		$weekend.on( 'change', sync );
+			navigator.clipboard.writeText( text ).then( function () {
+				var i18n = cfg.i18n || {};
+				if ( ! $btn.data( 'label' ) ) $btn.data( 'label', $btn.text() );
+				$btn.addClass( 'is-copied' ).text( i18n.copied || 'Copied' );
+				setTimeout( function () {
+					$btn.removeClass( 'is-copied' ).text( $btn.data( 'label' ) );
+				}, 1600 );
+			} );
+		} );
 	}
 
 	/* ---------------------------------------------------------------- */
@@ -596,8 +593,8 @@
 		initColorPickers();
 		initTabs();
 		initSubSettings();
-		initWeekendLock();
 		initHolidaysBuilder();
+		initHelpCopy();
 
 		$('#quickshipd-save-btn').on('click', saveSettings);
 		$('#quickshipd-restore-btn').on('click', restoreDefaults);

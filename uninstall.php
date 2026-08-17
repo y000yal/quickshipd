@@ -46,6 +46,7 @@ $quickshipd_options_to_delete = array(
 	'quickshipd_padding',
 	'quickshipd_db_repaired_v1',
 	'quickshipd_db_repaired_v2',
+	'quickshipd_migrated_weekends',
 );
 
 foreach ( $quickshipd_options_to_delete as $quickshipd_option_name ) {

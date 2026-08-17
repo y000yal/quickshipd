@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0.2
 WC tested up to: 10.9.4
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -73,11 +73,11 @@ Control where delivery dates appear:
 
 Maintain delivery visibility throughout the buying journey.
 
-= Smart Holidays & Non-Delivery Days =
+= Smart Holidays & Non-Dispatch Days =
 
 Handle real-world shipping constraints automatically:
 
-* Exclude weekends or custom non-delivery days
+* Pick the weekdays you do not dispatch on, weekends or any others
 * Add single dates or same-year date ranges with date pickers
 * Mark holidays to repeat every year
 * Ensure delivery dates remain accurate without manual updates
@@ -173,6 +173,10 @@ https://youtu.be/bjN8RIzE6SY
 
 No. QuickShipD is built only for WooCommerce. It declares WooCommerce as a required plugin (WordPress 6.5+). If WooCommerce is inactive, QuickShipD shows an admin notice with a link to install WooCommerce and does not load its storefront features.
 
+= Is there a shortcode? =
+
+Yes. Use `[quickshipd]` to place the estimate anywhere, including Elementor, Divi, and other page builders that build their own product layout and never fire the standard WooCommerce hooks. On a product page it picks up the current product automatically. Elsewhere, pass a product: `[quickshipd product_id="123"]`. Use `context="shop"` for the compact style with no countdown.
+
 = Does QuickShipD work with WooCommerce Blocks (block-based checkout)? =
 
 Yes — QuickShipD does not break the block-based checkout. Full block checkout integration (rendering the estimate inside the block) is on the roadmap for v1.1.
@@ -230,6 +234,16 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Changelog ==
 
+= 1.0.5   - 17/08/2026 =
+* Feature - `[quickshipd]` shortcode works anywhere, supports `product_id` and `context`.
+* Feature - Help tab added to settings.
+* Fix     - Orders on non-dispatch days now estimate from dispatch day.
+* Fix     - Styles/scripts load only where estimate displays.
+* Fix     - Icons keep size even if stylesheet missing.
+* Fix     - Countdown timer does not run on non-dispatch days, or after cutoff in preview.
+* Tweak   - "Exclude weekends" merged into "Non-dispatch days", with auto-migration.
+* Tweak   - Only calculator/display code loads on storefront.
+
 = 1.0.4   - 14/08/2026 =
 * Fix     - Delivery dates showed one day early on sites in UTC+ timezones.
 * Fix     - Uninstall now removes the style options and shipping method overrides it previously left behind.
@@ -260,6 +274,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 * WordPress.org–compliant: no tracking, no external requests, GPLv3 or later.
 
 == Upgrade Notice ==
+
+= 1.0.5 =
+Fixes delivery dates being a day early for orders placed on days you do not dispatch on. Adds the `[quickshipd]` shortcode for page builders, and fixes missing styles outside the standard WooCommerce pages. "Exclude weekends" is merged into "Non-dispatch days". Recommended for all users.
 
 = 1.0.4 =
 Fixes delivery dates showing one day early on sites in UTC+ timezones. Recommended for all users.

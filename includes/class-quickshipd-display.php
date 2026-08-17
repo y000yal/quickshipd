@@ -22,6 +22,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class QuickShipD_Display {
 
 	/**
+	 * Set when a render asks for the frontend assets before they are registered.
+	 *
+	 * @var bool
+	 */
+	private static $needs_assets = false;
+
+	/**
 	 * Register all frontend hooks.
 	 *
 	 * @return void
@@ -59,6 +66,9 @@ class QuickShipD_Display {
 		// Assets.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
+		// Shortcode: for page builders and themes that never fire our hooks.
+		add_shortcode( 'quickshipd', array( $this, 'shortcode' ) );
+
 		// AJAX: variation change.
 		add_action( 'wp_ajax_quickshipd_variation_date', array( $this, 'ajax_variation_date' ) );
 		add_action( 'wp_ajax_nopriv_quickshipd_variation_date', array( $this, 'ajax_variation_date' ) );
@@ -86,32 +96,79 @@ class QuickShipD_Display {
 	public function render_product(): void {
 		global $product;
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside build_html.
+		echo self::product_html( $product );
+	}
+
+	/**
+	 * Build the product-context estimate for a product, or '' if it should not
+	 * show. Shared by the product hook and the shortcode.
+	 *
+	 * @param  mixed  $product  WC_Product instance (anything else returns '').
+	 * @param  string $context  Display context passed to build_html().
+	 * @return string
+	 */
+	private static function product_html( $product, string $context = 'product' ): string {
 		if ( ! $product instanceof WC_Product ) {
-			return;
+			return '';
 		}
 
 		// Honour the per-product disable flag.
 		if ( 'yes' === get_post_meta( $product->get_id(), '_quickshipd_disabled', true ) ) {
-			return;
+			return '';
 		}
 
 		// Only show for in-stock products.
 		if ( ! $product->is_in_stock() ) {
-			return;
+			return '';
 		}
+
+		self::enqueue();
 
 		// For variable products show a placeholder that JS will populate when
 		// a variation is selected.
 		if ( $product->is_type( 'variable' ) ) {
-			echo '<div class="quickshipd-delivery quickshipd-variable" data-nonce="' . esc_attr( wp_create_nonce( 'quickshipd_variation' ) ) . '" data-ajax="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '" style="display:none;"></div>';
-			return;
+			return '<div class="quickshipd-delivery quickshipd-variable" data-nonce="' . esc_attr( wp_create_nonce( 'quickshipd_variation' ) ) . '" data-ajax="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '" style="display:none;"></div>';
 		}
 
 		$calc   = QuickShipD_Calculator::from_settings( array(), $product->get_id() );
 		$result = $calc->calculate();
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside build_html.
-		echo self::build_html( $result, $product->get_id(), 'product' );
+		return self::build_html( $result, $product->get_id(), $context );
+	}
+
+	/**
+	 * Shortcode handler for [quickshipd].
+	 *
+	 * Renders the same estimate as the product page, for page builders and
+	 * themes that never fire woocommerce_single_product_summary.
+	 *
+	 * @param  array|string $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function shortcode( $atts ): string {
+		$atts = shortcode_atts(
+			array(
+				'product_id' => 0,
+				'context'    => 'product',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'quickshipd'
+		);
+
+		$product_id = absint( $atts['product_id'] );
+		$product    = $product_id ? wc_get_product( $product_id ) : ( $GLOBALS['product'] ?? null );
+
+		// Page builders do not always prime the global, so fall back to the post.
+		if ( ! $product instanceof WC_Product ) {
+			$product = wc_get_product( get_the_ID() );
+		}
+
+		$context = in_array( $atts['context'], array( 'product', 'shop', 'cart', 'checkout' ), true )
+			? $atts['context']
+			: 'product';
+
+		return self::product_html( $product, $context );
 	}
 
 	// -----------------------------------------------------------------------
@@ -284,6 +341,9 @@ class QuickShipD_Display {
 			return '';
 		}
 
+		// Single choke point for every context, so markup never ships unstyled.
+		self::enqueue();
+
 		$opt = static function ( string $key, string $default ) use ( $s ): string {
 			if ( isset( $s[ $key ] ) && '' !== $s[ $key ] ) {
 				return (string) $s[ $key ];
@@ -375,32 +435,16 @@ class QuickShipD_Display {
 	 * @return void
 	 */
 	public function enqueue_assets(): void {
-		$show_product  = 'yes' === get_option( 'quickshipd_show_product', 'yes' );
-		$show_shop     = 'yes' === get_option( 'quickshipd_show_shop', 'no' );
-		$show_cart     = 'yes' === get_option( 'quickshipd_show_cart', 'yes' );
-		$show_checkout = 'yes' === get_option( 'quickshipd_show_checkout', 'yes' );
-
-		$should_load = (
-			( $show_product && is_product() ) ||
-			( $show_shop && ( is_shop() || is_product_category() || is_product_tag() ) ) ||
-			( $show_cart && is_cart() ) ||
-			( $show_checkout && is_checkout() )
-		);
-
-		if ( ! $should_load ) {
-			return;
-		}
-
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_style(
+		wp_register_style(
 			'quickshipd-frontend',
 			QUICKSHIPD_URL . 'assets/css/frontend' . $suffix . '.css',
 			array(),
 			QUICKSHIPD_VERSION
 		);
 
-		wp_enqueue_script(
+		wp_register_script(
 			'quickshipd-frontend',
 			QUICKSHIPD_URL . 'assets/js/frontend' . $suffix . '.js',
 			array(),
@@ -416,6 +460,47 @@ class QuickShipD_Display {
 				'nonce'   => wp_create_nonce( 'quickshipd_variation' ),
 			)
 		);
+
+		$show_product  = 'yes' === get_option( 'quickshipd_show_product', 'yes' );
+		$show_shop     = 'yes' === get_option( 'quickshipd_show_shop', 'no' );
+		$show_cart     = 'yes' === get_option( 'quickshipd_show_cart', 'yes' );
+		$show_checkout = 'yes' === get_option( 'quickshipd_show_checkout', 'yes' );
+
+		// Load up front on the pages we know about so the styles land in <head>.
+		// Anywhere else (page builders, product loops on a static home page) the
+		// render itself enqueues them and WordPress prints them in the footer.
+		$should_load = (
+			( $show_product && is_product() ) ||
+			( $show_shop && ( is_shop() || is_product_category() || is_product_tag() ) ) ||
+			( $show_cart && is_cart() ) ||
+			( $show_checkout && is_checkout() )
+		);
+
+		if ( $should_load || self::$needs_assets ) {
+			wp_enqueue_style( 'quickshipd-frontend' );
+			wp_enqueue_script( 'quickshipd-frontend' );
+		}
+	}
+
+	/**
+	 * Ask for the frontend assets from inside a render, so markup produced
+	 * outside the templates above still gets its stylesheet.
+	 *
+	 * Block themes render the template before wp_enqueue_scripts runs, so an
+	 * enqueue at that point would be dropped — flag it and let enqueue_assets()
+	 * pick it up. Classic themes render later, after registration, where an
+	 * immediate enqueue still prints in the footer.
+	 *
+	 * @return void
+	 */
+	private static function enqueue(): void {
+		if ( ! did_action( 'wp_enqueue_scripts' ) ) {
+			self::$needs_assets = true;
+			return;
+		}
+
+		wp_enqueue_style( 'quickshipd-frontend' );
+		wp_enqueue_script( 'quickshipd-frontend' );
 	}
 
 	// -----------------------------------------------------------------------
@@ -469,17 +554,10 @@ class QuickShipD_Display {
 		$cutoff_hour = isset( $_POST['quickshipd_cutoff_hour'] ) ? absint( wp_unslash( $_POST['quickshipd_cutoff_hour'] ) ) : (int) get_option( 'quickshipd_cutoff_hour', 14 );
 		$cutoff_min  = isset( $_POST['quickshipd_cutoff_min'] ) ? absint( wp_unslash( $_POST['quickshipd_cutoff_min'] ) ) : (int) get_option( 'quickshipd_cutoff_min', 0 );
 
-		$excl_weekends = isset( $_POST['quickshipd_exclude_weekends'] )
-			? sanitize_text_field( wp_unslash( $_POST['quickshipd_exclude_weekends'] ) )
-			: get_option( 'quickshipd_exclude_weekends', 'yes' );
-
 		$excluded_days = array();
 		if ( isset( $_POST['quickshipd_excluded_days'] ) && is_array( $_POST['quickshipd_excluded_days'] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Mapped via absint below.
 			$excluded_days = array_map( 'absint', wp_unslash( $_POST['quickshipd_excluded_days'] ) );
-		}
-		if ( 'yes' === $excl_weekends ) {
-			$excluded_days = array_unique( array_merge( $excluded_days, array( 0, 6 ) ) );
 		}
 
 		$holidays_raw = isset( $_POST['quickshipd_holidays'] )
@@ -594,7 +672,7 @@ class QuickShipD_Display {
 		}
 
 		if ( 'box' === $type ) {
-			return '<svg class="quickshipd-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
+			return '<svg class="quickshipd-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
 				. '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="1.5" fill="none"/>'
 				. '<polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" stroke-width="1.5" fill="none"/>'
 				. '<line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="1.5"/>'
@@ -602,7 +680,7 @@ class QuickShipD_Display {
 		}
 
 		// Default: truck.
-		return '<svg class="quickshipd-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
+		return '<svg class="quickshipd-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
 			. '<path d="M1 3h15v13H1V3z" stroke="currentColor" stroke-width="1.5" fill="none"/>'
 			. '<path d="M16 8h4l3 4v5h-7V8z" stroke="currentColor" stroke-width="1.5" fill="none"/>'
 			. '<circle cx="5.5" cy="18.5" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/>'

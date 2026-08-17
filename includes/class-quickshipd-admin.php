@@ -28,24 +28,6 @@ class QuickShipD_Admin {
 	const OPTION_GROUP = 'quickshipd_settings';
 
 	/**
-	 * Valid tabs.
-	 *
-	 * @var string[]
-	 */
-	private $tabs = array(
-		'delivery' => '',
-		'display'  => '',
-		'style'    => '',
-	);
-
-	/**
-	 * Current active tab.
-	 *
-	 * @var string
-	 */
-	private $current_tab = 'delivery';
-
-	/**
 	 * Register hooks.
 	 *
 	 * @return void
@@ -111,7 +93,7 @@ class QuickShipD_Admin {
 				'default' => 3,
 				'min'     => 0,
 				'max'     => 365,
-				'tooltip' => __( 'Minimum number of business days between order and delivery', 'quickshipd' ),
+				'tooltip' => __( 'Fastest delivery, counted in business days after dispatch. Use 0 for same-day delivery.', 'quickshipd' ),
 			)
 		);
 
@@ -126,7 +108,7 @@ class QuickShipD_Admin {
 				'default' => 5,
 				'min'     => 0,
 				'max'     => 365,
-				'tooltip' => __( 'Maximum delivery days. Set equal to minimum to show a single date instead of a range', 'quickshipd' ),
+				'tooltip' => __( 'Slowest delivery, counted in business days after dispatch. Set equal to the minimum to show a single date instead of a range.', 'quickshipd' ),
 			)
 		);
 
@@ -139,34 +121,21 @@ class QuickShipD_Admin {
 			array(
 				'id'      => 'quickshipd_cutoff_hour',
 				'default' => 14,
-				'tooltip' => __( 'Orders placed after this time count as next-day for delivery calculation', 'quickshipd' ),
+				'tooltip' => __( 'Orders placed after this time are dispatched on the next dispatch day.', 'quickshipd' ),
 			)
 		);
 
 		$this->register_section( 'quickshipd_delivery_schedule', __( 'Schedule', 'quickshipd' ), 'delivery' );
 
 		$this->register_field(
-			'quickshipd_exclude_weekends',
-			__( 'Exclude weekends', 'quickshipd' ),
-			'render_checkbox',
-			'delivery',
-			'quickshipd_delivery_schedule',
-			array(
-				'id'      => 'quickshipd_exclude_weekends',
-				'default' => 'yes',
-				'tooltip' => __( 'Skip Saturday and Sunday when counting delivery days', 'quickshipd' ),
-			)
-		);
-
-		$this->register_field(
 			'quickshipd_excluded_days',
-			__( 'Non-delivery days', 'quickshipd' ),
+			__( 'Non-dispatch days', 'quickshipd' ),
 			'render_weekdays',
 			'delivery',
 			'quickshipd_delivery_schedule',
 			array(
 				'id'      => 'quickshipd_excluded_days',
-				'tooltip' => __( 'Select specific days of the week when you do not dispatch orders', 'quickshipd' ),
+				'tooltip' => __( 'Days you do not send orders out. Orders placed on these days wait for the next dispatch day, and the days themselves are never counted toward the estimate.', 'quickshipd' ),
 			)
 		);
 
@@ -408,6 +377,10 @@ class QuickShipD_Admin {
 				'label' => __( 'Style', 'quickshipd' ),
 				'icon'  => '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
 			),
+			'help'     => array(
+				'label' => __( 'Help', 'quickshipd' ),
+				'icon'  => '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+			),
 		);
 		?>
 		<div class="wrap quickshipd-settings-wrap">
@@ -447,7 +420,13 @@ class QuickShipD_Admin {
 					<div class="quickshipd-settings-form">
 						<?php foreach ( $tabs as $tab_key => $unused ) : ?>
 							<div class="quickshipd-tab-pane <?php echo 'delivery' === $tab_key ? 'is-active' : ''; ?>" id="quickshipd-tab-<?php echo esc_attr( $tab_key ); ?>" data-tab="<?php echo esc_attr( $tab_key ); ?>">
-								<?php do_settings_sections( 'quickshipd-' . $tab_key ); ?>
+								<?php
+								if ( 'help' === $tab_key ) {
+									require QUICKSHIPD_PATH . 'includes/views/help-tab.php';
+								} else {
+									do_settings_sections( 'quickshipd-' . $tab_key );
+								}
+								?>
 							</div>
 						<?php endforeach; ?>
 					</div>
@@ -710,15 +689,13 @@ class QuickShipD_Admin {
 		$selected = (array) get_option( 'quickshipd_excluded_days', array() );
 		$selected = array_map( 'intval', $selected );
 
-		echo '<fieldset><legend class="screen-reader-text">' . esc_html__( 'Non-delivery days', 'quickshipd' ) . '</legend>';
+		echo '<fieldset><legend class="screen-reader-text">' . esc_html__( 'Non-dispatch days', 'quickshipd' ) . '</legend>';
 		foreach ( $days as $num => $label ) {
-			$is_weekend = ( 0 === $num || 6 === $num );
 			printf(
-				'<label class="quickshipd-toggle"><span class="quickshipd-toggle__switch"><input type="checkbox" class="quickshipd-toggle__input%4$s" id="quickshipd_excluded_day_%1$d" name="quickshipd_excluded_days[]" value="%1$d" %2$s><span class="quickshipd-toggle__track" aria-hidden="true"></span></span><span class="quickshipd-toggle__text">%3$s</span></label>',
+				'<label class="quickshipd-toggle"><span class="quickshipd-toggle__switch"><input type="checkbox" class="quickshipd-toggle__input" id="quickshipd_excluded_day_%1$d" name="quickshipd_excluded_days[]" value="%1$d" %2$s><span class="quickshipd-toggle__track" aria-hidden="true"></span></span><span class="quickshipd-toggle__text">%3$s</span></label>',
 				(int) $num,
 				checked( in_array( $num, $selected, true ), true, false ),
-				esc_html( $label ),
-				$is_weekend ? ' quickshipd-weekend-day' : ''
+				esc_html( $label )
 			);
 		}
 		echo '</fieldset>';
@@ -864,6 +841,7 @@ class QuickShipD_Admin {
 					'holidayNeedEnd'    => __( 'Choose an end date for the range.', 'quickshipd' ),
 					'holidayEndBefore'  => __( 'End date must be on or after the start date.', 'quickshipd' ),
 					'holidayCrossYear'  => __( 'Ranges must stay within the same calendar year.', 'quickshipd' ),
+					'copied'            => __( 'Copied', 'quickshipd' ),
 				),
 			)
 		);
@@ -900,12 +878,6 @@ class QuickShipD_Admin {
 				$cutoff_parts = explode( ':', $cutoff_raw );
 				update_option( 'quickshipd_cutoff_hour', $this->sanitize_cutoff_hour( $cutoff_parts[0] ?? '14' ) );
 				update_option( 'quickshipd_cutoff_min', $this->sanitize_cutoff_min( $cutoff_parts[1] ?? '0' ) );
-				update_option(
-					'quickshipd_exclude_weekends',
-					$this->sanitize_checkbox(
-						isset( $_POST['quickshipd_exclude_weekends'] ) ? sanitize_text_field( wp_unslash( $_POST['quickshipd_exclude_weekends'] ) ) : null
-					)
-				);
 				$excluded_raw = array();
 				if ( isset( $_POST['quickshipd_excluded_days'] ) && is_array( $_POST['quickshipd_excluded_days'] ) ) {
 					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each element sanitized via map_deep().

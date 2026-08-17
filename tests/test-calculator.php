@@ -129,6 +129,80 @@ class Test_QuickShipD_Calculator extends TestCase {
 	}
 
 	// -----------------------------------------------------------------------
+	// Dispatch-day roll-forward.
+	// -----------------------------------------------------------------------
+
+	/**
+	 * @test
+	 * Saturday order, weekends excluded, min=1 max=2. Monday is the dispatch
+	 * day, not a delivery day, so the estimate is Tuesday–Wednesday.
+	 */
+	public function test_order_on_excluded_day_counts_from_next_dispatch_day(): void {
+		$calc = $this->make( 1, 2, 14, 0, array( 0, 6 ) );
+		// Saturday 2024-01-06 09:00.
+		$now    = new \DateTime( '2024-01-06 09:00:00', new \DateTimeZone( 'UTC' ) );
+		$result = $calc->calculate( $now );
+
+		$this->assertSame( '2024-01-09', $result['min_date']->format( 'Y-m-d' ) ); // Tuesday.
+		$this->assertSame( '2024-01-10', $result['max_date']->format( 'Y-m-d' ) ); // Wednesday.
+	}
+
+	/**
+	 * @test
+	 * Friday before cutoff is unaffected: Friday still dispatches, so min=1
+	 * lands on Monday and max=2 on Tuesday.
+	 */
+	public function test_dispatch_day_order_is_unaffected(): void {
+		$calc = $this->make( 1, 2, 14, 0, array( 0, 6 ) );
+		// Friday 2024-01-05 09:00.
+		$now    = new \DateTime( '2024-01-05 09:00:00', new \DateTimeZone( 'UTC' ) );
+		$result = $calc->calculate( $now );
+
+		$this->assertSame( '2024-01-08', $result['min_date']->format( 'Y-m-d' ) ); // Monday.
+		$this->assertSame( '2024-01-09', $result['max_date']->format( 'Y-m-d' ) ); // Tuesday.
+	}
+
+	/**
+	 * @test
+	 * min=0 means same-day: delivered on the dispatch day itself.
+	 */
+	public function test_zero_days_is_the_dispatch_day(): void {
+		$calc = $this->make( 0, 0, 14, 0, array( 0, 6 ) );
+		// Saturday 2024-01-06 09:00 — dispatch rolls to Monday.
+		$now    = new \DateTime( '2024-01-06 09:00:00', new \DateTimeZone( 'UTC' ) );
+		$result = $calc->calculate( $now );
+
+		$this->assertSame( '2024-01-08', $result['max_date']->format( 'Y-m-d' ) ); // Monday.
+	}
+
+	/**
+	 * @test
+	 * The cutoff countdown is meaningless on a non-dispatch day.
+	 */
+	public function test_no_countdown_on_a_non_dispatch_day(): void {
+		$calc = $this->make( 1, 2, 14, 0, array( 0, 6 ) );
+		// Saturday 09:00 — well before the 14:00 cutoff, but nothing ships today.
+		$now    = new \DateTime( '2024-01-06 09:00:00', new \DateTimeZone( 'UTC' ) );
+		$result = $calc->calculate( $now );
+
+		$this->assertSame( 0, $result['countdown_seconds'] );
+	}
+
+	/**
+	 * @test
+	 * A holiday landing on the order date rolls dispatch forward too.
+	 */
+	public function test_holiday_on_order_date_rolls_dispatch_forward(): void {
+		$calc = $this->make( 1, 1, 14, 0, array(), array( '2024-01-08' ) ); // Monday is a holiday.
+		$now  = new \DateTime( '2024-01-08 09:00:00', new \DateTimeZone( 'UTC' ) );
+
+		$result = $calc->calculate( $now );
+		// Dispatch rolls to Tuesday, +1 day = Wednesday.
+		$this->assertSame( '2024-01-10', $result['min_date']->format( 'Y-m-d' ) );
+		$this->assertSame( 0, $result['countdown_seconds'] );
+	}
+
+	// -----------------------------------------------------------------------
 	// Holiday logic.
 	// -----------------------------------------------------------------------
 

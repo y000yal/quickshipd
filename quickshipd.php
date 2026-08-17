@@ -3,7 +3,7 @@
  * Plugin Name:       QuickShipD — Estimated Delivery Date for WooCommerce
  * Plugin URI:        https://quickshipd.com
  * Description:       Estimated delivery dates for WooCommerce on product, cart, and checkout — shipping-aware ranges, per-product overrides, optional countdown.
- * Version:           1.0.4
+ * Version:           1.0.5
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            y0000el
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Constants.
 // -------------------------------------------------------------------------
 
-define( 'QUICKSHIPD_VERSION', '1.0.4' );
+define( 'QUICKSHIPD_VERSION', '1.0.5' );
 define( 'QUICKSHIPD_PATH', plugin_dir_path( __FILE__ ) );
 define( 'QUICKSHIPD_URL', plugin_dir_url( __FILE__ ) );
 define( 'QUICKSHIPD_BASENAME', plugin_basename( __FILE__ ) );
@@ -67,8 +67,7 @@ register_activation_hook(
 			'quickshipd_max_days'         => 5,
 			'quickshipd_cutoff_hour'      => 14,
 			'quickshipd_cutoff_min'       => 0,
-			'quickshipd_exclude_weekends' => 'yes',
-			'quickshipd_excluded_days'    => array(),
+			'quickshipd_excluded_days'    => array( 0, 6 ),
 			'quickshipd_holidays'         => array(),
 			'quickshipd_show_product'     => 'yes',
 			'quickshipd_show_shop'        => 'no',
@@ -133,11 +132,39 @@ add_action(
 			update_option( 'quickshipd_db_repaired_v2', '1' );
 		}
 
+		// One-time migration: fold the removed "Exclude weekends" toggle into the
+		// non-dispatch days list, which now holds the whole schedule on its own.
+		if ( ! get_option( 'quickshipd_migrated_weekends' ) ) {
+			quickshipd_migrate_exclude_weekends();
+			update_option( 'quickshipd_migrated_weekends', '1' );
+		}
+
 		require_once QUICKSHIPD_PATH . 'includes/class-quickshipd-core.php';
 		QuickShipD_Core::get_instance();
 	},
 	20  // Priority 20 — after WooCommerce's own plugins_loaded at 10.
 );
+
+/**
+ * Merge the legacy quickshipd_exclude_weekends option into
+ * quickshipd_excluded_days, then drop it.
+ *
+ * @return void
+ */
+function quickshipd_migrate_exclude_weekends(): void {
+	$legacy = get_option( 'quickshipd_exclude_weekends', null );
+	if ( null === $legacy ) {
+		return;
+	}
+
+	if ( 'yes' === $legacy ) {
+		$excluded = (array) get_option( 'quickshipd_excluded_days', array() );
+		$excluded = array_values( array_unique( array_merge( array_map( 'absint', $excluded ), array( 0, 6 ) ) ) );
+		update_option( 'quickshipd_excluded_days', $excluded );
+	}
+
+	delete_option( 'quickshipd_exclude_weekends' );
+}
 
 /**
  * Restore any options that appear to have been wiped (set to 0, '', or 'no'
@@ -156,8 +183,7 @@ function quickshipd_repair_options( bool $force = false ): void {
 		'quickshipd_max_days'         => 5,
 		'quickshipd_cutoff_hour'      => 14,
 		'quickshipd_cutoff_min'       => 0,
-		'quickshipd_exclude_weekends' => 'yes',
-		'quickshipd_excluded_days'    => array(),
+		'quickshipd_excluded_days'    => array( 0, 6 ),
 		'quickshipd_holidays'         => array(),
 		'quickshipd_show_product'     => 'yes',
 		'quickshipd_show_shop'        => 'no',
@@ -203,7 +229,6 @@ function quickshipd_repair_options( bool $force = false ): void {
 		update_option( 'quickshipd_max_days', 5 );
 		update_option( 'quickshipd_cutoff_hour', 14 );
 		update_option( 'quickshipd_cutoff_min', 0 );
-		update_option( 'quickshipd_exclude_weekends', 'yes' );
 	}
 
 	// Detect wiped style options (text_color or text_single became '').
