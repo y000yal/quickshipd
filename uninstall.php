@@ -34,6 +34,8 @@ $quickshipd_options_to_delete = array(
 	'quickshipd_show_checkout',
 	'quickshipd_show_countdown',
 	'quickshipd_show_countdown_seconds',
+	'quickshipd_show_order_meta',
+	'quickshipd_email_exclude',
 	'quickshipd_text_single',
 	'quickshipd_text_range',
 	'quickshipd_text_countdown',

@@ -29,6 +29,18 @@ class QuickShipD_Display {
 	private static $needs_assets = false;
 
 	/**
+	 * Id of the WooCommerce email currently being rendered, if any.
+	 *
+	 * @var string
+	 */
+	private static $email_context = '';
+
+	/**
+	 * Order item meta key holding the estimate.
+	 */
+	const ORDER_META_KEY = 'Est. Delivery';
+
+	/**
 	 * Register all frontend hooks.
 	 *
 	 * @return void
@@ -61,7 +73,15 @@ class QuickShipD_Display {
 		// Persist the estimate on order line items so it appears in emails,
 		// the admin order screen, and My Account. Fires for both the classic
 		// and block checkout (the Store API delegates to WC_Checkout).
-		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'save_order_item_date' ), 10, 3 );
+		if ( 'yes' === get_option( 'quickshipd_show_order_meta', 'yes' ) ) {
+			add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'save_order_item_date' ), 10, 3 );
+		}
+
+		// Track which email is rendering, so the estimate can be dropped from
+		// the ones the store has switched off.
+		add_action( 'woocommerce_email_order_details', array( $this, 'open_email_context' ), 1, 4 );
+		add_action( 'woocommerce_email_order_details', array( $this, 'close_email_context' ), 999 );
+		add_filter( 'woocommerce_order_item_get_formatted_meta_data', array( $this, 'filter_email_item_meta' ), 10, 2 );
 
 		// Assets.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
@@ -262,6 +282,18 @@ class QuickShipD_Display {
 			return;
 		}
 
+		/**
+		 * Filter whether the estimate is stored on this order line at all.
+		 * Returning false keeps it out of emails, admin orders, and My Account.
+		 *
+		 * @param bool  $save   Whether to store the estimate.
+		 * @param mixed $item   Order line item being created.
+		 * @param array $values Cart item data.
+		 */
+		if ( ! apply_filters( 'quickshipd_save_order_item_date', true, $item, $values ) ) {
+			return;
+		}
+
 		if ( 'yes' === get_post_meta( $values['product_id'], '_quickshipd_disabled', true ) ) {
 			return;
 		}
@@ -276,6 +308,137 @@ class QuickShipD_Display {
 		}
 
 		$item->add_meta_data( __( 'Est. Delivery', 'quickshipd' ), self::format_date_label( $result ), true );
+	}
+
+	// -----------------------------------------------------------------------
+	// Email visibility.
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Order emails the estimate can appear in, as id => title.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function get_order_emails(): array {
+		if ( ! function_exists( 'WC' ) || ! WC()->mailer() ) {
+			return array();
+		}
+
+		// These carry no order item table, so the estimate could never show.
+		$skip = array( 'customer_new_account', 'customer_reset_password', 'admin_payment_gateway_enabled' );
+
+		$emails = array();
+		$titles = array();
+
+		foreach ( WC()->mailer()->get_emails() as $email ) {
+			if ( ! isset( $email->id ) || in_array( $email->id, $skip, true ) ) {
+				continue;
+			}
+
+			$id    = (string) $email->id;
+			$title = $email->get_title() ? $email->get_title() : $id;
+
+			$emails[ $id ] = $title;
+			$titles[]      = $title;
+		}
+
+		// WooCommerce ships an admin and a customer copy of some emails under
+		// the same title, so say who each one goes to when that happens.
+		$repeated = array_keys( array_filter( array_count_values( $titles ), static fn( $count ) => $count > 1 ) );
+
+		if ( empty( $repeated ) ) {
+			return $emails;
+		}
+
+		foreach ( WC()->mailer()->get_emails() as $email ) {
+			if ( ! isset( $email->id ) || ! isset( $emails[ (string) $email->id ] ) ) {
+				continue;
+			}
+
+			$id = (string) $email->id;
+			if ( ! in_array( $emails[ $id ], $repeated, true ) ) {
+				continue;
+			}
+
+			$emails[ $id ] = sprintf(
+				/* translators: 1: email name, 2: who receives it */
+				__( '%1$s (%2$s)', 'quickshipd' ),
+				$emails[ $id ],
+				$email->is_customer_email() ? __( 'to customer', 'quickshipd' ) : __( 'to admin', 'quickshipd' )
+			);
+		}
+
+		return $emails;
+	}
+
+	/**
+	 * Whether the estimate should render in a given email.
+	 *
+	 * @param  string $email_id WooCommerce email id.
+	 * @return bool
+	 */
+	public static function email_shows_estimate( string $email_id ): bool {
+		$excluded = (array) get_option( 'quickshipd_email_exclude', array() );
+		$show     = ! in_array( $email_id, array_map( 'strval', $excluded ), true );
+
+		/**
+		 * Filter whether the estimate renders in a specific WooCommerce email.
+		 *
+		 * @param bool   $show     Whether to show it.
+		 * @param string $email_id WooCommerce email id, e.g. customer_processing_order.
+		 */
+		return (bool) apply_filters( 'quickshipd_show_in_email', $show, $email_id );
+	}
+
+	/**
+	 * Remember which email is rendering.
+	 *
+	 * @param  mixed $order         Order object.
+	 * @param  bool  $sent_to_admin Whether the email goes to an admin.
+	 * @param  bool  $plain_text    Whether this is the plain text version.
+	 * @param  mixed $email         WC_Email instance.
+	 * @return void
+	 */
+	public function open_email_context( $order, $sent_to_admin = false, $plain_text = false, $email = null ): void {
+		self::$email_context = is_object( $email ) && isset( $email->id ) ? (string) $email->id : '';
+	}
+
+	/**
+	 * Forget the email being rendered.
+	 *
+	 * @return void
+	 */
+	public function close_email_context(): void {
+		self::$email_context = '';
+	}
+
+	/**
+	 * Strip the estimate from the item table of emails it is switched off for.
+	 *
+	 * @param  array $formatted Formatted meta objects.
+	 * @param  mixed $item      Order line item.
+	 * @return array
+	 */
+	public function filter_email_item_meta( $formatted, $item ) {
+		if ( '' === self::$email_context || ! is_array( $formatted ) ) {
+			return $formatted;
+		}
+
+		if ( self::email_shows_estimate( self::$email_context ) ) {
+			return $formatted;
+		}
+
+		// Match the current translation and the original, since the key stored
+		// on older orders is whatever the site language was at checkout.
+		$keys = array( __( 'Est. Delivery', 'quickshipd' ), self::ORDER_META_KEY );
+
+		foreach ( $formatted as $index => $meta ) {
+			if ( isset( $meta->key ) && in_array( $meta->key, $keys, true ) ) {
+				unset( $formatted[ $index ] );
+			}
+		}
+
+		return $formatted;
 	}
 
 	// -----------------------------------------------------------------------
@@ -647,8 +810,15 @@ class QuickShipD_Display {
 			return array();
 		}
 
-		$min = $method->get_option( 'quickshipd_min_days', '' );
-		$max = $method->get_option( 'quickshipd_max_days', '' );
+		// Read the saved instance settings directly. get_option() only routes to
+		// the instance values for keys present in get_instance_form_fields(),
+		// and our fields are only filtered in on admin screens.
+		$settings = method_exists( $method, 'get_instance_option_key' )
+			? (array) get_option( $method->get_instance_option_key(), array() )
+			: array();
+
+		$min = $settings['quickshipd_min_days'] ?? '';
+		$max = $settings['quickshipd_max_days'] ?? '';
 
 		$overrides = array();
 		if ( '' !== $min && is_numeric( $min ) ) {

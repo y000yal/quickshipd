@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0.2
 WC tested up to: 10.9.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -175,7 +175,13 @@ No. QuickShipD is built only for WooCommerce. It declares WooCommerce as a requi
 
 = Is there a shortcode? =
 
-Yes. Use `[quickshipd]` to place the estimate anywhere, including Elementor, Divi, and other page builders that build their own product layout and never fire the standard WooCommerce hooks. On a product page it picks up the current product automatically. Elsewhere, pass a product: `[quickshipd product_id="123"]`. Use `context="shop"` for the compact style with no countdown.
+Yes. `[quickshipd]` renders the estimate wherever you place it, which is the fix for Elementor, Divi, and other builders that never fire the standard WooCommerce hooks.
+
+Without `product_id` it needs a product in context, so it works on product pages, in a builder's product template, and inside product loops. On a normal page, post, or widget there is no product to read and it prints nothing, so pass one: `[quickshipd product_id="123"]`. Add `context="shop"` for the compact style with no countdown. The Help tab in the plugin settings has the full table.
+
+= Can I keep the estimate out of order emails? =
+
+Yes. Go to **WooCommerce → QuickShipD → Display → Orders & Emails**. Turn off "Save on the order" to store nothing at all, or leave it on and untick individual emails under "Show in these emails". Developers can also use the `quickshipd_save_order_item_date` and `quickshipd_show_in_email` filters.
 
 = Does QuickShipD work with WooCommerce Blocks (block-based checkout)? =
 
@@ -188,6 +194,14 @@ No. The delivery date is calculated in PHP on page load — no external API call
 = Can I show a single date instead of a range? =
 
 Yes — set Min delivery days and Max delivery days to the same value in **WooCommerce → QuickShipD → Delivery**. The plugin automatically switches to the single-date template ("Get it by {date}").
+
+= The estimate is printing on my packing slips or PDF invoices =
+
+PDF invoice and packing slip plugins read the order line meta directly, so unticking an email under **WooCommerce → QuickShipD → Display → Orders & Emails** will not remove it from a printed slip. Turn off **Save on the order** to stop storing it altogether, or use the `quickshipd_save_order_item_date` filter to skip it for specific orders. Existing orders keep whatever they were given at checkout.
+
+= How do I set up same-day delivery? =
+
+Set **Minimum delivery days** to 0 in **WooCommerce → QuickShipD → Delivery**, and set the **Order cutoff time** to your last dispatch run of the day. Delivery days are counted after dispatch, so 0 means the parcel arrives on the day it goes out. Use 0 and 0 for a single same-day date, or 0 and 1 if a late order might slip to tomorrow. Orders placed after the cutoff, or on a non-dispatch day, automatically move to the next dispatch day.
 
 = How do I add public holidays? =
 
@@ -234,6 +248,15 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Changelog ==
 
+= 1.0.6   - 19/08/2026 =
+* Fix     - Per shipping method delivery days ignored on the storefront. Introduced in 1.0.5.
+* Feature - Control whether the estimate is saved on orders, and which emails show it.
+* Feature - Filters `quickshipd_save_order_item_date` and `quickshipd_show_in_email`.
+* Feature - Help tab rebuilt, with a same-day delivery guide and more troubleshooting.
+* Tweak   - Non-dispatch days and email chooser are now multi-selects.
+* Fix     - Admin styles now load after WooCommerce's.
+* Fix     - Help tab Copy buttons failed silently on http admin.
+
 = 1.0.5   - 17/08/2026 =
 * Feature - `[quickshipd]` shortcode works anywhere, supports `product_id` and `context`.
 * Feature - Help tab added to settings.
@@ -274,6 +297,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 * WordPress.org–compliant: no tracking, no external requests, GPLv3 or later.
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+Fixes per shipping method delivery days being ignored on the storefront in 1.0.5. Adds control over the estimate on orders and emails. Update as soon as you can.
 
 = 1.0.5 =
 Fixes delivery dates being a day early for orders placed on days you do not dispatch on. Adds the `[quickshipd]` shortcode for page builders, and fixes missing styles outside the standard WooCommerce pages. "Exclude weekends" is merged into "Non-dispatch days". Recommended for all users.

@@ -337,6 +337,85 @@ tr.qs-sub-setting > th {
 	max-width: 360px;
 }
 
+/* WooCommerce's select2 fields, matched to the inputs above. Its own rule is
+   .select2-container--default .select2-selection--multiple { border: 1px solid #aaa },
+   so these carry an extra class to outrank it wherever they land. */
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple,
+.quickshipd-settings-wrap .select2-container--default .select2-selection--single,
+.quickshipd-settings-form .select2-container .select2-selection--multiple,
+.quickshipd-settings-form .select2-container .select2-selection--single {
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 7px;
+	/* Sized to sit level with the text and number inputs above. */
+	min-height: 31px;
+	padding: 1px 6px;
+	transition: border-color .15s, box-shadow .15s;
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-selection__rendered,
+.quickshipd-settings-form .select2-container .select2-selection__rendered {
+	padding: 0;
+	margin: 0;
+	line-height: 1.4;
+}
+
+/* The inline search field is what makes select2 taller than a plain input:
+   it ships at 27px with a 5px top margin. Match it to the token height. */
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-search--inline,
+.quickshipd-settings-form .select2-container .select2-search--inline {
+	margin: 1px 0;
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-search--inline .select2-search__field,
+.quickshipd-settings-form .select2-container .select2-search--inline .select2-search__field {
+	height: 20px;
+	min-height: 0;
+	padding: 0;
+	margin: 0;
+	line-height: 20px;
+	font-size: 13px;
+}
+
+.quickshipd-settings-form .select2-container--focus .select2-selection--multiple,
+.quickshipd-settings-form .select2-container--open .select2-selection--multiple {
+	border-color: var(--qs-green);
+	box-shadow: 0 0 0 3px rgba(22,163,74,.12);
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-selection__choice,
+.quickshipd-settings-form .select2-container .select2-selection__choice {
+	border-radius: 5px;
+	border-color: var(--qs-gray-200);
+	background: var(--qs-gray-50);
+	color: var(--qs-gray-900);
+	font-size: 12px;
+	line-height: 1.5;
+	padding: 0 7px;
+	margin: 1px 4px 1px 0;
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-selection__choice__remove,
+.quickshipd-settings-form .select2-container .select2-selection__choice__remove {
+	color: var(--qs-gray-500);
+	margin-right: 5px;
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+	color: var(--qs-gray-900);
+}
+
+/* The dropdown is appended to the body, and this stylesheet only loads on the
+   QuickShipD screen, so an unscoped rule is safe here. */
+.select2-dropdown {
+	border-color: var(--qs-gray-200);
+	border-radius: 7px;
+	overflow: hidden;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+	background: var(--qs-green);
+}
+
 .quickshipd-settings-form textarea.large-text {
 	width: 100%;
 	max-width: 420px;
@@ -899,7 +978,6 @@ tr.qs-sub-setting > th {
 /* ---------------------------------------------------------------- */
 
 .qs-help {
-	max-width: 880px;
 	color: var(--qs-gray-700);
 	font-size: 14px;
 	line-height: 1.65;
@@ -953,32 +1031,62 @@ tr.qs-sub-setting > th {
 	color: var(--qs-gray-500);
 }
 
-.qs-help-nav {
+/* Sidebar + panel ---------------------------------------------------- */
+
+.qs-help-body {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
-	margin-top: 16px;
+	align-items: flex-start;
+	gap: 24px;
 }
 
-.qs-help-nav__pill {
-	padding: 5px 12px;
-	border-radius: 999px;
-	background: var(--qs-gray-50);
-	border: 1px solid var(--qs-gray-200);
-	color: var(--qs-gray-700);
+.qs-help-side {
+	flex: 0 0 200px;
+	position: sticky;
+	top: 32px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.qs-help-side__item {
+	padding: 8px 12px;
+	border-radius: 7px;
+	border-left: 2px solid transparent;
+	color: var(--qs-gray-500);
 	font-size: 13px;
 	font-weight: 500;
 	text-decoration: none;
-	transition: background .15s ease, border-color .15s ease, color .15s ease;
+	transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 
-.qs-help-nav__pill:hover,
-.qs-help-nav__pill:focus {
-	background: var(--qs-green);
-	border-color: var(--qs-green);
-	color: #fff;
+.qs-help-side__item:hover,
+.qs-help-side__item:focus {
+	background: var(--qs-gray-50);
+	color: var(--qs-gray-900);
 	box-shadow: none;
 	outline: none;
+}
+
+.qs-help-side__item.is-active {
+	background: var(--qs-green-light);
+	border-left-color: var(--qs-green);
+	color: var(--qs-green-dark);
+	font-weight: 600;
+}
+
+.qs-help-content {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* Without JS every panel stays visible, so nothing is ever unreachable. */
+.qs-help.is-tabbed .qs-help-panel {
+	display: none;
+}
+
+.qs-help.is-tabbed .qs-help-panel.is-active {
+	display: block;
+	margin-bottom: 0;
 }
 
 /* Cards ------------------------------------------------------------- */
@@ -1147,6 +1255,15 @@ tr.qs-sub-setting > th {
 	border-radius: 0 8px 8px 0;
 }
 
+.qs-callout--warn {
+	background: #fffbeb;
+	border-left-color: #d97706;
+}
+
+.qs-callout--warn .qs-callout__label {
+	color: #b45309;
+}
+
 .qs-callout__label {
 	display: block;
 	margin-bottom: 5px;
@@ -1232,14 +1349,15 @@ tr.qs-sub-setting > th {
 	gap: 12px;
 	margin: 0 0 18px;
 	padding: 12px 14px;
-	background: var(--qs-gray-900);
+	background: var(--qs-gray-50);
+	border: 1px solid var(--qs-gray-200);
 	border-radius: 8px;
 }
 
 .qs-code code {
 	background: none;
 	padding: 0;
-	color: #a7f3d0;
+	color: var(--qs-green-dark);
 	font-size: 14px;
 	font-family: Menlo, Consolas, monospace;
 }
@@ -1254,25 +1372,58 @@ tr.qs-sub-setting > th {
 }
 
 .qs-copy {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	flex-shrink: 0;
-	padding: 4px 11px;
-	border: 1px solid rgba(255, 255, 255, .22);
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: 1px solid var(--qs-gray-200);
 	border-radius: 5px;
-	background: transparent;
-	color: #e2e8f0;
-	font-size: 12px;
+	background: #fff;
+	color: var(--qs-gray-500);
 	cursor: pointer;
 	transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 
+.qs-copy svg {
+	width: 14px;
+	height: 14px;
+}
+
+.qs-copy__done {
+	display: none;
+}
+
 .qs-copy:hover {
-	background: rgba(255, 255, 255, .12);
-	color: #fff;
+	border-color: var(--qs-green);
+	color: var(--qs-green-dark);
+}
+
+.qs-copy:focus-visible {
+	outline: 2px solid var(--qs-green);
+	outline-offset: 1px;
 }
 
 .qs-copy.is-copied {
-	background: var(--qs-green);
-	border-color: var(--qs-green);
+	background-color: #16a34a;
+	border-color: #16a34a;
+	color: #fff;
+}
+
+.qs-copy.is-copied .qs-copy__idle {
+	display: none;
+}
+
+.qs-copy.is-copied .qs-copy__done {
+	display: block;
+}
+
+/* Clipboard refused: the snippet is selected instead, so flag it differently. */
+.qs-copy.is-manual {
+	background: #d97706;
+	border-color: #d97706;
 	color: #fff;
 }
 
@@ -1289,12 +1440,19 @@ tr.qs-sub-setting > th {
 
 .qs-table {
 	width: 100%;
+	max-width: 100%;
 	margin: 0;
+	/* Fixed, so no single long cell can stretch the table past its card. */
+	table-layout: fixed;
 	border-collapse: separate;
 	border-spacing: 0;
 	border: 1px solid var(--qs-gray-200);
 	border-radius: 8px;
 	overflow: hidden;
+}
+
+.qs-table code {
+	word-break: break-word;
 }
 
 .qs-table th,
@@ -1316,9 +1474,39 @@ tr.qs-sub-setting > th {
 	border-bottom: 0;
 }
 
-.qs-table td:first-child,
-.qs-table td:nth-child(2) {
-	white-space: nowrap;
+.qs-table--shortcodes th:nth-child(1),
+.qs-table--shortcodes td:nth-child(1) {
+	width: 30%;
+}
+
+.qs-table--shortcodes th:nth-child(2),
+.qs-table--shortcodes td:nth-child(2) {
+	width: 42%;
+}
+
+.qs-table--shortcodes th:nth-child(3),
+.qs-table--shortcodes td:nth-child(3) {
+	width: 28%;
+}
+
+.qs-table--attrs th:nth-child(1),
+.qs-table--attrs td:nth-child(1) {
+	width: 24%;
+}
+
+.qs-table--attrs th:nth-child(2),
+.qs-table--attrs td:nth-child(2) {
+	width: 18%;
+}
+
+.qs-table--filters th:nth-child(1),
+.qs-table--filters td:nth-child(1) {
+	width: 34%;
+}
+
+.qs-table .qs-code {
+	flex-wrap: wrap;
+	gap: 8px;
 }
 
 .qs-table code,
@@ -1418,8 +1606,11 @@ tr.qs-sub-setting > th {
 	transform: rotate(45deg);
 }
 
-.qs-faq p {
-	margin: 0 0 14px;
+/* The :last-child reset above would otherwise pin the answer to the divider,
+   leaving 1px below it against 13px above the next question. */
+.qs-faq p,
+.qs-faq p:last-child {
+	margin: 0 0 13px;
 	padding-left: 18px;
 	color: var(--qs-gray-500);
 }
@@ -1457,6 +1648,25 @@ tr.qs-sub-setting > th {
 /* Responsive -------------------------------------------------------- */
 
 @media screen and (max-width: 782px) {
+	.qs-help-body {
+		flex-direction: column;
+	}
+
+	.qs-help-side {
+		position: static;
+		flex: 1 1 auto;
+		width: 100%;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.qs-help-side__item {
+		border-left: 0;
+		border: 1px solid var(--qs-gray-200);
+		border-radius: 999px;
+	}
+
 	.qs-card {
 		padding: 18px;
 	}

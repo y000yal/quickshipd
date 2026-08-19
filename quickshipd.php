@@ -3,7 +3,7 @@
  * Plugin Name:       QuickShipD — Estimated Delivery Date for WooCommerce
  * Plugin URI:        https://quickshipd.com
  * Description:       Estimated delivery dates for WooCommerce on product, cart, and checkout — shipping-aware ranges, per-product overrides, optional countdown.
- * Version:           1.0.5
+ * Version:           1.0.6
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            y0000el
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Constants.
 // -------------------------------------------------------------------------
 
-define( 'QUICKSHIPD_VERSION', '1.0.5' );
+define( 'QUICKSHIPD_VERSION', '1.0.6' );
 define( 'QUICKSHIPD_PATH', plugin_dir_path( __FILE__ ) );
 define( 'QUICKSHIPD_URL', plugin_dir_url( __FILE__ ) );
 define( 'QUICKSHIPD_BASENAME', plugin_basename( __FILE__ ) );
@@ -74,6 +74,8 @@ register_activation_hook(
 			'quickshipd_show_cart'        => 'yes',
 			'quickshipd_show_checkout'    => 'yes',
 			'quickshipd_show_countdown'   => 'yes',
+			'quickshipd_show_order_meta'  => 'yes',
+			'quickshipd_email_exclude'    => array(),
 			'quickshipd_text_single'      => 'Get it by {date}',
 			'quickshipd_text_range'       => 'Get it {start} – {end}',
 			'quickshipd_text_countdown'   => 'Order within {countdown} to get it by {date}',
@@ -190,6 +192,8 @@ function quickshipd_repair_options( bool $force = false ): void {
 		'quickshipd_show_cart'        => 'yes',
 		'quickshipd_show_checkout'    => 'yes',
 		'quickshipd_show_countdown'         => 'yes',
+		'quickshipd_show_order_meta'        => 'yes',
+		'quickshipd_email_exclude'          => array(),
 		'quickshipd_show_countdown_seconds' => 'yes',
 		'quickshipd_text_single'            => 'Get it by {date}',
 		'quickshipd_text_range'       => 'Get it {start} – {end}',

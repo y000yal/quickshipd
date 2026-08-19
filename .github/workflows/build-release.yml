@@ -6,6 +6,8 @@ jobs:
   release:
     name: Build and Deploy
     runs-on: ubuntu-latest
+    # Without this a hung deploy sits on the runner for the 6 hour default.
+    timeout-minutes: 20
     permissions:
       contents: write
     steps:
@@ -38,6 +40,18 @@ jobs:
         run: |
           pnpm run dist
           echo "zip_path=release/quickshipd.zip" >> $GITHUB_OUTPUT
+
+      # The deploy action apt-installs subversion when it cannot find svn, and
+      # the runner's default azure mirror is often unreachable, which is what
+      # makes that take minutes. Point apt at the main archive and install it
+      # here, so the action finds svn already present and skips its own apt run.
+      - name: Install subversion
+        run: |
+          sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' \
+            /etc/apt/sources.list /etc/apt/sources.list.d/*.sources /etc/apt/sources.list.d/*.list 2>/dev/null || true
+          sudo apt-get update -qq -o Acquire::Retries=3
+          sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 subversion
+          svn --version --quiet
 
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@stable

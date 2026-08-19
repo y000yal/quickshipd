@@ -3,8 +3,8 @@
  * Unit tests for QuickShipD_Calculator.
  *
  * Run from the plugin root with:
- *   composer require --dev phpunit/phpunit
- *   vendor/bin/phpunit tests/
+ *   composer install
+ *   vendor/bin/phpunit -c phpunit-unit.xml.dist
  *
  * These tests exercise pure calculation logic only — no WordPress functions
  * are called (wp_date, get_option, etc.) so no WordPress bootstrap is
@@ -15,40 +15,6 @@
  */
 
 use PHPUnit\Framework\TestCase;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/' );
-}
-
-// Stub wp_timezone() if running outside WordPress.
-if ( ! function_exists( 'wp_timezone' ) ) {
-	function wp_timezone(): \DateTimeZone {
-		return new \DateTimeZone( 'UTC' );
-	}
-}
-
-// Stub wp_date() if running outside WordPress.
-if ( ! function_exists( 'wp_date' ) ) {
-	function wp_date( string $format, ?int $timestamp = null ): string {
-		return $timestamp !== null ? date( $format, $timestamp ) : date( $format );
-	}
-}
-
-// Stub get_option() if running outside WordPress.
-if ( ! function_exists( 'get_option' ) ) {
-	function get_option( string $option, $default = false ) {
-		return $default;
-	}
-}
-
-// Stub __() if running outside WordPress.
-if ( ! function_exists( '__' ) ) {
-	function __( string $text, string $domain = 'default' ): string {
-		return $text;
-	}
-}
-
-require_once dirname( __DIR__ ) . '/includes/class-quickshipd-calculator.php';
 
 /**
  * Class Test_QuickShipD_Calculator

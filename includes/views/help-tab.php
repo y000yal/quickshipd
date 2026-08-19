@@ -12,13 +12,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $qs_help_nav = array(
-	'qs-help-start'     => __( 'Quick start', 'quickshipd' ),
-	'qs-help-dates'     => __( 'How dates work', 'quickshipd' ),
-	'qs-help-where'     => __( 'Where it shows', 'quickshipd' ),
-	'qs-help-shortcode' => __( 'Shortcode', 'quickshipd' ),
-	'qs-help-overrides' => __( 'Overrides', 'quickshipd' ),
-	'qs-help-faq'       => __( 'Troubleshooting', 'quickshipd' ),
+	'qs-help-start'        => __( 'Quick start', 'quickshipd' ),
+	'qs-help-dates'        => __( 'How dates work', 'quickshipd' ),
+	'qs-help-sameday'      => __( 'Same-day delivery', 'quickshipd' ),
+	'qs-help-where'        => __( 'Where it shows', 'quickshipd' ),
+	'qs-help-shortcode'    => __( 'Shortcode', 'quickshipd' ),
+	'qs-help-placeholders' => __( 'Text placeholders', 'quickshipd' ),
+	'qs-help-overrides'    => __( 'Overrides', 'quickshipd' ),
+	'qs-help-faq'          => __( 'Troubleshooting', 'quickshipd' ),
+	'qs-help-filters'      => __( 'For developers', 'quickshipd' ),
+	'qs-help-notes'        => __( 'Good to know', 'quickshipd' ),
 );
+
+/**
+ * Print a copy-to-clipboard button for a snippet.
+ *
+ * @param string $qs_snippet Text placed on the clipboard.
+ */
+$qs_copy_button = static function ( string $qs_snippet ): void {
+	printf(
+		'<button type="button" class="qs-copy" data-copy="%1$s" aria-label="%2$s" title="%2$s">'
+		. '<svg class="qs-copy__idle" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+		. '<svg class="qs-copy__done" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+		. '</button>',
+		esc_attr( $qs_snippet ),
+		esc_attr__( 'Copy to clipboard', 'quickshipd' )
+	);
+};
 ?>
 
 <div class="qs-help">
@@ -31,15 +51,20 @@ $qs_help_nav = array(
 				<?php esc_html_e( 'QuickShipD works out when an order will arrive and shows it to the customer before they buy. Nothing here needs installing, it is all live already.', 'quickshipd' ); ?>
 			</p>
 		</div>
-		<nav class="qs-help-nav" aria-label="<?php esc_attr_e( 'Help sections', 'quickshipd' ); ?>">
-			<?php foreach ( $qs_help_nav as $qs_anchor => $qs_label ) : ?>
-				<a class="qs-help-nav__pill" href="#<?php echo esc_attr( $qs_anchor ); ?>"><?php echo esc_html( $qs_label ); ?></a>
-			<?php endforeach; ?>
-		</nav>
 	</div>
 
+	<div class="qs-help-body">
+
+		<nav class="qs-help-side" aria-label="<?php esc_attr_e( 'Help sections', 'quickshipd' ); ?>">
+			<?php foreach ( $qs_help_nav as $qs_anchor => $qs_label ) : ?>
+				<a class="qs-help-side__item" href="#<?php echo esc_attr( $qs_anchor ); ?>" data-help-target="<?php echo esc_attr( $qs_anchor ); ?>"><?php echo esc_html( $qs_label ); ?></a>
+			<?php endforeach; ?>
+		</nav>
+
+		<div class="qs-help-content">
+
 	<!-- Quick start -->
-	<section class="qs-card" id="qs-help-start">
+	<section class="qs-card qs-help-panel" id="qs-help-start">
 		<h3 class="qs-card__title">
 			<span class="qs-card__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -72,7 +97,7 @@ $qs_help_nav = array(
 	</section>
 
 	<!-- How dates are worked out -->
-	<section class="qs-card" id="qs-help-dates">
+	<section class="qs-card qs-help-panel" id="qs-help-dates">
 		<h3 class="qs-card__title">
 			<span class="qs-card__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -108,8 +133,77 @@ $qs_help_nav = array(
 		<p class="qs-note"><?php esc_html_e( 'The countdown is hidden on days you do not dispatch, because beating the cutoff on those days cannot change the date.', 'quickshipd' ); ?></p>
 	</section>
 
+	<!-- Same-day dispatch and delivery -->
+	<section class="qs-card qs-help-panel" id="qs-help-sameday">
+		<h3 class="qs-card__title">
+			<span class="qs-card__icon" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</span>
+			<?php esc_html_e( 'Same-day dispatch and delivery', 'quickshipd' ); ?>
+		</h3>
+
+		<p class="qs-card__lead"><?php esc_html_e( 'Delivery days are counted after dispatch, so 0 days means the parcel arrives on the day it goes out. Set the minimum to 0 and the cutoff becomes your same-day deadline.', 'quickshipd' ); ?></p>
+
+		<h4 class="qs-subhead"><?php esc_html_e( 'Pick your numbers', 'quickshipd' ); ?></h4>
+
+		<table class="qs-table qs-table--attrs">
+			<thead>
+				<tr>
+					<th scope="col"><?php esc_html_e( 'What you promise', 'quickshipd' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Minimum', 'quickshipd' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Maximum', 'quickshipd' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><?php esc_html_e( 'Always same day', 'quickshipd' ); ?></td>
+					<td><code>0</code></td>
+					<td><code>0</code></td>
+				</tr>
+				<tr>
+					<td><?php esc_html_e( 'Same day, sometimes next day', 'quickshipd' ); ?></td>
+					<td><code>0</code></td>
+					<td><code>1</code></td>
+				</tr>
+				<tr>
+					<td><?php esc_html_e( 'Next day at the earliest', 'quickshipd' ); ?></td>
+					<td><code>1</code></td>
+					<td><code>2</code></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h4 class="qs-subhead"><?php esc_html_e( 'Set it up', 'quickshipd' ); ?></h4>
+
+		<ol class="qs-steps">
+			<li>
+				<h4><?php esc_html_e( 'Set minimum delivery days to 0', 'quickshipd' ); ?></h4>
+				<p><?php esc_html_e( 'On the Delivery tab. Set the maximum to 0 as well for a single date, or to 1 if a late order might slip to tomorrow.', 'quickshipd' ); ?></p>
+			</li>
+			<li>
+				<h4><?php esc_html_e( 'Set the cutoff to your last dispatch run', 'quickshipd' ); ?></h4>
+				<p><?php esc_html_e( 'This is the moment same-day stops being possible. If your courier collects at 11am, set 11:00. Orders after it automatically move to the next dispatch day, so you never promise a delivery you cannot make.', 'quickshipd' ); ?></p>
+			</li>
+			<li>
+				<h4><?php esc_html_e( 'Match the non-dispatch days to your opening days', 'quickshipd' ); ?></h4>
+				<p><?php esc_html_e( 'Delivering seven days a week? Untick every day. Closed at weekends? Leave Saturday and Sunday ticked, and weekend orders will quote the next working day instead.', 'quickshipd' ); ?></p>
+			</li>
+			<li>
+				<h4><?php esc_html_e( 'Say so in the wording', 'quickshipd' ); ?></h4>
+				<p><?php esc_html_e( 'On the Style tab, a countdown line such as "Order within {countdown} for delivery today" turns the cutoff into a reason to buy now. Keep the countdown switched on for this.', 'quickshipd' ); ?></p>
+			</li>
+		</ol>
+
+		<div class="qs-callout">
+			<span class="qs-callout__label"><?php esc_html_e( 'Worked example', 'quickshipd' ); ?></span>
+			<p><?php esc_html_e( 'Minimum 0, maximum 0, cutoff 11:00, closed at weekends. An order at 10:30 on Monday shows Monday, with 30 minutes left on the countdown. At 11:30 the same order shows Tuesday and the countdown disappears. An order on Saturday shows Monday, because nothing is dispatched at the weekend.', 'quickshipd' ); ?></p>
+		</div>
+
+		<p class="qs-note"><?php esc_html_e( 'Same-day can also be set for one product only, or for one shipping method such as local delivery, using the overrides described in the Overrides section.', 'quickshipd' ); ?></p>
+	</section>
+
 	<!-- Where it shows -->
-	<section class="qs-card" id="qs-help-where">
+	<section class="qs-card qs-help-panel" id="qs-help-where">
 		<h3 class="qs-card__title">
 			<span class="qs-card__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -136,13 +230,13 @@ $qs_help_nav = array(
 			</div>
 			<div class="qs-tile">
 				<h4><?php esc_html_e( 'Emails and orders', 'quickshipd' ); ?></h4>
-				<p><?php esc_html_e( 'Saved onto the order line at checkout, so it stays fixed on the order record in emails, admin orders, and My Account.', 'quickshipd' ); ?></p>
+				<p><?php esc_html_e( 'Saved onto the order line at checkout, so it stays fixed on the order record. Display > Orders & Emails controls whether it is saved at all, and which emails it appears in.', 'quickshipd' ); ?></p>
 			</div>
 		</div>
 	</section>
 
 	<!-- Shortcode -->
-	<section class="qs-card" id="qs-help-shortcode">
+	<section class="qs-card qs-help-panel" id="qs-help-shortcode">
 		<h3 class="qs-card__title">
 			<span class="qs-card__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -156,12 +250,12 @@ $qs_help_nav = array(
 
 		<div class="qs-code">
 			<code>[quickshipd]</code>
-			<button type="button" class="qs-copy" data-copy="[quickshipd]"><?php esc_html_e( 'Copy', 'quickshipd' ); ?></button>
+			<?php $qs_copy_button( '[quickshipd]' ); ?>
 		</div>
 
 		<h4 class="qs-subhead"><?php esc_html_e( 'Attributes', 'quickshipd' ); ?></h4>
 
-		<table class="qs-table">
+		<table class="qs-table qs-table--attrs">
 			<thead>
 				<tr>
 					<th scope="col"><?php esc_html_e( 'Attribute', 'quickshipd' ); ?></th>
@@ -183,37 +277,70 @@ $qs_help_nav = array(
 			</tbody>
 		</table>
 
-		<h4 class="qs-subhead"><?php esc_html_e( 'Examples', 'quickshipd' ); ?></h4>
+		<h4 class="qs-subhead"><?php esc_html_e( 'Where each one works', 'quickshipd' ); ?></h4>
 
-		<ul class="qs-examples">
-			<li>
-				<div class="qs-code qs-code--sm">
-					<code>[quickshipd]</code>
-					<button type="button" class="qs-copy" data-copy="[quickshipd]"><?php esc_html_e( 'Copy', 'quickshipd' ); ?></button>
-				</div>
-				<p><?php esc_html_e( 'On a product page or in an Elementor product template. Picks up the product on its own.', 'quickshipd' ); ?></p>
-			</li>
-			<li>
-				<div class="qs-code qs-code--sm">
-					<code>[quickshipd product_id="123"]</code>
-					<button type="button" class="qs-copy" data-copy='[quickshipd product_id="123"]'><?php esc_html_e( 'Copy', 'quickshipd' ); ?></button>
-				</div>
-				<p><?php esc_html_e( 'On a landing page, a widget, or any page that is not a product.', 'quickshipd' ); ?></p>
-			</li>
-			<li>
-				<div class="qs-code qs-code--sm">
-					<code>[quickshipd context="shop"]</code>
-					<button type="button" class="qs-copy" data-copy='[quickshipd context="shop"]'><?php esc_html_e( 'Copy', 'quickshipd' ); ?></button>
-				</div>
-				<p><?php esc_html_e( 'Compact style with no countdown, for tight layouts and product grids.', 'quickshipd' ); ?></p>
-			</li>
-		</ul>
+		<div class="qs-callout qs-callout--warn">
+			<span class="qs-callout__label"><?php esc_html_e( 'Read this first', 'quickshipd' ); ?></span>
+			<p><?php esc_html_e( 'Without product_id, the shortcode needs a product in context. It works on a product page, in an Elementor or Divi product template, and inside a product loop. On a normal page, a post, a footer, or a text widget there is no product to read, so it prints nothing. Pass product_id there.', 'quickshipd' ); ?></p>
+		</div>
 
-		<p class="qs-note"><?php esc_html_e( 'The shortcode respects every setting on the other tabs, including per-product overrides. It outputs nothing for a product that is out of stock or has QuickShipD switched off.', 'quickshipd' ); ?></p>
+		<table class="qs-table qs-table--shortcodes">
+			<thead>
+				<tr>
+					<th scope="col"><?php esc_html_e( 'Shortcode', 'quickshipd' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Works here', 'quickshipd' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Prints nothing here', 'quickshipd' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<div class="qs-code qs-code--sm">
+							<code>[quickshipd]</code>
+							<?php $qs_copy_button( '[quickshipd]' ); ?>
+						</div>
+					</td>
+					<td><?php esc_html_e( 'Single product pages, page builder product templates, and product loops such as the shop, a category, or a products block.', 'quickshipd' ); ?></td>
+					<td><?php esc_html_e( 'Normal pages and posts, widgets, headers and footers.', 'quickshipd' ); ?></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="qs-code qs-code--sm">
+							<code>[quickshipd context="shop"]</code>
+							<?php $qs_copy_button( '[quickshipd context="shop"]' ); ?>
+						</div>
+					</td>
+					<td><?php esc_html_e( 'Same places as above. Only the styling changes: compact, and no countdown.', 'quickshipd' ); ?></td>
+					<td><?php esc_html_e( 'Same as above. context does not supply a product, so add product_id off a product page.', 'quickshipd' ); ?></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="qs-code qs-code--sm">
+							<code>[quickshipd product_id="123"]</code>
+							<?php $qs_copy_button( '[quickshipd product_id="123"]' ); ?>
+						</div>
+					</td>
+					<td><?php esc_html_e( 'Anywhere at all, including normal pages, posts, and widgets. Replace 123 with the product id.', 'quickshipd' ); ?></td>
+					<td><?php esc_html_e( 'Only if that id is not a product, or the product is out of stock.', 'quickshipd' ); ?></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="qs-code qs-code--sm">
+							<code>[quickshipd product_id="123" context="shop"]</code>
+							<?php $qs_copy_button( '[quickshipd product_id="123" context="shop"]' ); ?>
+						</div>
+					</td>
+					<td><?php esc_html_e( 'Anywhere, in the compact style. Useful in sidebars and tight layouts.', 'quickshipd' ); ?></td>
+					<td><?php esc_html_e( 'Same as the row above.', 'quickshipd' ); ?></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<p class="qs-note"><?php esc_html_e( 'A product id is the number in the URL when you edit a product, for example post=123. The shortcode respects every setting on the other tabs, including per-product overrides, and prints nothing for a product that is out of stock or has QuickShipD switched off.', 'quickshipd' ); ?></p>
 	</section>
 
 	<!-- Placeholders -->
-	<section class="qs-card" id="qs-help-placeholders">
+	<section class="qs-card qs-help-panel" id="qs-help-placeholders">
 		<h3 class="qs-card__title">
 			<span class="qs-card__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none"><path d="M4 7V5h16v2M9 20h6M12 5v15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -244,7 +371,7 @@ $qs_help_nav = array(
 	</section>
 
 	<!-- Overrides -->
-	<section class="qs-card" id="qs-help-overrides">
+	<section class="qs-card qs-help-panel" id="qs-help-overrides">
 		<h3 class="qs-card__title">
 			<span class="qs-card__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -267,7 +394,7 @@ $qs_help_nav = array(
 	</section>
 
 	<!-- Troubleshooting -->
-	<section class="qs-card" id="qs-help-faq">
+	<section class="qs-card qs-help-panel" id="qs-help-faq">
 		<h3 class="qs-card__title">
 			<span class="qs-card__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -294,10 +421,60 @@ $qs_help_nav = array(
 			<summary><?php esc_html_e( 'Changing shipping method did not change the date', 'quickshipd' ); ?></summary>
 			<p><?php esc_html_e( 'Method overrides only apply at cart and checkout, where a method has actually been chosen. Product pages always use the store default, since no method is selected yet.', 'quickshipd' ); ?></p>
 		</details>
+
+		<details class="qs-faq">
+			<summary><?php esc_html_e( 'My estimates moved a day later after updating', 'quickshipd' ); ?></summary>
+			<p><?php esc_html_e( 'That is the dispatch day fix in 1.0.5 and it is working as intended. Before it, an order arriving on a day you do not dispatch counted your next working day as a delivery day, which quoted a date you could not meet. Counting now starts after dispatch. If you want the old, shorter quote back, lower the minimum delivery days by one.', 'quickshipd' ); ?></p>
+		</details>
+
+		<details class="qs-faq">
+			<summary><?php esc_html_e( 'It is printing on my packing slips or PDF invoices', 'quickshipd' ); ?></summary>
+			<p><?php esc_html_e( 'PDF invoice and packing slip plugins read the order line meta directly, so unticking an email does not remove it from a printed slip. Switch off "Save on the order" under Display, Orders & Emails to stop storing it altogether, or use the quickshipd_save_order_item_date filter to skip it for specific orders. Existing orders keep whatever they were given at checkout.', 'quickshipd' ); ?></p>
+		</details>
+
+		<details class="qs-faq">
+			<summary><?php esc_html_e( 'The estimate is missing from order emails', 'quickshipd' ); ?></summary>
+			<p><?php esc_html_e( 'Check Display, Orders & Emails. "Save on the order" must be on, and the email in question must still be ticked. Only orders placed while the setting was on carry the estimate, so older orders will not gain one retroactively.', 'quickshipd' ); ?></p>
+		</details>
+
+		<details class="qs-faq">
+			<summary><?php esc_html_e( 'A holiday is not being skipped', 'quickshipd' ); ?></summary>
+			<p><?php esc_html_e( 'Add the whole period as one range rather than a line per day, and tick "Repeats every year" if you close on the same dates annually. A range has to stay inside one calendar year, so a Christmas to New Year closure needs two entries. The live preview reflects holidays immediately, so use it to confirm the dates land where you expect.', 'quickshipd' ); ?></p>
+		</details>
+
+		<details class="qs-faq">
+			<summary><?php esc_html_e( 'The plugin is not in my language', 'quickshipd' ); ?></summary>
+			<p><?php esc_html_e( 'Every string is translatable and translations are hosted on translate.wordpress.org. If your language is incomplete, you can submit strings there and WordPress will pull them in automatically once approved. Anything you type yourself, such as the message templates on the Style tab, is shown exactly as you wrote it and is never translated.', 'quickshipd' ); ?></p>
+		</details>
+	</section>
+
+	<!-- Developer filters -->
+	<section class="qs-card qs-help-panel" id="qs-help-filters">
+		<h3 class="qs-card__title">
+			<span class="qs-card__icon" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</span>
+			<?php esc_html_e( 'For developers', 'quickshipd' ); ?>
+		</h3>
+
+		<p class="qs-card__lead"><?php esc_html_e( 'Two filters cover the order record, for cases the settings above do not.', 'quickshipd' ); ?></p>
+
+		<table class="qs-table qs-table--filters">
+			<tbody>
+				<tr>
+					<td><code>quickshipd_save_order_item_date</code></td>
+					<td><?php esc_html_e( 'Return false to keep the estimate off an order line entirely. Receives the line item and the cart item data, so it can be decided per product or per order.', 'quickshipd' ); ?></td>
+				</tr>
+				<tr>
+					<td><code>quickshipd_show_in_email</code></td>
+					<td><?php esc_html_e( 'Return false to hide the estimate in one email. Receives the WooCommerce email id, for example customer_processing_order.', 'quickshipd' ); ?></td>
+				</tr>
+			</tbody>
+		</table>
 	</section>
 
 	<!-- Good to know -->
-	<section class="qs-card qs-card--plain" id="qs-help-notes">
+	<section class="qs-card qs-card--plain qs-help-panel" id="qs-help-notes">
 		<h3 class="qs-card__title">
 			<span class="qs-card__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16v-5M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -312,5 +489,8 @@ $qs_help_nav = array(
 			<li><?php esc_html_e( 'Restore Defaults at the bottom of this page resets every setting, including holidays and non-dispatch days.', 'quickshipd' ); ?></li>
 		</ul>
 	</section>
+
+	</div><!-- /.qs-help-content -->
+	</div><!-- /.qs-help-body -->
 
 </div>

@@ -83,6 +83,10 @@
 				}
 			} else if ( $(this).is('[type=radio]') ) {
 				if ( $(this).is(':checked') ) data[name] = $(this).val();
+			} else if ( $(this).is('select[multiple]') ) {
+				// val() is already an array here, or null when nothing is picked.
+				data[ name.replace('[]', '') ] = $(this).val() || [];
+				delete data[name];
 			} else {
 				var cleanName = name.replace('[]', '');
 				if ( name.indexOf('[]') !== -1 ) {
@@ -268,11 +272,10 @@
 	}
 
 	function getExcludedDows() {
-		var excDows = [];
-		$( 'input[name="quickshipd_excluded_days[]"]:checked' ).each( function () {
-			excDows.push( parseInt( $( this ).val(), 10 ) );
+		var picked = $( 'select[name="quickshipd_excluded_days[]"]' ).val() || [];
+		return $.map( picked, function ( value ) {
+			return parseInt( value, 10 );
 		} );
-		return excDows;
 	}
 
 	function getHolidayEntries() {
@@ -540,20 +543,106 @@
 	/* Help tab: copy a shortcode to the clipboard                      */
 	/* ---------------------------------------------------------------- */
 
+	/* ---------------------------------------------------------------- */
+	/* Help tab: sidebar shows one section at a time                    */
+	/* ---------------------------------------------------------------- */
+
+	function initHelpNav() {
+		var $help = $( '.qs-help' );
+		var $items = $help.find( '.qs-help-side__item' );
+		if ( ! $items.length ) return;
+
+		function show( target ) {
+			var $panel = $help.find( '#' + target );
+			if ( ! $panel.length ) return;
+
+			$items.removeClass( 'is-active' )
+				.filter( '[data-help-target="' + target + '"]' ).addClass( 'is-active' );
+			$help.find( '.qs-help-panel' ).removeClass( 'is-active' );
+			$panel.addClass( 'is-active' );
+		}
+
+		// Only hide panels once the switcher is live, so a no-JS page still
+		// shows every section.
+		$help.addClass( 'is-tabbed' );
+		show( $items.first().data( 'help-target' ) );
+
+		$items.on( 'click', function ( e ) {
+			e.preventDefault();
+			show( $( this ).data( 'help-target' ) );
+		} );
+	}
+
 	function initHelpCopy() {
 		$( document ).on( 'click', '.qs-copy', function () {
 			var $btn = $( this );
-			var text = String( $btn.data( 'copy' ) || '' );
-			if ( ! text || ! navigator.clipboard ) return;
+			var text = $btn.attr( 'data-copy' ) || '';
+			if ( ! text ) return;
 
-			navigator.clipboard.writeText( text ).then( function () {
-				var i18n = cfg.i18n || {};
-				if ( ! $btn.data( 'label' ) ) $btn.data( 'label', $btn.text() );
-				$btn.addClass( 'is-copied' ).text( i18n.copied || 'Copied' );
-				setTimeout( function () {
-					$btn.removeClass( 'is-copied' ).text( $btn.data( 'label' ) );
-				}, 1600 );
+			var i18n = cfg.i18n || {};
+
+			qsCopyText( text ).then( function () {
+				qsCopyFeedback( $btn, i18n.copied || 'Copied', false );
+			} ).catch( function () {
+				// Could not reach the clipboard. Select the code so Ctrl+C works.
+				qsSelectText( $btn.closest( '.qs-code' ).find( 'code' )[0] );
+				qsCopyFeedback( $btn, i18n.copyFailed || 'Press Ctrl+C to copy', true );
 			} );
+		} );
+	}
+
+	function qsCopyFeedback( $btn, message, manual ) {
+		if ( ! $btn.data( 'qsTitle' ) ) {
+			$btn.data( 'qsTitle', $btn.attr( 'title' ) || '' );
+		}
+
+		$btn.addClass( manual ? 'is-copied is-manual' : 'is-copied' )
+			.attr( { title: message, 'aria-label': message } );
+
+		setTimeout( function () {
+			var title = $btn.data( 'qsTitle' );
+			$btn.removeClass( 'is-copied is-manual' ).attr( { title: title, 'aria-label': title } );
+		}, 1600 );
+	}
+
+	function qsSelectText( el ) {
+		if ( ! el || ! window.getSelection ) return;
+		var range = document.createRange();
+		range.selectNodeContents( el );
+		var sel = window.getSelection();
+		sel.removeAllRanges();
+		sel.addRange( range );
+	}
+
+	/**
+	 * navigator.clipboard only exists in a secure context, so an admin served
+	 * over plain http has to fall back to the old execCommand path.
+	 */
+	function qsCopyText( text ) {
+		if ( navigator.clipboard && window.isSecureContext ) {
+			return navigator.clipboard.writeText( text );
+		}
+
+		return new Promise( function ( resolve, reject ) {
+			var ta = document.createElement( 'textarea' );
+			ta.value = text;
+			ta.setAttribute( 'readonly', '' );
+			ta.style.position = 'fixed';
+			ta.style.top = '-1000px';
+			ta.style.opacity = '0';
+			document.body.appendChild( ta );
+			ta.select();
+			ta.setSelectionRange( 0, ta.value.length );
+
+			var ok = false;
+			try {
+				ok = document.execCommand( 'copy' );
+			} catch ( e ) {
+				ok = false;
+			}
+			document.body.removeChild( ta );
+
+			return ok ? resolve() : reject();
 		} );
 	}
 
@@ -594,6 +683,7 @@
 		initTabs();
 		initSubSettings();
 		initHolidaysBuilder();
+		initHelpNav();
 		initHelpCopy();
 
 		$('#quickshipd-save-btn').on('click', saveSettings);

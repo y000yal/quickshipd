@@ -44,14 +44,23 @@ const build = series( buildJS, buildCSS );
 
 const EXCLUDE = [
 	'!node_modules/**',
+	'!vendor/**',
 	'!release/**',
 	'!tests/**',
+	'!bin/**',
+	'!.github/**',
 	'!**/*.zip',
 	'!package.json',
 	'!package-lock.json',
 	'!pnpm-lock.yaml',
 	'!yarn.lock',
 	'!gulpfile.js',
+	'!composer.json',
+	'!composer.lock',
+	'!phpunit.xml.dist',
+	'!phpunit-unit.xml.dist',
+	'!.phpcs.xml.dist',
+	'!.gitignore',
 ];
 
 function dist() {

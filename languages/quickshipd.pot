@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: QuickShipD — Estimated Delivery Date for WooCommerce 1.0.5\n"
+"Project-Id-Version: QuickShipD — Estimated Delivery Date for WooCommerce 1.0.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/quickshipd\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-17T10:40:15+00:00\n"
+"POT-Creation-Date: 2026-08-19T07:02:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: quickshipd\n"
@@ -39,367 +39,402 @@ msgstr ""
 msgid "https://yoyallimbu.com.np"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:51
+#: includes/class-quickshipd-admin.php:53
 msgid "QuickShipD — Delivery Dates"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:52
-#: includes/class-quickshipd-admin.php:398
+#: includes/class-quickshipd-admin.php:54
+#: includes/class-quickshipd-admin.php:427
 msgid "QuickShipD"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:68
+#: includes/class-quickshipd-admin.php:70
 msgid "General"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:72
+#: includes/class-quickshipd-admin.php:74
 msgid "Enable QuickShipD"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:79
+#: includes/class-quickshipd-admin.php:81
 msgid "Enables or disables estimated delivery dates across your entire store"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:83
+#: includes/class-quickshipd-admin.php:85
 msgid "Timing"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:87
+#: includes/class-quickshipd-admin.php:89
 msgid "Minimum delivery days"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:96
+#: includes/class-quickshipd-admin.php:98
 msgid "Fastest delivery, counted in business days after dispatch. Use 0 for same-day delivery."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:102
+#: includes/class-quickshipd-admin.php:104
 msgid "Maximum delivery days"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:111
+#: includes/class-quickshipd-admin.php:113
 msgid "Slowest delivery, counted in business days after dispatch. Set equal to the minimum to show a single date instead of a range."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:117
+#: includes/class-quickshipd-admin.php:119
 msgid "Order cutoff time"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:124
+#: includes/class-quickshipd-admin.php:126
 msgid "Orders placed after this time are dispatched on the next dispatch day."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:128
+#: includes/class-quickshipd-admin.php:130
 msgid "Schedule"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:132
-#: includes/class-quickshipd-admin.php:692
+#: includes/class-quickshipd-admin.php:134
 msgid "Non-dispatch days"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:138
+#: includes/class-quickshipd-admin.php:140
 msgid "Days you do not send orders out. Orders placed on these days wait for the next dispatch day, and the days themselves are never counted toward the estimate."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:144
+#: includes/class-quickshipd-admin.php:146
 msgid "Holidays"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:150
+#: includes/class-quickshipd-admin.php:152
 msgid "Add single dates or date ranges to skip. Enable “Repeats every year” for annual holidays like Christmas. Ranges must stay within the same calendar year."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:159
+#: includes/class-quickshipd-admin.php:161
 msgid "Show on"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:163
+#: includes/class-quickshipd-admin.php:165
 msgid "Product pages"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:167
+#: includes/class-quickshipd-admin.php:169
 msgid "Shop / archive pages"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:171
+#: includes/class-quickshipd-admin.php:173
 msgid "Cart page (per item)"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:175
+#: includes/class-quickshipd-admin.php:177
 msgid "Checkout page"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:195
+#: includes/class-quickshipd-admin.php:197
 msgid "Options"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:199
+#: includes/class-quickshipd-admin.php:201
 msgid "Show countdown timer"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:206
+#: includes/class-quickshipd-admin.php:208
 msgid "Shows an \"Order within Xh Ym\" countdown timer on product pages to encourage urgency"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:212
+#: includes/class-quickshipd-admin.php:214
 msgid "Show live seconds"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:219
+#: includes/class-quickshipd-admin.php:221
 msgid "Tick seconds in real-time (e.g. 2h 30m 14s). When off, only hours and minutes are shown."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:226
-msgid "Text Templates"
+#: includes/class-quickshipd-admin.php:225
+msgid "Orders & Emails"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:230
-msgid "Single-date text"
+#: includes/class-quickshipd-admin.php:229
+msgid "Save on the order"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:232
-msgid "Available placeholders: {date}"
-msgstr ""
-
-#: includes/class-quickshipd-admin.php:235
-msgid "Date-range text"
-msgstr ""
-
-#: includes/class-quickshipd-admin.php:237
-msgid "Available placeholders: {start}, {end}"
-msgstr ""
-
-#: includes/class-quickshipd-admin.php:240
-msgid "Countdown text"
+#: includes/class-quickshipd-admin.php:236
+msgid "Store the estimate on each order line at checkout so it appears in emails, the admin order screen, My Account, and any PDF invoice or packing slip plugin. Turning this off stores nothing, and existing orders keep what they already have."
 msgstr ""
 
 #: includes/class-quickshipd-admin.php:242
-msgid "Available placeholders: {countdown}, {date}"
+msgid "Show in these emails"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:248
+msgid "Which WooCommerce emails include the estimate. Untick one to hide it there without affecting the admin order screen or My Account. This does not cover PDF invoices or packing slips, which read the order line directly."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:255
+msgid "Text Templates"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:259
+msgid "Single-date text"
 msgstr ""
 
 #: includes/class-quickshipd-admin.php:261
+msgid "Available placeholders: {date}"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:264
+msgid "Date-range text"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:266
+msgid "Available placeholders: {start}, {end}"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:269
+msgid "Countdown text"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:271
+msgid "Available placeholders: {countdown}, {date}"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:290
 msgid "Date Format &amp; Icon"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:265
+#: includes/class-quickshipd-admin.php:294
 msgid "Date format"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:274
+#: includes/class-quickshipd-admin.php:303
 msgid "Icon"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:281
+#: includes/class-quickshipd-admin.php:310
 msgid "Colors &amp; Background"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:285
+#: includes/class-quickshipd-admin.php:314
 msgid "Primary text color"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:292
+#: includes/class-quickshipd-admin.php:321
 msgid "Applied to the delivery date line and the bold time in the countdown"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:298
+#: includes/class-quickshipd-admin.php:327
 msgid "Secondary text color"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:305
+#: includes/class-quickshipd-admin.php:334
 msgid "Applied to the \"Order within … to get it by\" surrounding text"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:311
+#: includes/class-quickshipd-admin.php:340
 msgid "Background color"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:318
+#: includes/class-quickshipd-admin.php:347
 msgid "Background behind the delivery widget. Leave blank for transparent."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:324
+#: includes/class-quickshipd-admin.php:353
 msgid "Border radius"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:339
+#: includes/class-quickshipd-admin.php:368
 msgid "Padding"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:364
+#: includes/class-quickshipd-admin.php:393
 msgid "You do not have permission to access this page."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:369
+#: includes/class-quickshipd-admin.php:398
 msgid "Delivery"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:373
+#: includes/class-quickshipd-admin.php:402
 msgid "Display"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:377
+#: includes/class-quickshipd-admin.php:406
 msgid "Style"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:381
+#: includes/class-quickshipd-admin.php:410
 msgid "Help"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:408
+#: includes/class-quickshipd-admin.php:437
 msgid "Settings tabs"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:436
+#: includes/class-quickshipd-admin.php:465
 msgid "Save Settings"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:441
+#: includes/class-quickshipd-admin.php:470
 msgid "Restore Defaults"
 msgstr ""
 
 #. translators: plugin version
-#: includes/class-quickshipd-admin.php:465
+#: includes/class-quickshipd-admin.php:494
 #, php-format
 msgid "QuickShipD v%s"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:488
+#: includes/class-quickshipd-admin.php:517
 msgid "Live Preview For"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:489
+#: includes/class-quickshipd-admin.php:518
 msgid "Product page/Shop Page"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:618
+#: includes/class-quickshipd-admin.php:647
 msgid "Holiday type"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:619
+#: includes/class-quickshipd-admin.php:648
 msgid "Single date"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:620
+#: includes/class-quickshipd-admin.php:649
 msgid "Date range"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:627
+#: includes/class-quickshipd-admin.php:656
 msgid "Repeats every year"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:631
+#: includes/class-quickshipd-admin.php:660
 msgid "Start date"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:632
+#: includes/class-quickshipd-admin.php:661
 msgid "End date"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:633
+#: includes/class-quickshipd-admin.php:662
 msgid "Add holiday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:642
+#: includes/class-quickshipd-admin.php:671
 msgid "No holidays added yet."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:680
-msgctxt "weekday"
-msgid "Saturday"
-msgstr ""
-
-#: includes/class-quickshipd-admin.php:681
-msgctxt "weekday"
-msgid "Sunday"
-msgstr ""
-
-#: includes/class-quickshipd-admin.php:682
+#: includes/class-quickshipd-admin.php:709
 msgctxt "weekday"
 msgid "Monday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:683
+#: includes/class-quickshipd-admin.php:710
 msgctxt "weekday"
 msgid "Tuesday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:684
+#: includes/class-quickshipd-admin.php:711
 msgctxt "weekday"
 msgid "Wednesday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:685
+#: includes/class-quickshipd-admin.php:712
 msgctxt "weekday"
 msgid "Thursday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:686
+#: includes/class-quickshipd-admin.php:713
 msgctxt "weekday"
 msgid "Friday"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:742
+#: includes/class-quickshipd-admin.php:714
+msgctxt "weekday"
+msgid "Saturday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:715
+msgctxt "weekday"
+msgid "Sunday"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:722
+msgid "Dispatching every day"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:750
+msgid "No WooCommerce emails found."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:758
+msgid "No emails selected"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:811
 msgid "Truck"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:743
+#: includes/class-quickshipd-admin.php:812
 msgid "Box"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:744
+#: includes/class-quickshipd-admin.php:813
 msgid "None"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:829
+#: includes/class-quickshipd-admin.php:922
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:830
+#: includes/class-quickshipd-admin.php:923
 msgid "Defaults restored."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:831
+#: includes/class-quickshipd-admin.php:924
 msgid "Could not save. Please try again."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:832
+#: includes/class-quickshipd-admin.php:925
 msgid "Reset all settings to their default values?"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:836
+#: includes/class-quickshipd-admin.php:929
 msgid "Single"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:837
+#: includes/class-quickshipd-admin.php:930
 msgid "Range"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:838
+#: includes/class-quickshipd-admin.php:931
 msgid "every year"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:839
+#: includes/class-quickshipd-admin.php:932
 msgid "Remove"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:840
+#: includes/class-quickshipd-admin.php:933
 msgid "Choose a start date."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:841
+#: includes/class-quickshipd-admin.php:934
 msgid "Choose an end date for the range."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:842
+#: includes/class-quickshipd-admin.php:935
 msgid "End date must be on or after the start date."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:843
+#: includes/class-quickshipd-admin.php:936
 msgid "Ranges must stay within the same calendar year."
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:844
+#: includes/class-quickshipd-admin.php:937
 msgid "Copied"
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:938
+msgid "Press Ctrl+C to copy"
 msgstr ""
 
 #. translators: 1: hours, 2: minutes, 3: seconds
@@ -448,9 +483,24 @@ msgstr ""
 msgid "Override the global maximum. Leave blank to use global."
 msgstr ""
 
-#: includes/class-quickshipd-display.php:236
-#: includes/class-quickshipd-display.php:278
+#: includes/class-quickshipd-display.php:256
+#: includes/class-quickshipd-display.php:310
+#: includes/class-quickshipd-display.php:433
 msgid "Est. Delivery"
+msgstr ""
+
+#. translators: 1: email name, 2: who receives it
+#: includes/class-quickshipd-display.php:365
+#, php-format
+msgid "%1$s (%2$s)"
+msgstr ""
+
+#: includes/class-quickshipd-display.php:367
+msgid "to customer"
+msgstr ""
+
+#: includes/class-quickshipd-display.php:367
+msgid "to admin"
 msgstr ""
 
 #: includes/class-quickshipd-product-meta.php:42
@@ -483,7 +533,7 @@ msgid "QuickShipD is disabled."
 msgstr ""
 
 #: includes/views/help-tab.php:15
-#: includes/views/help-tab.php:47
+#: includes/views/help-tab.php:72
 msgid "Quick start"
 msgstr ""
 
@@ -492,325 +542,503 @@ msgid "How dates work"
 msgstr ""
 
 #: includes/views/help-tab.php:17
-msgid "Where it shows"
+msgid "Same-day delivery"
 msgstr ""
 
 #: includes/views/help-tab.php:18
-#: includes/views/help-tab.php:150
-msgid "Shortcode"
+msgid "Where it shows"
 msgstr ""
 
 #: includes/views/help-tab.php:19
-#: includes/views/help-tab.php:252
-msgid "Overrides"
+#: includes/views/help-tab.php:244
+#: includes/views/help-tab.php:290
+msgid "Shortcode"
 msgstr ""
 
 #: includes/views/help-tab.php:20
-#: includes/views/help-tab.php:275
-msgid "Troubleshooting"
-msgstr ""
-
-#: includes/views/help-tab.php:29
-msgid "Everything you can do with QuickShipD"
-msgstr ""
-
-#: includes/views/help-tab.php:31
-msgid "QuickShipD works out when an order will arrive and shows it to the customer before they buy. Nothing here needs installing, it is all live already."
-msgstr ""
-
-#: includes/views/help-tab.php:34
-msgid "Help sections"
-msgstr ""
-
-#: includes/views/help-tab.php:52
-msgid "Set your delivery window"
-msgstr ""
-
-#: includes/views/help-tab.php:53
-msgid "On the Delivery tab, enter the minimum and maximum days a parcel takes to arrive after you hand it to the carrier. Set both to the same number for a single date instead of a range. Use 0 for same-day delivery."
-msgstr ""
-
-#: includes/views/help-tab.php:56
-msgid "Set your order cutoff"
-msgstr ""
-
-#: includes/views/help-tab.php:57
-msgid "Orders placed before this time go out the same day. Anything after it moves to the next dispatch day."
-msgstr ""
-
-#: includes/views/help-tab.php:60
-msgid "Tick your non-dispatch days"
-msgstr ""
-
-#: includes/views/help-tab.php:61
-msgid "The weekdays you do not send orders out, usually Saturday and Sunday. They are never counted toward the estimate."
-msgstr ""
-
-#: includes/views/help-tab.php:64
-msgid "Add your holidays"
-msgstr ""
-
-#: includes/views/help-tab.php:65
-msgid "Single dates or date ranges you are closed. Tick \"Repeats every year\" for fixed holidays such as Christmas."
-msgstr ""
-
-#: includes/views/help-tab.php:68
-msgid "Choose where it appears"
-msgstr ""
-
-#: includes/views/help-tab.php:69
-msgid "The Display tab controls product pages, shop archives, cart, and checkout. The Style tab controls wording and colours. The live preview updates as you type."
-msgstr ""
-
-#: includes/views/help-tab.php:80
-msgid "How the date is worked out"
-msgstr ""
-
-#: includes/views/help-tab.php:83
-msgid "QuickShipD keeps the day you dispatch separate from the days a parcel spends in transit."
-msgstr ""
-
-#: includes/views/help-tab.php:88
-msgid "Start from today"
-msgstr ""
-
-#: includes/views/help-tab.php:89
-msgid "If the cutoff time has already passed, move to tomorrow."
-msgstr ""
-
-#: includes/views/help-tab.php:93
-msgid "Find the dispatch day"
-msgstr ""
-
-#: includes/views/help-tab.php:94
-msgid "If that day is a non-dispatch day or a holiday, roll forward until it is not."
-msgstr ""
-
-#: includes/views/help-tab.php:98
-msgid "Count the transit days"
-msgstr ""
-
-#: includes/views/help-tab.php:99
-msgid "Count forward from the dispatch day, skipping non-dispatch days and holidays."
-msgstr ""
-
-#: includes/views/help-tab.php:104
-msgid "Worked example"
-msgstr ""
-
-#: includes/views/help-tab.php:105
-msgid "Weekends off, delivery 1 to 2 days, a customer orders on Saturday. Nothing ships at the weekend, so the dispatch day rolls to Monday. One to two days after Monday gives Tuesday to Wednesday. Monday is never shown as the arrival date, because that is the day the parcel leaves you."
-msgstr ""
-
-#: includes/views/help-tab.php:108
-msgid "The countdown is hidden on days you do not dispatch, because beating the cutoff on those days cannot change the date."
-msgstr ""
-
-#: includes/views/help-tab.php:117
-msgid "Where the estimate shows"
-msgstr ""
-
-#: includes/views/help-tab.php:122
-msgid "Product page"
-msgstr ""
-
-#: includes/views/help-tab.php:123
-msgid "Full estimate with icon and the cutoff countdown. Variable products update as the shopper picks a variation."
-msgstr ""
-
-#: includes/views/help-tab.php:126
-msgid "Shop and archives"
-msgstr ""
-
-#: includes/views/help-tab.php:126
-msgid "off by default"
-msgstr ""
-
-#: includes/views/help-tab.php:127
-msgid "Compact estimate, no countdown."
-msgstr ""
-
-#: includes/views/help-tab.php:130
-msgid "Cart"
-msgstr ""
-
-#: includes/views/help-tab.php:131
-msgid "An \"Est. Delivery\" line under each item. Works on the classic and the block cart."
-msgstr ""
-
-#: includes/views/help-tab.php:134
-msgid "Checkout"
-msgstr ""
-
-#: includes/views/help-tab.php:135
-msgid "A summary row above shipping on the classic checkout. On the block checkout the per-item line shows instead."
-msgstr ""
-
-#: includes/views/help-tab.php:138
-msgid "Emails and orders"
-msgstr ""
-
-#: includes/views/help-tab.php:139
-msgid "Saved onto the order line at checkout, so it stays fixed on the order record in emails, admin orders, and My Account."
-msgstr ""
-
-#: includes/views/help-tab.php:154
-msgid "Place the estimate yourself anywhere on the site. This is the answer whenever a page builder such as Elementor or Divi builds its own product layout, never fires the standard WooCommerce hooks, and the estimate does not appear on its own."
-msgstr ""
-
-#: includes/views/help-tab.php:159
-#: includes/views/help-tab.php:192
-#: includes/views/help-tab.php:199
-#: includes/views/help-tab.php:206
-msgid "Copy"
-msgstr ""
-
-#: includes/views/help-tab.php:162
-msgid "Attributes"
-msgstr ""
-
-#: includes/views/help-tab.php:167
-msgid "Attribute"
-msgstr ""
-
-#: includes/views/help-tab.php:168
-msgid "Default"
-msgstr ""
-
-#: includes/views/help-tab.php:169
-msgid "What it does"
-msgstr ""
-
-#: includes/views/help-tab.php:175
-msgid "current product"
-msgstr ""
-
-#: includes/views/help-tab.php:176
-msgid "Which product to estimate for. Leave it out on a product page or inside a product loop and the current product is used. Required anywhere else."
-msgstr ""
-
-#: includes/views/help-tab.php:181
-msgid "Which style to use. \"product\" gives the full estimate with countdown, \"shop\" gives the compact one without."
-msgstr ""
-
-#: includes/views/help-tab.php:186
-msgid "Examples"
-msgstr ""
-
-#: includes/views/help-tab.php:194
-msgid "On a product page or in an Elementor product template. Picks up the product on its own."
-msgstr ""
-
-#: includes/views/help-tab.php:201
-msgid "On a landing page, a widget, or any page that is not a product."
-msgstr ""
-
-#: includes/views/help-tab.php:208
-msgid "Compact style with no countdown, for tight layouts and product grids."
-msgstr ""
-
-#: includes/views/help-tab.php:212
-msgid "The shortcode respects every setting on the other tabs, including per-product overrides. It outputs nothing for a product that is out of stock or has QuickShipD switched off."
-msgstr ""
-
-#: includes/views/help-tab.php:221
+#: includes/views/help-tab.php:348
 msgid "Text placeholders"
 msgstr ""
 
-#: includes/views/help-tab.php:224
-msgid "Drop these into the message templates on the Style tab."
+#: includes/views/help-tab.php:21
+#: includes/views/help-tab.php:379
+msgid "Overrides"
 msgstr ""
 
-#: includes/views/help-tab.php:229
-msgid "The single or latest delivery date"
+#: includes/views/help-tab.php:22
+#: includes/views/help-tab.php:402
+msgid "Troubleshooting"
 msgstr ""
 
-#: includes/views/help-tab.php:233
-msgid "The earliest date in a range"
+#: includes/views/help-tab.php:23
+#: includes/views/help-tab.php:457
+msgid "For developers"
 msgstr ""
 
-#: includes/views/help-tab.php:237
-msgid "The latest date in a range"
-msgstr ""
-
-#: includes/views/help-tab.php:241
-msgid "Time left before the order cutoff"
-msgstr ""
-
-#: includes/views/help-tab.php:255
-msgid "The Delivery tab sets the store default. Two things can override it, in this order."
-msgstr ""
-
-#: includes/views/help-tab.php:259
-msgid "1. Per product"
-msgstr ""
-
-#: includes/views/help-tab.php:260
-msgid "Edit a product, open the Shipping tab in Product data, and set its own minimum and maximum days. You can also switch QuickShipD off for that product entirely."
-msgstr ""
-
-#: includes/views/help-tab.php:263
-msgid "2. Per shipping method"
-msgstr ""
-
-#: includes/views/help-tab.php:264
-msgid "In WooCommerce, Settings, Shipping, open a zone and edit a method. Each method has its own minimum and maximum, so express can quote a faster date than standard. Leave blank to use the store default."
-msgstr ""
-
-#: includes/views/help-tab.php:279
-msgid "It does not show on my product page"
-msgstr ""
-
-#: includes/views/help-tab.php:280
-msgid "Check the product is in stock and that QuickShipD is not switched off on it. If the page is built with Elementor, Divi, or another builder, the theme never fires the WooCommerce hook, so drop the [quickshipd] shortcode into the layout where you want it."
-msgstr ""
-
-#: includes/views/help-tab.php:284
-msgid "The dates on my site do not match the preview"
-msgstr ""
-
-#: includes/views/help-tab.php:285
-msgid "Both use your WordPress timezone from Settings, General. If they still differ, a page cache is most likely serving an older copy of the page. Clear it and check again."
-msgstr ""
-
-#: includes/views/help-tab.php:289
-msgid "The countdown is missing"
-msgstr ""
-
-#: includes/views/help-tab.php:290
-msgid "The countdown only appears on product pages, only when it is switched on, and only before the cutoff on a day you actually dispatch. After the cutoff there is nothing left to count down to."
-msgstr ""
-
-#: includes/views/help-tab.php:294
-msgid "Changing shipping method did not change the date"
-msgstr ""
-
-#: includes/views/help-tab.php:295
-msgid "Method overrides only apply at cart and checkout, where a method has actually been chosen. Product pages always use the store default, since no method is selected yet."
-msgstr ""
-
-#: includes/views/help-tab.php:305
+#: includes/views/help-tab.php:24
+#: includes/views/help-tab.php:482
 msgid "Good to know"
 msgstr ""
 
-#: includes/views/help-tab.php:309
+#: includes/views/help-tab.php:39
+msgid "Copy to clipboard"
+msgstr ""
+
+#: includes/views/help-tab.php:49
+msgid "Everything you can do with QuickShipD"
+msgstr ""
+
+#: includes/views/help-tab.php:51
+msgid "QuickShipD works out when an order will arrive and shows it to the customer before they buy. Nothing here needs installing, it is all live already."
+msgstr ""
+
+#: includes/views/help-tab.php:58
+msgid "Help sections"
+msgstr ""
+
+#: includes/views/help-tab.php:77
+msgid "Set your delivery window"
+msgstr ""
+
+#: includes/views/help-tab.php:78
+msgid "On the Delivery tab, enter the minimum and maximum days a parcel takes to arrive after you hand it to the carrier. Set both to the same number for a single date instead of a range. Use 0 for same-day delivery."
+msgstr ""
+
+#: includes/views/help-tab.php:81
+msgid "Set your order cutoff"
+msgstr ""
+
+#: includes/views/help-tab.php:82
+msgid "Orders placed before this time go out the same day. Anything after it moves to the next dispatch day."
+msgstr ""
+
+#: includes/views/help-tab.php:85
+msgid "Tick your non-dispatch days"
+msgstr ""
+
+#: includes/views/help-tab.php:86
+msgid "The weekdays you do not send orders out, usually Saturday and Sunday. They are never counted toward the estimate."
+msgstr ""
+
+#: includes/views/help-tab.php:89
+msgid "Add your holidays"
+msgstr ""
+
+#: includes/views/help-tab.php:90
+msgid "Single dates or date ranges you are closed. Tick \"Repeats every year\" for fixed holidays such as Christmas."
+msgstr ""
+
+#: includes/views/help-tab.php:93
+msgid "Choose where it appears"
+msgstr ""
+
+#: includes/views/help-tab.php:94
+msgid "The Display tab controls product pages, shop archives, cart, and checkout. The Style tab controls wording and colours. The live preview updates as you type."
+msgstr ""
+
+#: includes/views/help-tab.php:105
+msgid "How the date is worked out"
+msgstr ""
+
+#: includes/views/help-tab.php:108
+msgid "QuickShipD keeps the day you dispatch separate from the days a parcel spends in transit."
+msgstr ""
+
+#: includes/views/help-tab.php:113
+msgid "Start from today"
+msgstr ""
+
+#: includes/views/help-tab.php:114
+msgid "If the cutoff time has already passed, move to tomorrow."
+msgstr ""
+
+#: includes/views/help-tab.php:118
+msgid "Find the dispatch day"
+msgstr ""
+
+#: includes/views/help-tab.php:119
+msgid "If that day is a non-dispatch day or a holiday, roll forward until it is not."
+msgstr ""
+
+#: includes/views/help-tab.php:123
+msgid "Count the transit days"
+msgstr ""
+
+#: includes/views/help-tab.php:124
+msgid "Count forward from the dispatch day, skipping non-dispatch days and holidays."
+msgstr ""
+
+#: includes/views/help-tab.php:129
+#: includes/views/help-tab.php:198
+msgid "Worked example"
+msgstr ""
+
+#: includes/views/help-tab.php:130
+msgid "Weekends off, delivery 1 to 2 days, a customer orders on Saturday. Nothing ships at the weekend, so the dispatch day rolls to Monday. One to two days after Monday gives Tuesday to Wednesday. Monday is never shown as the arrival date, because that is the day the parcel leaves you."
+msgstr ""
+
+#: includes/views/help-tab.php:133
+msgid "The countdown is hidden on days you do not dispatch, because beating the cutoff on those days cannot change the date."
+msgstr ""
+
+#: includes/views/help-tab.php:142
+msgid "Same-day dispatch and delivery"
+msgstr ""
+
+#: includes/views/help-tab.php:145
+msgid "Delivery days are counted after dispatch, so 0 days means the parcel arrives on the day it goes out. Set the minimum to 0 and the cutoff becomes your same-day deadline."
+msgstr ""
+
+#: includes/views/help-tab.php:147
+msgid "Pick your numbers"
+msgstr ""
+
+#: includes/views/help-tab.php:152
+msgid "What you promise"
+msgstr ""
+
+#: includes/views/help-tab.php:153
+msgid "Minimum"
+msgstr ""
+
+#: includes/views/help-tab.php:154
+msgid "Maximum"
+msgstr ""
+
+#: includes/views/help-tab.php:159
+msgid "Always same day"
+msgstr ""
+
+#: includes/views/help-tab.php:164
+msgid "Same day, sometimes next day"
+msgstr ""
+
+#: includes/views/help-tab.php:169
+msgid "Next day at the earliest"
+msgstr ""
+
+#: includes/views/help-tab.php:176
+msgid "Set it up"
+msgstr ""
+
+#: includes/views/help-tab.php:180
+msgid "Set minimum delivery days to 0"
+msgstr ""
+
+#: includes/views/help-tab.php:181
+msgid "On the Delivery tab. Set the maximum to 0 as well for a single date, or to 1 if a late order might slip to tomorrow."
+msgstr ""
+
+#: includes/views/help-tab.php:184
+msgid "Set the cutoff to your last dispatch run"
+msgstr ""
+
+#: includes/views/help-tab.php:185
+msgid "This is the moment same-day stops being possible. If your courier collects at 11am, set 11:00. Orders after it automatically move to the next dispatch day, so you never promise a delivery you cannot make."
+msgstr ""
+
+#: includes/views/help-tab.php:188
+msgid "Match the non-dispatch days to your opening days"
+msgstr ""
+
+#: includes/views/help-tab.php:189
+msgid "Delivering seven days a week? Untick every day. Closed at weekends? Leave Saturday and Sunday ticked, and weekend orders will quote the next working day instead."
+msgstr ""
+
+#: includes/views/help-tab.php:192
+msgid "Say so in the wording"
+msgstr ""
+
+#: includes/views/help-tab.php:193
+msgid "On the Style tab, a countdown line such as \"Order within {countdown} for delivery today\" turns the cutoff into a reason to buy now. Keep the countdown switched on for this."
+msgstr ""
+
+#: includes/views/help-tab.php:199
+msgid "Minimum 0, maximum 0, cutoff 11:00, closed at weekends. An order at 10:30 on Monday shows Monday, with 30 minutes left on the countdown. At 11:30 the same order shows Tuesday and the countdown disappears. An order on Saturday shows Monday, because nothing is dispatched at the weekend."
+msgstr ""
+
+#: includes/views/help-tab.php:202
+msgid "Same-day can also be set for one product only, or for one shipping method such as local delivery, using the overrides described in the Overrides section."
+msgstr ""
+
+#: includes/views/help-tab.php:211
+msgid "Where the estimate shows"
+msgstr ""
+
+#: includes/views/help-tab.php:216
+msgid "Product page"
+msgstr ""
+
+#: includes/views/help-tab.php:217
+msgid "Full estimate with icon and the cutoff countdown. Variable products update as the shopper picks a variation."
+msgstr ""
+
+#: includes/views/help-tab.php:220
+msgid "Shop and archives"
+msgstr ""
+
+#: includes/views/help-tab.php:220
+msgid "off by default"
+msgstr ""
+
+#: includes/views/help-tab.php:221
+msgid "Compact estimate, no countdown."
+msgstr ""
+
+#: includes/views/help-tab.php:224
+msgid "Cart"
+msgstr ""
+
+#: includes/views/help-tab.php:225
+msgid "An \"Est. Delivery\" line under each item. Works on the classic and the block cart."
+msgstr ""
+
+#: includes/views/help-tab.php:228
+msgid "Checkout"
+msgstr ""
+
+#: includes/views/help-tab.php:229
+msgid "A summary row above shipping on the classic checkout. On the block checkout the per-item line shows instead."
+msgstr ""
+
+#: includes/views/help-tab.php:232
+msgid "Emails and orders"
+msgstr ""
+
+#: includes/views/help-tab.php:233
+msgid "Saved onto the order line at checkout, so it stays fixed on the order record. Display > Orders & Emails controls whether it is saved at all, and which emails it appears in."
+msgstr ""
+
+#: includes/views/help-tab.php:248
+msgid "Place the estimate yourself anywhere on the site. This is the answer whenever a page builder such as Elementor or Divi builds its own product layout, never fires the standard WooCommerce hooks, and the estimate does not appear on its own."
+msgstr ""
+
+#: includes/views/help-tab.php:256
+msgid "Attributes"
+msgstr ""
+
+#: includes/views/help-tab.php:261
+msgid "Attribute"
+msgstr ""
+
+#: includes/views/help-tab.php:262
+msgid "Default"
+msgstr ""
+
+#: includes/views/help-tab.php:263
+msgid "What it does"
+msgstr ""
+
+#: includes/views/help-tab.php:269
+msgid "current product"
+msgstr ""
+
+#: includes/views/help-tab.php:270
+msgid "Which product to estimate for. Leave it out on a product page or inside a product loop and the current product is used. Required anywhere else."
+msgstr ""
+
+#: includes/views/help-tab.php:275
+msgid "Which style to use. \"product\" gives the full estimate with countdown, \"shop\" gives the compact one without."
+msgstr ""
+
+#: includes/views/help-tab.php:280
+msgid "Where each one works"
+msgstr ""
+
+#: includes/views/help-tab.php:283
+msgid "Read this first"
+msgstr ""
+
+#: includes/views/help-tab.php:284
+msgid "Without product_id, the shortcode needs a product in context. It works on a product page, in an Elementor or Divi product template, and inside a product loop. On a normal page, a post, a footer, or a text widget there is no product to read, so it prints nothing. Pass product_id there."
+msgstr ""
+
+#: includes/views/help-tab.php:291
+msgid "Works here"
+msgstr ""
+
+#: includes/views/help-tab.php:292
+msgid "Prints nothing here"
+msgstr ""
+
+#: includes/views/help-tab.php:303
+msgid "Single product pages, page builder product templates, and product loops such as the shop, a category, or a products block."
+msgstr ""
+
+#: includes/views/help-tab.php:304
+msgid "Normal pages and posts, widgets, headers and footers."
+msgstr ""
+
+#: includes/views/help-tab.php:313
+msgid "Same places as above. Only the styling changes: compact, and no countdown."
+msgstr ""
+
+#: includes/views/help-tab.php:314
+msgid "Same as above. context does not supply a product, so add product_id off a product page."
+msgstr ""
+
+#: includes/views/help-tab.php:323
+msgid "Anywhere at all, including normal pages, posts, and widgets. Replace 123 with the product id."
+msgstr ""
+
+#: includes/views/help-tab.php:324
+msgid "Only if that id is not a product, or the product is out of stock."
+msgstr ""
+
+#: includes/views/help-tab.php:333
+msgid "Anywhere, in the compact style. Useful in sidebars and tight layouts."
+msgstr ""
+
+#: includes/views/help-tab.php:334
+msgid "Same as the row above."
+msgstr ""
+
+#: includes/views/help-tab.php:339
+msgid "A product id is the number in the URL when you edit a product, for example post=123. The shortcode respects every setting on the other tabs, including per-product overrides, and prints nothing for a product that is out of stock or has QuickShipD switched off."
+msgstr ""
+
+#: includes/views/help-tab.php:351
+msgid "Drop these into the message templates on the Style tab."
+msgstr ""
+
+#: includes/views/help-tab.php:356
+msgid "The single or latest delivery date"
+msgstr ""
+
+#: includes/views/help-tab.php:360
+msgid "The earliest date in a range"
+msgstr ""
+
+#: includes/views/help-tab.php:364
+msgid "The latest date in a range"
+msgstr ""
+
+#: includes/views/help-tab.php:368
+msgid "Time left before the order cutoff"
+msgstr ""
+
+#: includes/views/help-tab.php:382
+msgid "The Delivery tab sets the store default. Two things can override it, in this order."
+msgstr ""
+
+#: includes/views/help-tab.php:386
+msgid "1. Per product"
+msgstr ""
+
+#: includes/views/help-tab.php:387
+msgid "Edit a product, open the Shipping tab in Product data, and set its own minimum and maximum days. You can also switch QuickShipD off for that product entirely."
+msgstr ""
+
+#: includes/views/help-tab.php:390
+msgid "2. Per shipping method"
+msgstr ""
+
+#: includes/views/help-tab.php:391
+msgid "In WooCommerce, Settings, Shipping, open a zone and edit a method. Each method has its own minimum and maximum, so express can quote a faster date than standard. Leave blank to use the store default."
+msgstr ""
+
+#: includes/views/help-tab.php:406
+msgid "It does not show on my product page"
+msgstr ""
+
+#: includes/views/help-tab.php:407
+msgid "Check the product is in stock and that QuickShipD is not switched off on it. If the page is built with Elementor, Divi, or another builder, the theme never fires the WooCommerce hook, so drop the [quickshipd] shortcode into the layout where you want it."
+msgstr ""
+
+#: includes/views/help-tab.php:411
+msgid "The dates on my site do not match the preview"
+msgstr ""
+
+#: includes/views/help-tab.php:412
+msgid "Both use your WordPress timezone from Settings, General. If they still differ, a page cache is most likely serving an older copy of the page. Clear it and check again."
+msgstr ""
+
+#: includes/views/help-tab.php:416
+msgid "The countdown is missing"
+msgstr ""
+
+#: includes/views/help-tab.php:417
+msgid "The countdown only appears on product pages, only when it is switched on, and only before the cutoff on a day you actually dispatch. After the cutoff there is nothing left to count down to."
+msgstr ""
+
+#: includes/views/help-tab.php:421
+msgid "Changing shipping method did not change the date"
+msgstr ""
+
+#: includes/views/help-tab.php:422
+msgid "Method overrides only apply at cart and checkout, where a method has actually been chosen. Product pages always use the store default, since no method is selected yet."
+msgstr ""
+
+#: includes/views/help-tab.php:426
+msgid "My estimates moved a day later after updating"
+msgstr ""
+
+#: includes/views/help-tab.php:427
+msgid "That is the dispatch day fix in 1.0.5 and it is working as intended. Before it, an order arriving on a day you do not dispatch counted your next working day as a delivery day, which quoted a date you could not meet. Counting now starts after dispatch. If you want the old, shorter quote back, lower the minimum delivery days by one."
+msgstr ""
+
+#: includes/views/help-tab.php:431
+msgid "It is printing on my packing slips or PDF invoices"
+msgstr ""
+
+#: includes/views/help-tab.php:432
+msgid "PDF invoice and packing slip plugins read the order line meta directly, so unticking an email does not remove it from a printed slip. Switch off \"Save on the order\" under Display, Orders & Emails to stop storing it altogether, or use the quickshipd_save_order_item_date filter to skip it for specific orders. Existing orders keep whatever they were given at checkout."
+msgstr ""
+
+#: includes/views/help-tab.php:436
+msgid "The estimate is missing from order emails"
+msgstr ""
+
+#: includes/views/help-tab.php:437
+msgid "Check Display, Orders & Emails. \"Save on the order\" must be on, and the email in question must still be ticked. Only orders placed while the setting was on carry the estimate, so older orders will not gain one retroactively."
+msgstr ""
+
+#: includes/views/help-tab.php:441
+msgid "A holiday is not being skipped"
+msgstr ""
+
+#: includes/views/help-tab.php:442
+msgid "Add the whole period as one range rather than a line per day, and tick \"Repeats every year\" if you close on the same dates annually. A range has to stay inside one calendar year, so a Christmas to New Year closure needs two entries. The live preview reflects holidays immediately, so use it to confirm the dates land where you expect."
+msgstr ""
+
+#: includes/views/help-tab.php:446
+msgid "The plugin is not in my language"
+msgstr ""
+
+#: includes/views/help-tab.php:447
+msgid "Every string is translatable and translations are hosted on translate.wordpress.org. If your language is incomplete, you can submit strings there and WordPress will pull them in automatically once approved. Anything you type yourself, such as the message templates on the Style tab, is shown exactly as you wrote it and is never translated."
+msgstr ""
+
+#: includes/views/help-tab.php:460
+msgid "Two filters cover the order record, for cases the settings above do not."
+msgstr ""
+
+#: includes/views/help-tab.php:466
+msgid "Return false to keep the estimate off an order line entirely. Receives the line item and the cart item data, so it can be decided per product or per order."
+msgstr ""
+
+#: includes/views/help-tab.php:470
+msgid "Return false to hide the estimate in one email. Receives the WooCommerce email id, for example customer_processing_order."
+msgstr ""
+
+#: includes/views/help-tab.php:486
 msgid "Dates are worked out in PHP on page load. No external services are contacted and no customer data leaves your site."
 msgstr ""
 
-#: includes/views/help-tab.php:310
+#: includes/views/help-tab.php:487
 msgid "Frontend CSS and JavaScript load only on pages that actually show an estimate."
 msgstr ""
 
-#: includes/views/help-tab.php:311
+#: includes/views/help-tab.php:488
 msgid "Compatible with HPOS and the block cart and checkout."
 msgstr ""
 
-#: includes/views/help-tab.php:312
+#: includes/views/help-tab.php:489
 msgid "Restore Defaults at the bottom of this page resets every setting, including holidays and non-dispatch days."
 msgstr ""
 
 #. translators: link to WooCommerce plugin page
-#: quickshipd.php:116
+#: quickshipd.php:118
 #, php-format
 msgid "<strong>QuickShipD</strong> requires WooCommerce to be installed and activated. <a href=\"%s\">Install WooCommerce</a>."
 msgstr ""

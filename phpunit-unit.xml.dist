@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- Pure logic. No WordPress, no database, runs anywhere. -->
+<phpunit
+	bootstrap="tests/unit/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertWarningsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertDeprecationsToExceptions="true"
+	>
+	<testsuites>
+		<testsuite name="unit">
+			<directory prefix="test-" suffix=".php">./tests/unit/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

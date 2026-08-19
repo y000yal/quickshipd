@@ -35,7 +35,9 @@ class QuickShipD_Admin {
 	public function init(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu_page' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		// Priority 20: WooCommerce registers its admin styles at 10, and ours has
+		// to be able to declare them as a dependency so they print first.
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ), 20 );
 		add_action( 'wp_ajax_quickshipd_save_settings', array( $this, 'ajax_save_settings' ) );
 		add_action( 'wp_ajax_quickshipd_restore_defaults', array( $this, 'ajax_restore_defaults' ) );
 	}
@@ -217,6 +219,33 @@ class QuickShipD_Admin {
 				'id'      => 'quickshipd_show_countdown_seconds',
 				'default' => 'yes',
 				'tooltip' => __( 'Tick seconds in real-time (e.g. 2h 30m 14s). When off, only hours and minutes are shown.', 'quickshipd' ),
+			)
+		);
+
+		$this->register_section( 'quickshipd_display_orders', __( 'Orders & Emails', 'quickshipd' ), 'display' );
+
+		$this->register_field(
+			'quickshipd_show_order_meta',
+			__( 'Save on the order', 'quickshipd' ),
+			'render_checkbox',
+			'display',
+			'quickshipd_display_orders',
+			array(
+				'id'      => 'quickshipd_show_order_meta',
+				'default' => 'yes',
+				'tooltip' => __( 'Store the estimate on each order line at checkout so it appears in emails, the admin order screen, My Account, and any PDF invoice or packing slip plugin. Turning this off stores nothing, and existing orders keep what they already have.', 'quickshipd' ),
+			)
+		);
+
+		$this->register_field(
+			'quickshipd_email_exclude',
+			__( 'Show in these emails', 'quickshipd' ),
+			'render_email_types',
+			'display',
+			'quickshipd_display_orders',
+			array(
+				'id'      => 'quickshipd_email_exclude',
+				'tooltip' => __( 'Which WooCommerce emails include the estimate. Untick one to hide it there without affecting the admin order screen or My Account. This does not cover PDF invoices or packing slips, which read the order line directly.', 'quickshipd' ),
 			)
 		);
 
@@ -675,30 +704,70 @@ class QuickShipD_Admin {
 	 * @return void
 	 */
 	public function render_weekdays( array $args ): void {
-		// Ordered Sat, Sun, Mon … so the weekend pair leads the list.
+		// Monday first, so the list reads as a working week.
 		$days = array(
-			6 => _x( 'Saturday', 'weekday', 'quickshipd' ),
-			0 => _x( 'Sunday', 'weekday', 'quickshipd' ),
 			1 => _x( 'Monday', 'weekday', 'quickshipd' ),
 			2 => _x( 'Tuesday', 'weekday', 'quickshipd' ),
 			3 => _x( 'Wednesday', 'weekday', 'quickshipd' ),
 			4 => _x( 'Thursday', 'weekday', 'quickshipd' ),
 			5 => _x( 'Friday', 'weekday', 'quickshipd' ),
+			6 => _x( 'Saturday', 'weekday', 'quickshipd' ),
+			0 => _x( 'Sunday', 'weekday', 'quickshipd' ),
 		);
 
-		$selected = (array) get_option( 'quickshipd_excluded_days', array() );
-		$selected = array_map( 'intval', $selected );
+		$selected = array_map( 'intval', (array) get_option( 'quickshipd_excluded_days', array() ) );
 
-		echo '<fieldset><legend class="screen-reader-text">' . esc_html__( 'Non-dispatch days', 'quickshipd' ) . '</legend>';
+		printf(
+			'<select multiple="multiple" class="wc-enhanced-select quickshipd-weekday-select" id="quickshipd_excluded_days" name="quickshipd_excluded_days[]" data-placeholder="%s" style="width:100%%;">',
+			esc_attr__( 'Dispatching every day', 'quickshipd' )
+		);
+
 		foreach ( $days as $num => $label ) {
 			printf(
-				'<label class="quickshipd-toggle"><span class="quickshipd-toggle__switch"><input type="checkbox" class="quickshipd-toggle__input" id="quickshipd_excluded_day_%1$d" name="quickshipd_excluded_days[]" value="%1$d" %2$s><span class="quickshipd-toggle__track" aria-hidden="true"></span></span><span class="quickshipd-toggle__text">%3$s</span></label>',
+				'<option value="%1$d" %2$s>%3$s</option>',
 				(int) $num,
-				checked( in_array( $num, $selected, true ), true, false ),
+				selected( in_array( (int) $num, $selected, true ), true, false ),
 				esc_html( $label )
 			);
 		}
-		echo '</fieldset>';
+
+		echo '</select>';
+	}
+
+	/**
+	 * Render the WooCommerce email checkboxes.
+	 *
+	 * Stored inverted: the option holds the emails to exclude, so any email
+	 * added later by an extension shows the estimate by default.
+	 *
+	 * @param  array $args Field arguments.
+	 * @return void
+	 */
+	public function render_email_types( array $args ): void {
+		$emails = QuickShipD_Display::get_order_emails();
+
+		if ( empty( $emails ) ) {
+			echo '<p class="description">' . esc_html__( 'No WooCommerce emails found.', 'quickshipd' ) . '</p>';
+			return;
+		}
+
+		$excluded = array_map( 'strval', (array) get_option( 'quickshipd_email_exclude', array() ) );
+
+		printf(
+			'<select multiple="multiple" class="wc-enhanced-select quickshipd-email-select" id="quickshipd_email_types" name="quickshipd_email_types[]" data-placeholder="%s" style="width:100%%;">',
+			esc_attr__( 'No emails selected', 'quickshipd' )
+		);
+
+		foreach ( $emails as $email_id => $label ) {
+			printf(
+				'<option value="%1$s" %2$s>%3$s</option>',
+				esc_attr( $email_id ),
+				selected( ! in_array( (string) $email_id, $excluded, true ), true, false ),
+				esc_html( $label )
+			);
+		}
+
+		echo '</select>';
 	}
 
 	/**
@@ -791,7 +860,24 @@ class QuickShipD_Admin {
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'wp-color-picker' );
 
+		// WooCommerce's own multi-select, used by the day and email choosers.
+		wp_enqueue_script( 'wc-enhanced-select' );
+
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
+		/**
+		 * Asset version. With SCRIPT_DEBUG on, use the file's modified time so
+		 * edits are picked up without bumping the plugin version by hand.
+		 *
+		 * @param  string $path Absolute path to the asset.
+		 * @return string
+		 */
+		$asset_version = static function ( string $path ): string {
+			if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG && file_exists( $path ) ) {
+				return (string) filemtime( $path );
+			}
+			return QUICKSHIPD_VERSION;
+		};
 
 		// Frontend stylesheet is needed for the live preview card.
 		wp_enqueue_style(
@@ -801,18 +887,25 @@ class QuickShipD_Admin {
 			QUICKSHIPD_VERSION
 		);
 
+		// Depend on WooCommerce's admin CSS rather than merely enqueueing it, so
+		// select2 styling always prints before ours and our overrides land last.
+		$css_deps = array( 'quickshipd-frontend' );
+		if ( wp_style_is( 'woocommerce_admin_styles', 'registered' ) ) {
+			$css_deps[] = 'woocommerce_admin_styles';
+		}
+
 		wp_enqueue_style(
 			'quickshipd-admin',
 			QUICKSHIPD_URL . 'assets/css/admin' . $suffix . '.css',
-			array( 'quickshipd-frontend' ),
-			QUICKSHIPD_VERSION
+			$css_deps,
+			$asset_version( QUICKSHIPD_PATH . 'assets/css/admin' . $suffix . '.css' )
 		);
 
 		wp_enqueue_script(
 			'quickshipd-admin',
 			QUICKSHIPD_URL . 'assets/js/admin' . $suffix . '.js',
 			array( 'wp-color-picker', 'jquery' ),
-			QUICKSHIPD_VERSION,
+			$asset_version( QUICKSHIPD_PATH . 'assets/js/admin' . $suffix . '.js' ),
 			true
 		);
 
@@ -842,6 +935,7 @@ class QuickShipD_Admin {
 					'holidayEndBefore'  => __( 'End date must be on or after the start date.', 'quickshipd' ),
 					'holidayCrossYear'  => __( 'Ranges must stay within the same calendar year.', 'quickshipd' ),
 					'copied'            => __( 'Copied', 'quickshipd' ),
+					'copyFailed'        => __( 'Press Ctrl+C to copy', 'quickshipd' ),
 				),
 			)
 		);
@@ -926,6 +1020,18 @@ class QuickShipD_Admin {
 						isset( $_POST['quickshipd_show_countdown_seconds'] ) ? sanitize_text_field( wp_unslash( $_POST['quickshipd_show_countdown_seconds'] ) ) : null
 					)
 				);
+				update_option(
+					'quickshipd_show_order_meta',
+					$this->sanitize_checkbox(
+						isset( $_POST['quickshipd_show_order_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['quickshipd_show_order_meta'] ) ) : null
+					)
+				);
+				$email_checked = array();
+				if ( isset( $_POST['quickshipd_email_types'] ) && is_array( $_POST['quickshipd_email_types'] ) ) {
+					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each element sanitized via map_deep().
+					$email_checked = map_deep( wp_unslash( $_POST['quickshipd_email_types'] ), 'sanitize_text_field' );
+				}
+				update_option( 'quickshipd_email_exclude', $this->sanitize_email_exclude( $email_checked ) );
 				break;
 
 			case 'style':
@@ -1005,6 +1111,23 @@ class QuickShipD_Admin {
 	public function sanitize_cutoff_min( $value ): int {
 		$min = (int) $value;
 		return ( $min >= 0 && $min <= 59 ) ? $min : 0;
+	}
+
+	/**
+	 * Turn the ticked email list into the excluded list that gets stored.
+	 *
+	 * @param  mixed $checked Email ids that were ticked.
+	 * @return string[]
+	 */
+	public function sanitize_email_exclude( $checked ): array {
+		$known = array_keys( QuickShipD_Display::get_order_emails() );
+		if ( empty( $known ) ) {
+			return array();
+		}
+
+		$checked = is_array( $checked ) ? array_map( 'strval', $checked ) : array();
+
+		return array_values( array_diff( $known, $checked ) );
 	}
 
 	/**
