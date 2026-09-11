@@ -31,29 +31,43 @@
 		});
 	}
 
+	var tickTimer = null;
+
 	function startCountdown() {
+		if (tickTimer) return;
 		if (document.querySelector('.quickshipd-countdown[data-seconds]')) {
-			setInterval(tickAll, 1000);
+			tickTimer = setInterval(tickAll, 1000);
 		}
 	}
 
 	// -- Variation AJAX -----------------------------------------------------
 
+	var requestedId = null;
+	var requestSeq  = 0;
+
 	function updateVariation(variationId) {
 		var el = document.querySelector('.quickshipd-variable');
 		if (!el) return;
 
-		if (!variationId) { el.style.display = 'none'; el.innerHTML = ''; return; }
+		variationId = parseInt(variationId, 10) || 0;
+
+		// Selecting an attribute fires both the observer and found_variation.
+		if (variationId === requestedId) return;
+		requestedId = variationId;
+
+		if (!variationId) { requestSeq++; el.style.display = 'none'; el.innerHTML = ''; return; }
 
 		var url   = el.getAttribute('data-ajax') || (window.quickshipdData && window.quickshipdData.ajaxUrl) || '';
 		var nonce = el.getAttribute('data-nonce') || (window.quickshipdData && window.quickshipdData.nonce) || '';
 		if (!url) return;
 
 		var body = 'action=quickshipd_variation_date&variation_id=' + variationId + '&nonce=' + encodeURIComponent(nonce);
+		var seq  = ++requestSeq;
 
 		fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
 			.then(function (r) { return r.json(); })
 			.then(function (d) {
+				if (seq !== requestSeq) return; // A newer selection already won.
 				if (d && d.success && d.data && d.data.html) {
 					el.innerHTML = d.data.html;
 					el.style.display = '';
@@ -63,7 +77,10 @@
 					el.innerHTML = '';
 				}
 			})
-			.catch(function () { el.style.display = 'none'; });
+			.catch(function () {
+				requestedId = null; // Allow a retry on the same variation.
+				if (seq === requestSeq) el.style.display = 'none';
+			});
 	}
 
 	function initVariation() {
@@ -97,10 +114,19 @@
 			'<span class="quickshipd-skel-line quickshipd-skel-line--sm"></span>' +
 		'</div>';
 
+	// Clicking the already-selected rate re-renders nothing, so restore anything
+	// still showing a skeleton rather than leaving it spinning forever.
 	function showBlockSkeletons() {
 		var els = document.querySelectorAll( '.wc-block-components-product-details__est-delivery' );
 		els.forEach( function ( el ) {
+			if ( el.querySelector( '.quickshipd-checkout-skeleton' ) ) return;
+			var saved = el.innerHTML;
 			el.innerHTML = SKELETON_HTML;
+			setTimeout( function () {
+				if ( el.isConnected && el.querySelector( '.quickshipd-checkout-skeleton' ) ) {
+					el.innerHTML = saved;
+				}
+			}, 5000 );
 		} );
 	}
 
@@ -124,16 +150,25 @@
 	}
 
 	function initClassicCheckoutSkeleton() {
-		// Classic checkout: jQuery update_checkout event.
+		// Classic checkout: jQuery update_checkout event. The row is looked up on
+		// every event because WooCommerce replaces #order_review wholesale.
 		if ( !window.jQuery ) return;
-		var wrap = document.getElementById( 'quickshipd-checkout-delivery' );
-		if ( !wrap ) return;
+		var saved = null;
+
 		jQuery( document.body ).on( 'update_checkout', function () {
-			var td = wrap.querySelector( 'td' );
-			if ( td && !td.querySelector( '.quickshipd-checkout-skeleton' ) ) {
-				td.setAttribute( 'data-qs-saved', td.innerHTML );
-				td.innerHTML = SKELETON_HTML;
+			var td = document.querySelector( '#quickshipd-checkout-delivery td' );
+			if ( !td || td.querySelector( '.quickshipd-checkout-skeleton' ) ) return;
+			saved = td.innerHTML;
+			td.innerHTML = SKELETON_HTML;
+		} );
+
+		// If the refresh failed, the row is never replaced. Put the estimate back.
+		jQuery( document.body ).on( 'updated_checkout checkout_error', function () {
+			var td = document.querySelector( '#quickshipd-checkout-delivery td' );
+			if ( td && null !== saved && td.querySelector( '.quickshipd-checkout-skeleton' ) ) {
+				td.innerHTML = saved;
 			}
+			saved = null;
 		} );
 	}
 

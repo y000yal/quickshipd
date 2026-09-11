@@ -2,12 +2,12 @@
 Contributors: y0000el
 Tags: estimated delivery date, delivery date, estimated delivery, delivery time, order cutoff
 Requires at least: 6.5
-Tested up to: 7.0.4
+Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0.2
 WC tested up to: 10.9.4
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -248,6 +248,13 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 
 == Changelog ==
 
+= 1.0.7   - 11/09/2026 =
+* Fix     - Countdown timer ran faster the more variations a shopper selected, skipping seconds on variable products.
+* Fix     - Switching variations quickly could leave the delivery date of the previous variation on screen.
+* Fix     - Selecting a variation requested the delivery date twice.
+* Fix     - Checkout loading placeholder could stay on screen when the shipping method was reselected or the checkout refresh failed.
+* Fix     - Checkout loading placeholder stopped appearing after the first checkout refresh on the classic checkout.
+
 = 1.0.6   - 19/08/2026 =
 * Fix     - Per shipping method delivery days ignored on the storefront. Introduced in 1.0.5.
 * Feature - Control whether the estimate is saved on orders, and which emails show it.
@@ -297,6 +304,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
 * WordPress.org–compliant: no tracking, no external requests, GPLv3 or later.
 
 == Upgrade Notice ==
+
+= 1.0.7 =
+Fixes the countdown timer skipping seconds on variable products, and a stuck loading placeholder at checkout. Recommended for all users.
 
 = 1.0.6 =
 Fixes per shipping method delivery days being ignored on the storefront in 1.0.5. Adds control over the estimate on orders and emails. Update as soon as you can.
