@@ -1,0 +1,171 @@
+name: Tests
+
+# Pull requests only. Pushing to master and publishing a release do not run
+# these, so the wordpress.org deploy is never held up by them.
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: Lint PHP
+        run: find . -path ./node_modules -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Lint JS
+        run: for f in assets/js/*.js; do node --check "$f"; done
+
+  unit:
+    name: Unit (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run unit tests
+        run: vendor/bin/phpunit -c phpunit-unit.xml.dist
+
+  preview-parity:
+    name: Live preview parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Preview matches the PHP calculator
+        run: node tests/js/preview-parity.test.js
+
+  functional:
+    name: Functional (WP ${{ matrix.wordpress }}, PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.1'
+            wordpress: 'latest'
+          - php: '8.3'
+            wordpress: 'latest'
+          - php: '7.4'
+            wordpress: '6.5'
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli, gd, zip
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      # bin/install-wp-tests.sh needs subversion, and installing it on the
+      # runner regularly takes minutes. The same files come out of two
+      # tarballs, so fetch those instead.
+      - name: Install the WordPress test suite
+        env:
+          WP_VERSION: ${{ matrix.wordpress }}
+        run: |
+          set -euo pipefail
+
+          if [ "$WP_VERSION" = "latest" ]; then
+            WP_VERSION=$(curl -sS https://api.wordpress.org/core/version-check/1.7/ \
+              | php -r 'echo json_decode(file_get_contents("php://stdin"), true)["offers"][0]["current"];')
+          fi
+          echo "Using WordPress $WP_VERSION"
+
+          # Core, for ABSPATH.
+          curl -sSL -o /tmp/wordpress.tar.gz "https://wordpress.org/wordpress-${WP_VERSION}.tar.gz"
+          mkdir -p /tmp/wordpress
+          tar xzf /tmp/wordpress.tar.gz -C /tmp/wordpress --strip-components=1
+
+          # Test library, from the develop repo. Full releases such as 7.0.4 are
+          # tags; a series such as 6.5 only exists as a branch, so try both.
+          DEV_BASE="https://github.com/WordPress/wordpress-develop/archive/refs"
+          if ! curl -fsSL -o /tmp/develop.tar.gz "${DEV_BASE}/tags/${WP_VERSION}.tar.gz"; then
+            echo "No tag ${WP_VERSION}, falling back to the branch of the same name"
+            curl -fsSL -o /tmp/develop.tar.gz "${DEV_BASE}/heads/${WP_VERSION}.tar.gz"
+          fi
+          mkdir -p /tmp/develop
+          tar xzf /tmp/develop.tar.gz -C /tmp/develop --strip-components=1
+
+          mkdir -p /tmp/wordpress-tests-lib
+          cp -r /tmp/develop/tests/phpunit/includes /tmp/wordpress-tests-lib/
+          cp -r /tmp/develop/tests/phpunit/data /tmp/wordpress-tests-lib/
+          cp /tmp/develop/wp-tests-config-sample.php /tmp/wordpress-tests-lib/wp-tests-config.php
+
+          cd /tmp/wordpress-tests-lib
+          sed -i "s:dirname( __FILE__ ) . '/src/':'/tmp/wordpress/':" wp-tests-config.php
+          sed -i "s/youremptytestdbnamehere/wordpress_test/" wp-tests-config.php
+          sed -i "s/yourusernamehere/root/" wp-tests-config.php
+          sed -i "s/yourpasswordhere/root/" wp-tests-config.php
+          sed -i "s/localhost/127.0.0.1:3306/" wp-tests-config.php
+
+          echo "WP_TESTS_DIR=/tmp/wordpress-tests-lib" >> "$GITHUB_ENV"
+
+      - name: Install WooCommerce
+        run: |
+          set -euo pipefail
+          WC_VERSION=$(curl -sS https://api.wordpress.org/plugins/info/1.0/woocommerce.json \
+            | php -r 'echo json_decode(file_get_contents("php://stdin"))->version;')
+          echo "Using WooCommerce $WC_VERSION"
+          curl -sSL -o /tmp/woocommerce.zip "https://downloads.wordpress.org/plugin/woocommerce.$WC_VERSION.zip"
+          unzip -q /tmp/woocommerce.zip -d /tmp
+          echo "WC_PLUGIN_FILE=/tmp/woocommerce/woocommerce.php" >> "$GITHUB_ENV"
+
+      - name: Run functional tests
+        run: vendor/bin/phpunit -c phpunit.xml.dist

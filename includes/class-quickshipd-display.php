@@ -22,6 +22,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class QuickShipD_Display {
 
 	/**
+	 * Set when a render asks for the frontend assets before they are registered.
+	 *
+	 * @var bool
+	 */
+	private static $needs_assets = false;
+
+	/**
+	 * Id of the WooCommerce email currently being rendered, if any.
+	 *
+	 * @var string
+	 */
+	private static $email_context = '';
+
+	/**
+	 * Order item meta key holding the estimate.
+	 */
+	const ORDER_META_KEY = 'Est. Delivery';
+
+	/**
 	 * Register all frontend hooks.
 	 *
 	 * @return void
@@ -54,10 +73,21 @@ class QuickShipD_Display {
 		// Persist the estimate on order line items so it appears in emails,
 		// the admin order screen, and My Account. Fires for both the classic
 		// and block checkout (the Store API delegates to WC_Checkout).
-		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'save_order_item_date' ), 10, 3 );
+		if ( 'yes' === get_option( 'quickshipd_show_order_meta', 'yes' ) ) {
+			add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'save_order_item_date' ), 10, 3 );
+		}
+
+		// Track which email is rendering, so the estimate can be dropped from
+		// the ones the store has switched off.
+		add_action( 'woocommerce_email_order_details', array( $this, 'open_email_context' ), 1, 4 );
+		add_action( 'woocommerce_email_order_details', array( $this, 'close_email_context' ), 999 );
+		add_filter( 'woocommerce_order_item_get_formatted_meta_data', array( $this, 'filter_email_item_meta' ), 10, 2 );
 
 		// Assets.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+
+		// Shortcode: for page builders and themes that never fire our hooks.
+		add_shortcode( 'quickshipd', array( $this, 'shortcode' ) );
 
 		// AJAX: variation change.
 		add_action( 'wp_ajax_quickshipd_variation_date', array( $this, 'ajax_variation_date' ) );
@@ -86,32 +116,79 @@ class QuickShipD_Display {
 	public function render_product(): void {
 		global $product;
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside build_html.
+		echo self::product_html( $product );
+	}
+
+	/**
+	 * Build the product-context estimate for a product, or '' if it should not
+	 * show. Shared by the product hook and the shortcode.
+	 *
+	 * @param  mixed  $product  WC_Product instance (anything else returns '').
+	 * @param  string $context  Display context passed to build_html().
+	 * @return string
+	 */
+	private static function product_html( $product, string $context = 'product' ): string {
 		if ( ! $product instanceof WC_Product ) {
-			return;
+			return '';
 		}
 
 		// Honour the per-product disable flag.
 		if ( 'yes' === get_post_meta( $product->get_id(), '_quickshipd_disabled', true ) ) {
-			return;
+			return '';
 		}
 
 		// Only show for in-stock products.
 		if ( ! $product->is_in_stock() ) {
-			return;
+			return '';
 		}
+
+		self::enqueue();
 
 		// For variable products show a placeholder that JS will populate when
 		// a variation is selected.
 		if ( $product->is_type( 'variable' ) ) {
-			echo '<div class="quickshipd-delivery quickshipd-variable" data-nonce="' . esc_attr( wp_create_nonce( 'quickshipd_variation' ) ) . '" data-ajax="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '" style="display:none;"></div>';
-			return;
+			return '<div class="quickshipd-delivery quickshipd-variable" data-nonce="' . esc_attr( wp_create_nonce( 'quickshipd_variation' ) ) . '" data-ajax="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '" style="display:none;"></div>';
 		}
 
 		$calc   = QuickShipD_Calculator::from_settings( array(), $product->get_id() );
 		$result = $calc->calculate();
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside build_html.
-		echo self::build_html( $result, $product->get_id(), 'product' );
+		return self::build_html( $result, $product->get_id(), $context );
+	}
+
+	/**
+	 * Shortcode handler for [quickshipd].
+	 *
+	 * Renders the same estimate as the product page, for page builders and
+	 * themes that never fire woocommerce_single_product_summary.
+	 *
+	 * @param  array|string $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function shortcode( $atts ): string {
+		$atts = shortcode_atts(
+			array(
+				'product_id' => 0,
+				'context'    => 'product',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'quickshipd'
+		);
+
+		$product_id = absint( $atts['product_id'] );
+		$product    = $product_id ? wc_get_product( $product_id ) : ( $GLOBALS['product'] ?? null );
+
+		// Page builders do not always prime the global, so fall back to the post.
+		if ( ! $product instanceof WC_Product ) {
+			$product = wc_get_product( get_the_ID() );
+		}
+
+		$context = in_array( $atts['context'], array( 'product', 'shop', 'cart', 'checkout' ), true )
+			? $atts['context']
+			: 'product';
+
+		return self::product_html( $product, $context );
 	}
 
 	// -----------------------------------------------------------------------
@@ -205,6 +282,18 @@ class QuickShipD_Display {
 			return;
 		}
 
+		/**
+		 * Filter whether the estimate is stored on this order line at all.
+		 * Returning false keeps it out of emails, admin orders, and My Account.
+		 *
+		 * @param bool  $save   Whether to store the estimate.
+		 * @param mixed $item   Order line item being created.
+		 * @param array $values Cart item data.
+		 */
+		if ( ! apply_filters( 'quickshipd_save_order_item_date', true, $item, $values ) ) {
+			return;
+		}
+
 		if ( 'yes' === get_post_meta( $values['product_id'], '_quickshipd_disabled', true ) ) {
 			return;
 		}
@@ -219,6 +308,137 @@ class QuickShipD_Display {
 		}
 
 		$item->add_meta_data( __( 'Est. Delivery', 'quickshipd' ), self::format_date_label( $result ), true );
+	}
+
+	// -----------------------------------------------------------------------
+	// Email visibility.
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Order emails the estimate can appear in, as id => title.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function get_order_emails(): array {
+		if ( ! function_exists( 'WC' ) || ! WC()->mailer() ) {
+			return array();
+		}
+
+		// These carry no order item table, so the estimate could never show.
+		$skip = array( 'customer_new_account', 'customer_reset_password', 'admin_payment_gateway_enabled' );
+
+		$emails = array();
+		$titles = array();
+
+		foreach ( WC()->mailer()->get_emails() as $email ) {
+			if ( ! isset( $email->id ) || in_array( $email->id, $skip, true ) ) {
+				continue;
+			}
+
+			$id    = (string) $email->id;
+			$title = $email->get_title() ? $email->get_title() : $id;
+
+			$emails[ $id ] = $title;
+			$titles[]      = $title;
+		}
+
+		// WooCommerce ships an admin and a customer copy of some emails under
+		// the same title, so say who each one goes to when that happens.
+		$repeated = array_keys( array_filter( array_count_values( $titles ), static fn( $count ) => $count > 1 ) );
+
+		if ( empty( $repeated ) ) {
+			return $emails;
+		}
+
+		foreach ( WC()->mailer()->get_emails() as $email ) {
+			if ( ! isset( $email->id ) || ! isset( $emails[ (string) $email->id ] ) ) {
+				continue;
+			}
+
+			$id = (string) $email->id;
+			if ( ! in_array( $emails[ $id ], $repeated, true ) ) {
+				continue;
+			}
+
+			$emails[ $id ] = sprintf(
+				/* translators: 1: email name, 2: who receives it */
+				__( '%1$s (%2$s)', 'quickshipd' ),
+				$emails[ $id ],
+				$email->is_customer_email() ? __( 'to customer', 'quickshipd' ) : __( 'to admin', 'quickshipd' )
+			);
+		}
+
+		return $emails;
+	}
+
+	/**
+	 * Whether the estimate should render in a given email.
+	 *
+	 * @param  string $email_id WooCommerce email id.
+	 * @return bool
+	 */
+	public static function email_shows_estimate( string $email_id ): bool {
+		$excluded = (array) get_option( 'quickshipd_email_exclude', array() );
+		$show     = ! in_array( $email_id, array_map( 'strval', $excluded ), true );
+
+		/**
+		 * Filter whether the estimate renders in a specific WooCommerce email.
+		 *
+		 * @param bool   $show     Whether to show it.
+		 * @param string $email_id WooCommerce email id, e.g. customer_processing_order.
+		 */
+		return (bool) apply_filters( 'quickshipd_show_in_email', $show, $email_id );
+	}
+
+	/**
+	 * Remember which email is rendering.
+	 *
+	 * @param  mixed $order         Order object.
+	 * @param  bool  $sent_to_admin Whether the email goes to an admin.
+	 * @param  bool  $plain_text    Whether this is the plain text version.
+	 * @param  mixed $email         WC_Email instance.
+	 * @return void
+	 */
+	public function open_email_context( $order, $sent_to_admin = false, $plain_text = false, $email = null ): void {
+		self::$email_context = is_object( $email ) && isset( $email->id ) ? (string) $email->id : '';
+	}
+
+	/**
+	 * Forget the email being rendered.
+	 *
+	 * @return void
+	 */
+	public function close_email_context(): void {
+		self::$email_context = '';
+	}
+
+	/**
+	 * Strip the estimate from the item table of emails it is switched off for.
+	 *
+	 * @param  array $formatted Formatted meta objects.
+	 * @param  mixed $item      Order line item.
+	 * @return array
+	 */
+	public function filter_email_item_meta( $formatted, $item ) {
+		if ( '' === self::$email_context || ! is_array( $formatted ) ) {
+			return $formatted;
+		}
+
+		if ( self::email_shows_estimate( self::$email_context ) ) {
+			return $formatted;
+		}
+
+		// Match the current translation and the original, since the key stored
+		// on older orders is whatever the site language was at checkout.
+		$keys = array( __( 'Est. Delivery', 'quickshipd' ), self::ORDER_META_KEY );
+
+		foreach ( $formatted as $index => $meta ) {
+			if ( isset( $meta->key ) && in_array( $meta->key, $keys, true ) ) {
+				unset( $formatted[ $index ] );
+			}
+		}
+
+		return $formatted;
 	}
 
 	// -----------------------------------------------------------------------
@@ -283,6 +503,9 @@ class QuickShipD_Display {
 		if ( empty( $result['show'] ) ) {
 			return '';
 		}
+
+		// Single choke point for every context, so markup never ships unstyled.
+		self::enqueue();
 
 		$opt = static function ( string $key, string $default ) use ( $s ): string {
 			if ( isset( $s[ $key ] ) && '' !== $s[ $key ] ) {
@@ -375,32 +598,16 @@ class QuickShipD_Display {
 	 * @return void
 	 */
 	public function enqueue_assets(): void {
-		$show_product  = 'yes' === get_option( 'quickshipd_show_product', 'yes' );
-		$show_shop     = 'yes' === get_option( 'quickshipd_show_shop', 'no' );
-		$show_cart     = 'yes' === get_option( 'quickshipd_show_cart', 'yes' );
-		$show_checkout = 'yes' === get_option( 'quickshipd_show_checkout', 'yes' );
-
-		$should_load = (
-			( $show_product && is_product() ) ||
-			( $show_shop && ( is_shop() || is_product_category() || is_product_tag() ) ) ||
-			( $show_cart && is_cart() ) ||
-			( $show_checkout && is_checkout() )
-		);
-
-		if ( ! $should_load ) {
-			return;
-		}
-
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_style(
+		wp_register_style(
 			'quickshipd-frontend',
 			QUICKSHIPD_URL . 'assets/css/frontend' . $suffix . '.css',
 			array(),
 			QUICKSHIPD_VERSION
 		);
 
-		wp_enqueue_script(
+		wp_register_script(
 			'quickshipd-frontend',
 			QUICKSHIPD_URL . 'assets/js/frontend' . $suffix . '.js',
 			array(),
@@ -416,6 +623,47 @@ class QuickShipD_Display {
 				'nonce'   => wp_create_nonce( 'quickshipd_variation' ),
 			)
 		);
+
+		$show_product  = 'yes' === get_option( 'quickshipd_show_product', 'yes' );
+		$show_shop     = 'yes' === get_option( 'quickshipd_show_shop', 'no' );
+		$show_cart     = 'yes' === get_option( 'quickshipd_show_cart', 'yes' );
+		$show_checkout = 'yes' === get_option( 'quickshipd_show_checkout', 'yes' );
+
+		// Load up front on the pages we know about so the styles land in <head>.
+		// Anywhere else (page builders, product loops on a static home page) the
+		// render itself enqueues them and WordPress prints them in the footer.
+		$should_load = (
+			( $show_product && is_product() ) ||
+			( $show_shop && ( is_shop() || is_product_category() || is_product_tag() ) ) ||
+			( $show_cart && is_cart() ) ||
+			( $show_checkout && is_checkout() )
+		);
+
+		if ( $should_load || self::$needs_assets ) {
+			wp_enqueue_style( 'quickshipd-frontend' );
+			wp_enqueue_script( 'quickshipd-frontend' );
+		}
+	}
+
+	/**
+	 * Ask for the frontend assets from inside a render, so markup produced
+	 * outside the templates above still gets its stylesheet.
+	 *
+	 * Block themes render the template before wp_enqueue_scripts runs, so an
+	 * enqueue at that point would be dropped — flag it and let enqueue_assets()
+	 * pick it up. Classic themes render later, after registration, where an
+	 * immediate enqueue still prints in the footer.
+	 *
+	 * @return void
+	 */
+	private static function enqueue(): void {
+		if ( ! did_action( 'wp_enqueue_scripts' ) ) {
+			self::$needs_assets = true;
+			return;
+		}
+
+		wp_enqueue_style( 'quickshipd-frontend' );
+		wp_enqueue_script( 'quickshipd-frontend' );
 	}
 
 	// -----------------------------------------------------------------------
@@ -469,17 +717,10 @@ class QuickShipD_Display {
 		$cutoff_hour = isset( $_POST['quickshipd_cutoff_hour'] ) ? absint( wp_unslash( $_POST['quickshipd_cutoff_hour'] ) ) : (int) get_option( 'quickshipd_cutoff_hour', 14 );
 		$cutoff_min  = isset( $_POST['quickshipd_cutoff_min'] ) ? absint( wp_unslash( $_POST['quickshipd_cutoff_min'] ) ) : (int) get_option( 'quickshipd_cutoff_min', 0 );
 
-		$excl_weekends = isset( $_POST['quickshipd_exclude_weekends'] )
-			? sanitize_text_field( wp_unslash( $_POST['quickshipd_exclude_weekends'] ) )
-			: get_option( 'quickshipd_exclude_weekends', 'yes' );
-
 		$excluded_days = array();
 		if ( isset( $_POST['quickshipd_excluded_days'] ) && is_array( $_POST['quickshipd_excluded_days'] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Mapped via absint below.
 			$excluded_days = array_map( 'absint', wp_unslash( $_POST['quickshipd_excluded_days'] ) );
-		}
-		if ( 'yes' === $excl_weekends ) {
-			$excluded_days = array_unique( array_merge( $excluded_days, array( 0, 6 ) ) );
 		}
 
 		$holidays_raw = isset( $_POST['quickshipd_holidays'] )
@@ -569,8 +810,15 @@ class QuickShipD_Display {
 			return array();
 		}
 
-		$min = $method->get_option( 'quickshipd_min_days', '' );
-		$max = $method->get_option( 'quickshipd_max_days', '' );
+		// Read the saved instance settings directly. get_option() only routes to
+		// the instance values for keys present in get_instance_form_fields(),
+		// and our fields are only filtered in on admin screens.
+		$settings = method_exists( $method, 'get_instance_option_key' )
+			? (array) get_option( $method->get_instance_option_key(), array() )
+			: array();
+
+		$min = $settings['quickshipd_min_days'] ?? '';
+		$max = $settings['quickshipd_max_days'] ?? '';
 
 		$overrides = array();
 		if ( '' !== $min && is_numeric( $min ) ) {
@@ -594,7 +842,7 @@ class QuickShipD_Display {
 		}
 
 		if ( 'box' === $type ) {
-			return '<svg class="quickshipd-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
+			return '<svg class="quickshipd-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
 				. '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="1.5" fill="none"/>'
 				. '<polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" stroke-width="1.5" fill="none"/>'
 				. '<line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="1.5"/>'
@@ -602,7 +850,7 @@ class QuickShipD_Display {
 		}
 
 		// Default: truck.
-		return '<svg class="quickshipd-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
+		return '<svg class="quickshipd-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
 			. '<path d="M1 3h15v13H1V3z" stroke="currentColor" stroke-width="1.5" fill="none"/>'
 			. '<path d="M16 8h4l3 4v5h-7V8z" stroke="currentColor" stroke-width="1.5" fill="none"/>'
 			. '<circle cx="5.5" cy="18.5" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/>'

@@ -1,0 +1,44 @@
+# Files never published to wordpress.org.
+# The 10up deploy action rsyncs the repository to SVN trunk and honours this
+# list. It does NOT use the gulp release zip, so this has to be kept in step
+# with the EXCLUDE array in gulpfile.js.
+
+# Version control and CI
+.git
+.gitignore
+.gitattributes
+.github
+.circleci
+.distignore
+
+# wordpress.org assets live in their own SVN directory, not in the plugin
+.wordpress-org
+
+# Dependencies
+node_modules
+vendor
+
+# Build tooling
+gulpfile.js
+package.json
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+composer.json
+composer.lock
+release
+
+# Tests and linting
+tests
+bin
+phpunit.xml.dist
+phpunit-unit.xml.dist
+.phpunit.result.cache
+.phpcs.xml.dist
+.editorconfig
+
+# Local noise
+.DS_Store
+Thumbs.db
+*.zip
+*.log

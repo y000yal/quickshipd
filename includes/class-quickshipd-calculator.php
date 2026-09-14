@@ -128,13 +128,8 @@ class QuickShipD_Calculator {
 			$max_days = (int) $overrides['max_days'];
 		}
 
-		// Excluded weekdays.
-		$exclude_weekends = 'yes' === get_option( 'quickshipd_exclude_weekends', 'yes' );
-		$excluded_days    = (array) get_option( 'quickshipd_excluded_days', array() );
-		if ( $exclude_weekends ) {
-			// Ensure 0 (Sunday) and 6 (Saturday) are in the list.
-			$excluded_days = array_unique( array_merge( $excluded_days, array( 0, 6 ) ) );
-		}
+		// Weekdays orders are not dispatched on.
+		$excluded_days = (array) get_option( 'quickshipd_excluded_days', array() );
 
 		// Holidays: structured entries (or legacy textarea string — migrated on read).
 		$holidays_raw = get_option( 'quickshipd_holidays', array() );
@@ -174,9 +169,16 @@ class QuickShipD_Calculator {
 			$start->modify( '+1 day' );
 		}
 
-		// Countdown seconds: how many seconds until the cutoff (0 if past).
+		// Roll forward to the dispatch day: nothing goes out on an excluded day,
+		// so the delivery count must start after it, not on it.
+		$safety = 365;
+		while ( $this->is_excluded( $start ) && $safety-- > 0 ) {
+			$start->modify( '+1 day' );
+		}
+
+		// Countdown only means anything while today is still the dispatch day.
 		$countdown_seconds = 0;
-		if ( ! $past_cutoff ) {
+		if ( ! $past_cutoff && $start->format( 'Y-m-d' ) === $now->format( 'Y-m-d' ) ) {
 			$countdown_seconds = (int) ( $cutoff->getTimestamp() - $now->getTimestamp() );
 		}
 
@@ -213,15 +215,6 @@ class QuickShipD_Calculator {
 			$date->modify( '+1 day' );
 			if ( ! $this->is_excluded( $date ) ) {
 				++$added;
-			}
-		}
-
-		// If min_days/max_days is 0, the start day itself is valid only if not
-		// excluded — otherwise advance to the next valid day.
-		if ( 0 === $days ) {
-			$safety = 365;
-			while ( $this->is_excluded( $date ) && $safety-- > 0 ) {
-				$date->modify( '+1 day' );
 			}
 		}
 

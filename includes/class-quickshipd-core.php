@@ -49,13 +49,6 @@ final class QuickShipD_Core {
 	private QuickShipD_Product_Meta $product_meta;
 
 	/**
-	 * REST handler instance.
-	 *
-	 * @var QuickShipD_Rest
-	 */
-	private QuickShipD_Rest $rest;
-
-	/**
 	 * Private constructor — use ::get_instance().
 	 */
 	private function __construct() {}
@@ -81,7 +74,12 @@ final class QuickShipD_Core {
 	private function setup(): void {
 		$this->load_dependencies();
 		$this->init_subsystems();
-		$this->register_shipping_method_hooks();
+
+		// Shipping zone form fields are an admin screen only. The frontend reads
+		// the saved instance settings straight from the DB, so it needs nothing here.
+		if ( is_admin() ) {
+			$this->register_shipping_method_hooks();
+		}
 	}
 
 	/**
@@ -92,11 +90,10 @@ final class QuickShipD_Core {
 	private function load_dependencies(): void {
 		$includes = QUICKSHIPD_PATH . 'includes/';
 
+		// Only the two files every request needs. The admin, product-meta, and
+		// REST classes are loaded in init_subsystems() when their context applies.
 		require_once $includes . 'class-quickshipd-calculator.php';
 		require_once $includes . 'class-quickshipd-display.php';
-		require_once $includes . 'class-quickshipd-admin.php';
-		require_once $includes . 'class-quickshipd-product-meta.php';
-		require_once $includes . 'class-quickshipd-rest.php';
 	}
 
 	/**
@@ -105,19 +102,32 @@ final class QuickShipD_Core {
 	 * @return void
 	 */
 	private function init_subsystems(): void {
-		$this->display      = new QuickShipD_Display();
-		$this->product_meta = new QuickShipD_Product_Meta();
-		$this->rest         = new QuickShipD_Rest();
+		$this->display = new QuickShipD_Display();
 
 		$this->display->init();
 		$this->display->init_preview_ajax(); // always register, regardless of enabled state.
-		$this->product_meta->init();
-		$this->rest->init();
 
-		if ( is_admin() ) {
-			$this->admin = new QuickShipD_Admin();
-			$this->admin->init();
+		// REST handler: only pulled in when a REST request is actually served.
+		add_action(
+			'rest_api_init',
+			static function (): void {
+				require_once QUICKSHIPD_PATH . 'includes/class-quickshipd-rest.php';
+				( new QuickShipD_Rest() )->register_routes();
+			}
+		);
+
+		if ( ! is_admin() ) {
+			return;
 		}
+
+		require_once QUICKSHIPD_PATH . 'includes/class-quickshipd-admin.php';
+		require_once QUICKSHIPD_PATH . 'includes/class-quickshipd-product-meta.php';
+
+		$this->admin = new QuickShipD_Admin();
+		$this->admin->init();
+
+		$this->product_meta = new QuickShipD_Product_Meta();
+		$this->product_meta->init();
 	}
 
 	/**

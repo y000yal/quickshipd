@@ -337,6 +337,85 @@ tr.qs-sub-setting > th {
 	max-width: 360px;
 }
 
+/* WooCommerce's select2 fields, matched to the inputs above. Its own rule is
+   .select2-container--default .select2-selection--multiple { border: 1px solid #aaa },
+   so these carry an extra class to outrank it wherever they land. */
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple,
+.quickshipd-settings-wrap .select2-container--default .select2-selection--single,
+.quickshipd-settings-form .select2-container .select2-selection--multiple,
+.quickshipd-settings-form .select2-container .select2-selection--single {
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 7px;
+	/* Sized to sit level with the text and number inputs above. */
+	min-height: 31px;
+	padding: 1px 6px;
+	transition: border-color .15s, box-shadow .15s;
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-selection__rendered,
+.quickshipd-settings-form .select2-container .select2-selection__rendered {
+	padding: 0;
+	margin: 0;
+	line-height: 1.4;
+}
+
+/* The inline search field is what makes select2 taller than a plain input:
+   it ships at 27px with a 5px top margin. Match it to the token height. */
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-search--inline,
+.quickshipd-settings-form .select2-container .select2-search--inline {
+	margin: 1px 0;
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-search--inline .select2-search__field,
+.quickshipd-settings-form .select2-container .select2-search--inline .select2-search__field {
+	height: 20px;
+	min-height: 0;
+	padding: 0;
+	margin: 0;
+	line-height: 20px;
+	font-size: 13px;
+}
+
+.quickshipd-settings-form .select2-container--focus .select2-selection--multiple,
+.quickshipd-settings-form .select2-container--open .select2-selection--multiple {
+	border-color: var(--qs-green);
+	box-shadow: 0 0 0 3px rgba(22,163,74,.12);
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-selection__choice,
+.quickshipd-settings-form .select2-container .select2-selection__choice {
+	border-radius: 5px;
+	border-color: var(--qs-gray-200);
+	background: var(--qs-gray-50);
+	color: var(--qs-gray-900);
+	font-size: 12px;
+	line-height: 1.5;
+	padding: 0 7px;
+	margin: 1px 4px 1px 0;
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-selection__choice__remove,
+.quickshipd-settings-form .select2-container .select2-selection__choice__remove {
+	color: var(--qs-gray-500);
+	margin-right: 5px;
+}
+
+.quickshipd-settings-wrap .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+	color: var(--qs-gray-900);
+}
+
+/* The dropdown is appended to the body, and this stylesheet only loads on the
+   QuickShipD screen, so an unscoped rule is safe here. */
+.select2-dropdown {
+	border-color: var(--qs-gray-200);
+	border-radius: 7px;
+	overflow: hidden;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+	background: var(--qs-green);
+}
+
 .quickshipd-settings-form textarea.large-text {
 	width: 100%;
 	max-width: 420px;
@@ -893,3 +972,717 @@ tr.qs-sub-setting > th {
 		height: 16px;
 	}
 }
+
+/* ---------------------------------------------------------------- */
+/* Help tab                                                          */
+/* ---------------------------------------------------------------- */
+
+.qs-help {
+	color: var(--qs-gray-700);
+	font-size: 14px;
+	line-height: 1.65;
+	scroll-behavior: smooth;
+}
+
+.qs-help h3,
+.qs-help h4 {
+	color: var(--qs-gray-900);
+}
+
+.qs-help p {
+	margin: 0 0 12px;
+}
+
+.qs-help p:last-child {
+	margin-bottom: 0;
+}
+
+/* Header ------------------------------------------------------------ */
+
+.qs-help-hero {
+	margin: 0 0 22px;
+	padding: 0 0 20px;
+	border-bottom: 1px solid var(--qs-gray-200);
+}
+
+.qs-help-hero__main {
+	max-width: 640px;
+}
+
+/* Two classes, so it outranks the .quickshipd-settings-form h2 card styling. */
+.qs-help .qs-help-hero__title {
+	margin: 0 0 6px;
+	padding: 0;
+	background: none;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	font-size: 19px;
+	font-weight: 600;
+	line-height: 1.35;
+	letter-spacing: normal;
+	text-transform: none;
+	color: var(--qs-gray-900);
+}
+
+.qs-help-hero__text {
+	margin: 0;
+	font-size: 14px;
+	color: var(--qs-gray-500);
+}
+
+/* Sidebar + panel ---------------------------------------------------- */
+
+.qs-help-body {
+	display: flex;
+	align-items: flex-start;
+	gap: 24px;
+}
+
+.qs-help-side {
+	flex: 0 0 200px;
+	position: sticky;
+	top: 32px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.qs-help-side__item {
+	padding: 8px 12px;
+	border-radius: 7px;
+	border-left: 2px solid transparent;
+	color: var(--qs-gray-500);
+	font-size: 13px;
+	font-weight: 500;
+	text-decoration: none;
+	transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.qs-help-side__item:hover,
+.qs-help-side__item:focus {
+	background: var(--qs-gray-50);
+	color: var(--qs-gray-900);
+	box-shadow: none;
+	outline: none;
+}
+
+.qs-help-side__item.is-active {
+	background: var(--qs-green-light);
+	border-left-color: var(--qs-green);
+	color: var(--qs-green-dark);
+	font-weight: 600;
+}
+
+.qs-help-content {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* Without JS every panel stays visible, so nothing is ever unreachable. */
+.qs-help.is-tabbed .qs-help-panel {
+	display: none;
+}
+
+.qs-help.is-tabbed .qs-help-panel.is-active {
+	display: block;
+	margin-bottom: 0;
+}
+
+/* Cards ------------------------------------------------------------- */
+
+.qs-card {
+	margin: 0 0 18px;
+	padding: 24px 26px;
+	background: #fff;
+	border: 1px solid var(--qs-gray-200);
+	border-radius: var(--qs-radius);
+	box-shadow: var(--qs-shadow);
+	scroll-margin-top: 24px;
+}
+
+.qs-card:last-child {
+	margin-bottom: 0;
+}
+
+.qs-card--plain {
+	background: var(--qs-gray-50);
+	box-shadow: none;
+}
+
+.qs-card__title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 16px;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.qs-card__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	flex-shrink: 0;
+	border-radius: 8px;
+	background: var(--qs-green-light);
+	color: var(--qs-green-dark);
+}
+
+.qs-card__icon svg {
+	width: 16px;
+	height: 16px;
+}
+
+.qs-card__lead {
+	margin: -4px 0 16px;
+	color: var(--qs-gray-500);
+}
+
+/* Numbered steps ---------------------------------------------------- */
+
+.qs-steps {
+	counter-reset: qs-step;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.qs-steps li {
+	counter-increment: qs-step;
+	position: relative;
+	padding: 0 0 18px 44px;
+}
+
+.qs-steps li::before {
+	content: counter(qs-step);
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: var(--qs-green);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.qs-steps li::after {
+	content: "";
+	position: absolute;
+	top: 30px;
+	bottom: 4px;
+	left: 13px;
+	width: 1px;
+	background: var(--qs-gray-200);
+}
+
+.qs-steps li:last-child {
+	padding-bottom: 0;
+}
+
+.qs-steps li:last-child::after {
+	display: none;
+}
+
+.qs-steps h4 {
+	margin: 3px 0 4px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.qs-steps p {
+	margin: 0;
+	color: var(--qs-gray-500);
+}
+
+/* Flow (3 across) --------------------------------------------------- */
+
+.qs-flow {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	margin: 0 0 18px;
+}
+
+.qs-flow__step {
+	padding: 16px;
+	background: var(--qs-gray-50);
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 8px;
+}
+
+.qs-flow__num {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	margin-bottom: 8px;
+	border-radius: 50%;
+	background: #fff;
+	border: 1px solid var(--qs-green);
+	color: var(--qs-green-dark);
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.qs-flow__step h4 {
+	margin: 0 0 4px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.qs-flow__step p {
+	margin: 0;
+	font-size: 13px;
+	color: var(--qs-gray-500);
+}
+
+/* Callout ----------------------------------------------------------- */
+
+.qs-callout {
+	margin: 0 0 14px;
+	padding: 16px 18px;
+	background: var(--qs-green-light);
+	border-left: 3px solid var(--qs-green);
+	border-radius: 0 8px 8px 0;
+}
+
+.qs-callout--warn {
+	background: #fffbeb;
+	border-left-color: #d97706;
+}
+
+.qs-callout--warn .qs-callout__label {
+	color: #b45309;
+}
+
+.qs-callout__label {
+	display: block;
+	margin-bottom: 5px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: var(--qs-green-dark);
+}
+
+.qs-callout p {
+	margin: 0;
+	color: var(--qs-gray-700);
+}
+
+.qs-note {
+	margin: 0;
+	color: var(--qs-gray-500);
+	font-size: 13px;
+}
+
+.qs-muted {
+	color: var(--qs-gray-400);
+}
+
+/* Tiles ------------------------------------------------------------- */
+
+.qs-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 12px;
+}
+
+.qs-grid--2 {
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.qs-tile {
+	padding: 16px 18px;
+	background: var(--qs-gray-50);
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 8px;
+	transition: border-color .15s ease, background .15s ease;
+}
+
+.qs-tile:hover {
+	background: #fff;
+	border-color: var(--qs-green);
+}
+
+.qs-tile h4 {
+	margin: 0 0 5px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.qs-tile p {
+	margin: 0;
+	font-size: 13px;
+	color: var(--qs-gray-500);
+}
+
+.qs-tag {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 2px 7px;
+	border-radius: 999px;
+	background: var(--qs-gray-200);
+	color: var(--qs-gray-500);
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: .03em;
+	text-transform: uppercase;
+	vertical-align: middle;
+}
+
+/* Code + copy ------------------------------------------------------- */
+
+.qs-code {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 0 0 18px;
+	padding: 12px 14px;
+	background: var(--qs-gray-50);
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 8px;
+}
+
+.qs-code code {
+	background: none;
+	padding: 0;
+	color: var(--qs-green-dark);
+	font-size: 14px;
+	font-family: Menlo, Consolas, monospace;
+}
+
+.qs-code--sm {
+	margin: 0;
+	padding: 9px 12px;
+}
+
+.qs-code--sm code {
+	font-size: 13px;
+}
+
+.qs-copy {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 5px;
+	background: #fff;
+	color: var(--qs-gray-500);
+	cursor: pointer;
+	transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.qs-copy svg {
+	width: 14px;
+	height: 14px;
+}
+
+.qs-copy__done {
+	display: none;
+}
+
+.qs-copy:hover {
+	border-color: var(--qs-green);
+	color: var(--qs-green-dark);
+}
+
+.qs-copy:focus-visible {
+	outline: 2px solid var(--qs-green);
+	outline-offset: 1px;
+}
+
+.qs-copy.is-copied {
+	background-color: #16a34a;
+	border-color: #16a34a;
+	color: #fff;
+}
+
+.qs-copy.is-copied .qs-copy__idle {
+	display: none;
+}
+
+.qs-copy.is-copied .qs-copy__done {
+	display: block;
+}
+
+/* Clipboard refused: the snippet is selected instead, so flag it differently. */
+.qs-copy.is-manual {
+	background: #d97706;
+	border-color: #d97706;
+	color: #fff;
+}
+
+.qs-subhead {
+	margin: 22px 0 10px;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: var(--qs-gray-500);
+}
+
+/* Table ------------------------------------------------------------- */
+
+.qs-table {
+	width: 100%;
+	max-width: 100%;
+	margin: 0;
+	/* Fixed, so no single long cell can stretch the table past its card. */
+	table-layout: fixed;
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.qs-table code {
+	word-break: break-word;
+}
+
+.qs-table th,
+.qs-table td {
+	padding: 11px 14px;
+	text-align: left;
+	vertical-align: top;
+	border-bottom: 1px solid var(--qs-gray-200);
+	font-size: 13px;
+}
+
+.qs-table thead th {
+	background: var(--qs-gray-50);
+	font-weight: 600;
+	color: var(--qs-gray-900);
+}
+
+.qs-table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.qs-table--shortcodes th:nth-child(1),
+.qs-table--shortcodes td:nth-child(1) {
+	width: 30%;
+}
+
+.qs-table--shortcodes th:nth-child(2),
+.qs-table--shortcodes td:nth-child(2) {
+	width: 42%;
+}
+
+.qs-table--shortcodes th:nth-child(3),
+.qs-table--shortcodes td:nth-child(3) {
+	width: 28%;
+}
+
+.qs-table--attrs th:nth-child(1),
+.qs-table--attrs td:nth-child(1) {
+	width: 24%;
+}
+
+.qs-table--attrs th:nth-child(2),
+.qs-table--attrs td:nth-child(2) {
+	width: 18%;
+}
+
+.qs-table--filters th:nth-child(1),
+.qs-table--filters td:nth-child(1) {
+	width: 34%;
+}
+
+.qs-table .qs-code {
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.qs-table code,
+.qs-chip code {
+	padding: 2px 7px;
+	background: var(--qs-gray-100);
+	border-radius: 4px;
+	color: var(--qs-green-dark);
+	font-size: 12px;
+	font-family: Menlo, Consolas, monospace;
+}
+
+/* Examples ---------------------------------------------------------- */
+
+.qs-examples {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 12px;
+}
+
+.qs-examples li {
+	display: grid;
+	grid-template-columns: minmax(220px, 300px) 1fr;
+	align-items: center;
+	gap: 14px;
+	margin: 0;
+}
+
+.qs-examples p {
+	margin: 0;
+	font-size: 13px;
+	color: var(--qs-gray-500);
+}
+
+/* Placeholder chips ------------------------------------------------- */
+
+.qs-chips {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+	gap: 10px;
+}
+
+.qs-chip {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 11px 14px;
+	background: var(--qs-gray-50);
+	border: 1px solid var(--qs-gray-200);
+	border-radius: 8px;
+}
+
+.qs-chip span {
+	font-size: 13px;
+	color: var(--qs-gray-500);
+}
+
+/* FAQ --------------------------------------------------------------- */
+
+.qs-faq {
+	border-bottom: 1px solid var(--qs-gray-200);
+}
+
+.qs-faq:last-of-type {
+	border-bottom: 0;
+}
+
+.qs-faq summary {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 13px 0;
+	cursor: pointer;
+	font-weight: 600;
+	color: var(--qs-gray-900);
+	list-style: none;
+}
+
+.qs-faq summary::-webkit-details-marker {
+	display: none;
+}
+
+.qs-faq summary::before {
+	content: "";
+	width: 8px;
+	height: 8px;
+	flex-shrink: 0;
+	border-right: 2px solid var(--qs-green);
+	border-bottom: 2px solid var(--qs-green);
+	transform: rotate(-45deg);
+	transition: transform .18s ease;
+}
+
+.qs-faq[open] summary::before {
+	transform: rotate(45deg);
+}
+
+/* The :last-child reset above would otherwise pin the answer to the divider,
+   leaving 1px below it against 13px above the next question. */
+.qs-faq p,
+.qs-faq p:last-child {
+	margin: 0 0 13px;
+	padding-left: 18px;
+	color: var(--qs-gray-500);
+}
+
+/* Ticks ------------------------------------------------------------- */
+
+.qs-ticks {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 9px;
+}
+
+.qs-ticks li {
+	position: relative;
+	margin: 0;
+	padding-left: 26px;
+	font-size: 13px;
+	color: var(--qs-gray-700);
+}
+
+.qs-ticks li::before {
+	content: "";
+	position: absolute;
+	top: 5px;
+	left: 0;
+	width: 12px;
+	height: 7px;
+	border-left: 2px solid var(--qs-green);
+	border-bottom: 2px solid var(--qs-green);
+	transform: rotate(-45deg);
+}
+
+/* Responsive -------------------------------------------------------- */
+
+@media screen and (max-width: 782px) {
+	.qs-help-body {
+		flex-direction: column;
+	}
+
+	.qs-help-side {
+		position: static;
+		flex: 1 1 auto;
+		width: 100%;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.qs-help-side__item {
+		border-left: 0;
+		border: 1px solid var(--qs-gray-200);
+		border-radius: 999px;
+	}
+
+	.qs-card {
+		padding: 18px;
+	}
+
+	.qs-flow {
+		grid-template-columns: 1fr;
+	}
+
+	.qs-examples li {
+		grid-template-columns: 1fr;
+		align-items: start;
+	}
+
+	.qs-table td:first-child,
+	.qs-table td:nth-child(2) {
+		white-space: normal;
+	}
+}
+
