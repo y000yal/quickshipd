@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0.2
 WC tested up to: 10.9.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
  
@@ -264,6 +264,13 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
  
 == Changelog ==
  
+= 1.0.8   - 05/10/2026 =
+* Feature - Choose soonest, latest, or range delivery dates on product and shop pages.
+* Feature - Estimate product delivery using the fastest shipping rate available for the customer.
+* Tweak   - Product countdown dates and live previews follow the selected delivery date display.
+* Tweak   - Show a shorter shipping note only when fastest shipping is enabled.
+* Tweak   - Help tab explains product date options, shipping availability, and fallback estimates.
+
 = 1.0.7   - 11/09/2026 =
 * Fix     - Countdown timer ran faster the more variations a shopper selected, skipping seconds on variable products.
 * Fix     - Switching variations quickly could leave the delivery date of the previous variation on screen.
@@ -321,6 +328,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
  
 == Upgrade Notice ==
  
+= 1.0.8 =
+Adds soonest and latest product date options and optional fastest available shipping estimates. Existing settings keep the delivery range; enable the new options on the Display tab.
+
 = 1.0.7 =
 Fixes the countdown timer skipping seconds on variable products, and a stuck loading placeholder at checkout. Recommended for all users.
 
