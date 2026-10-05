@@ -194,6 +194,21 @@ class QuickShipD_Admin {
 			);
 		}
 
+		$this->register_section( 'quickshipd_display_product_date', __( 'Product delivery date', 'quickshipd' ), 'display' );
+		$this->register_field( 'quickshipd_product_date', __( 'Date to show', 'quickshipd' ), 'render_product_date', 'display', 'quickshipd_display_product_date', array( 'id' => 'quickshipd_product_date' ) );
+		$this->register_field(
+			'quickshipd_product_fastest_shipping',
+			__( 'Use fastest available shipping', 'quickshipd' ),
+			'render_checkbox',
+			'display',
+			'quickshipd_display_product_date',
+			array(
+				'id'      => 'quickshipd_product_fastest_shipping',
+				'default' => 'no',
+				'tooltip' => __( 'Use eligible shipping rates for one unit and the customer destination. Without a destination or rates, use store and product settings. Local pickup is excluded.', 'quickshipd' ),
+			)
+		);
+
 		$this->register_section( 'quickshipd_display_options', __( 'Options', 'quickshipd' ), 'display' );
 
 		$this->register_field(
@@ -610,6 +625,25 @@ class QuickShipD_Admin {
 	}
 
 	/**
+	 * Render the product delivery date selector.
+	 *
+	 * @param array $args Field arguments.
+	 */
+	public function render_product_date( array $args ): void {
+		$value   = get_option( $args['id'], 'range' );
+		$options = array(
+			'range'   => __( 'Delivery range (current behaviour)', 'quickshipd' ),
+			'soonest' => __( 'Soonest date', 'quickshipd' ),
+			'latest'  => __( 'Latest date', 'quickshipd' ),
+		);
+		echo '<select id="quickshipd_product_date" name="quickshipd_product_date">';
+		foreach ( $options as $key => $label ) {
+			printf( '<option value="%1$s" %2$s>%3$s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
+		}
+		echo '</select>';
+	}
+
+	/**
 	 * Render a textarea field.
 	 *
 	 * @param  array $args Field arguments.
@@ -926,6 +960,9 @@ class QuickShipD_Admin {
 				'nowTimestamp'  => $now->getTimestamp(),
 				'siteUtcOffset' => $tz->getOffset( $now ),
 				'i18n'          => array(
+					'soonestText'      => __( 'Get it as soon as {date}', 'quickshipd' ),
+					'soonestCountdown' => __( 'Order within {countdown} to get it as soon as {date}', 'quickshipd' ),
+					'shippingNote'     => __( 'With the fastest shipping option.', 'quickshipd' ),
 					'holidaySingle'     => __( 'Single', 'quickshipd' ),
 					'holidayRange'      => __( 'Range', 'quickshipd' ),
 					'holidayRecurring'  => __( 'every year', 'quickshipd' ),
@@ -984,6 +1021,12 @@ class QuickShipD_Admin {
 				break;
 
 			case 'display':
+				$date_mode = isset( $_POST['quickshipd_product_date'] ) ? sanitize_key( wp_unslash( $_POST['quickshipd_product_date'] ) ) : 'range';
+				update_option( 'quickshipd_product_date', in_array( $date_mode, array( 'range', 'soonest', 'latest' ), true ) ? $date_mode : 'range' );
+				update_option(
+					'quickshipd_product_fastest_shipping',
+					$this->sanitize_checkbox( isset( $_POST['quickshipd_product_fastest_shipping'] ) ? sanitize_text_field( wp_unslash( $_POST['quickshipd_product_fastest_shipping'] ) ) : null )
+				);
 				update_option(
 					'quickshipd_show_product',
 					$this->sanitize_checkbox(

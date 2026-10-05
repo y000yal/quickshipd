@@ -167,4 +167,30 @@ class Test_QuickShipD_Display extends QuickShipD_Test_Case {
 		$this->assertFalse( has_action( 'woocommerce_single_product_summary', array( $display, 'render_product' ) ) );
 		$this->assertFalse( shortcode_exists( 'quickshipd_disabled_probe' ) );
 	}
+	/**
+	 * Single product dates and countdowns agree without changing checkout.
+	 *
+	 * @test
+	 */
+	public function test_product_date_modes_preserve_checkout(): void {
+		update_option( 'quickshipd_date_format', 'Y-m-d' );
+		$result = ( new QuickShipD_Calculator( 1, 3, 14, 0, array(), array() ) )->calculate( new DateTime( '2026-10-05 09:00:00', wp_timezone() ) );
+		$modes  = array(
+			'soonest' => '2026-10-06',
+			'latest'  => '2026-10-08',
+		);
+		foreach ( $modes as $mode => $date ) {
+			update_option( 'quickshipd_product_date', $mode );
+			$html = QuickShipD_Display::build_html( $result, $this->product->get_id(), 'product' );
+			$this->assertSame( 2, substr_count( $html, $date ) );
+			$this->assertStringNotContainsString( 'Get it 2026-10-06', $html );
+		}
+		update_option( 'quickshipd_product_date', 'soonest' );
+		$html = QuickShipD_Display::build_html( $result, null, 'checkout' );
+		$this->assertStringContainsString( 'Get it 2026-10-06', $html );
+		$this->assertStringContainsString( '2026-10-08', $html );
+		update_option( 'quickshipd_product_date', 'range' );
+		$html = QuickShipD_Display::build_html( $result, $this->product->get_id(), 'product' );
+		$this->assertStringContainsString( 'Get it 2026-10-06', $html );
+	}
 }

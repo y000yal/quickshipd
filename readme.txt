@@ -173,6 +173,13 @@ https://youtu.be/bjN8RIzE6SY
 4. Go to **WooCommerce → QuickShipD** and set your minimum/maximum delivery days, cutoff time, and any holidays or excluded weekdays.
  
 == Frequently Asked Questions ==
+
+= Can I show the soonest delivery date on product pages? =
+
+Yes. Under WooCommerce → QuickShipD → Display → Product delivery date, choose Soonest date, Latest date, or Delivery range. This applies to product pages, variations, and shop estimates. Cart and checkout follow the selected shipping method.
+
+Enable Use fastest available shipping to calculate the product estimate from eligible WooCommerce shipping rates for one unit and the customer destination. Local pickup is excluded. If the destination is unknown or no shipping rates are available, store and product delivery settings are used. Rates can change with quantity, coupons, and the final cart. The live admin preview uses your timing settings because it has no product or customer destination.
+
  
 = Does QuickShipD work without WooCommerce? =
  

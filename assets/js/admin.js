@@ -307,6 +307,8 @@
 		var bgColor         = field( 'input[name="quickshipd_bg_color"]',       '#f0fdf4' );
 		var borderRadius    = parseInt( field( 'input[name="quickshipd_border_radius"]', '8' ), 10 );
 		var padding         = parseInt( field( 'input[name="quickshipd_padding"]', '10' ), 10 );
+		var dateMode        = field( 'select[name="quickshipd_product_date"]', 'range' );
+		var fastestShipping = checkbox( 'input[name="quickshipd_product_fastest_shipping"]' );
 		var showCd          = checkbox( 'input[name="quickshipd_show_countdown"]' );
 		var showCdSecs      = checkbox( 'input[name="quickshipd_show_countdown_seconds"]' );
 
@@ -347,9 +349,14 @@
 		var minFmt   = qsDateFmt( minDate, dateFmt );
 		var maxFmt   = qsDateFmt( maxDate, dateFmt );
 
-		var dateLabel = isRange
+		var selectedFmt = dateMode === 'soonest' ? minFmt : maxFmt;
+		if ( dateMode === 'soonest' ) {
+			if ( textSingle === 'Get it by {date}' ) textSingle = cfg.i18n.soonestText;
+			if ( textCountdown === 'Order within {countdown} to get it by {date}' ) textCountdown = cfg.i18n.soonestCountdown;
+		}
+		var dateLabel = isRange && dateMode === 'range'
 			? textRange.replace( '{start}', minFmt ).replace( '{end}', maxFmt )
-			: textSingle.replace( '{date}', maxFmt );
+			: textSingle.replace( '{date}', selectedFmt );
 
 		var containerStyle = '';
 		if ( bgColor ) {
@@ -367,11 +374,14 @@
 			var cdFmt  = qsCountdownFmt( countdownSecs, showCdSecs );
 			var cdText = textCountdown
 				.replace( '{countdown}', '<strong style="color:' + primaryColor + '">' + cdFmt + '</strong>' )
-				.replace( '{date}', maxFmt );
+				.replace( '{date}', selectedFmt );
 			var cdSecsAttr = showCdSecs ? ' data-show-seconds="1"' : '';
 			html += '<div class="quickshipd-countdown" style="color:' + secondaryColor + '" data-seconds="' + countdownSecs + '"' + cdSecsAttr + '>' + cdText + '</div>';
 		}
 
+		if ( fastestShipping ) {
+			html += '<div class="quickshipd-shipping-note" style="color:' + secondaryColor + '">' + cfg.i18n.shippingNote + '</div>';
+		}
 		html += '</div>';
 		return html;
 	}

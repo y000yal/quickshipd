@@ -151,10 +151,74 @@ class QuickShipD_Display {
 			return '<div class="quickshipd-delivery quickshipd-variable" data-nonce="' . esc_attr( wp_create_nonce( 'quickshipd_variation' ) ) . '" data-ajax="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '" style="display:none;"></div>';
 		}
 
-		$calc   = QuickShipD_Calculator::from_settings( array(), $product->get_id() );
-		$result = $calc->calculate();
+		$result = in_array( $context, array( 'product', 'shop' ), true )
+			? self::product_result( $product )
+			: QuickShipD_Calculator::from_settings( ( new self() )->get_selected_shipping_method_overrides(), $product->get_id() )->calculate();
 
 		return self::build_html( $result, $product->get_id(), $context );
+	}
+
+	/**
+	 * Calculate a product estimate using eligible shipping rates when enabled.
+	 *
+	 * @param WC_Product $product Product being displayed.
+	 * @return array Calculator result.
+	 */
+	private static function product_result( $product ): array {
+		$now    = new \DateTime( 'now', wp_timezone() );
+		$result = QuickShipD_Calculator::from_settings( array(), $product->get_id() )->calculate( $now );
+		if ( 'yes' !== get_option( 'quickshipd_product_fastest_shipping', 'no' ) || ! $product->needs_shipping() || ! WC()->customer || ! WC()->session || ! WC()->cart ) {
+			return $result;
+		}
+
+		$customer = WC()->customer;
+		if ( '' === $customer->get_shipping_country() || ( ! $customer->has_calculated_shipping() && '' === $customer->get_shipping_postcode() && '' === $customer->get_shipping_address_1() ) ) {
+			return $result;
+		}
+
+		$cost    = (float) wc_get_price_excluding_tax( $product );
+		$package = array(
+			'contents'        => array(
+				'quickshipd_product' => array(
+					'data'              => $product,
+					'product_id'        => $product->get_parent_id() ? $product->get_parent_id() : $product->get_id(),
+					'variation_id'      => $product->is_type( 'variation' ) ? $product->get_id() : 0,
+					'variation'         => $product->is_type( 'variation' ) ? $product->get_variation_attributes() : array(),
+					'quantity'          => 1,
+					'line_total'        => $cost,
+					'line_subtotal'     => $cost,
+					'line_tax'          => 0,
+					'line_subtotal_tax' => 0,
+				),
+			),
+			'contents_cost'   => $cost,
+			'applied_coupons' => array(),
+			'user'            => array( 'ID' => get_current_user_id() ),
+			'destination'     => array(
+				'country'   => $customer->get_shipping_country(),
+				'state'     => $customer->get_shipping_state(),
+				'postcode'  => $customer->get_shipping_postcode(),
+				'city'      => $customer->get_shipping_city(),
+				'address'   => $customer->get_shipping_address_1(),
+				'address_1' => $customer->get_shipping_address_1(),
+				'address_2' => $customer->get_shipping_address_2(),
+			),
+			'cart_subtotal'   => $cost,
+		);
+		// A separate cache key prevents product estimates overwriting checkout rates.
+		$package = WC()->shipping()->calculate_shipping_for_package( $package, 'quickshipd_product' );
+		$fastest = null;
+		foreach ( $package['rates'] ?? array() as $rate ) {
+			if ( in_array( $rate->get_method_id(), array( 'local_pickup', 'pickup_location' ), true ) ) {
+				continue;
+			}
+			$method   = WC_Shipping_Zones::get_shipping_method( $rate->get_instance_id() );
+			$estimate = QuickShipD_Calculator::from_settings( self::shipping_method_overrides( $method ), $product->get_id() )->calculate( $now );
+			if ( null === $fastest || $estimate['min_date'] < $fastest['min_date'] || ( $estimate['min_date']->format( 'Y-m-d' ) === $fastest['min_date']->format( 'Y-m-d' ) && $estimate['max_date'] < $fastest['max_date'] ) ) {
+				$fastest = $estimate;
+			}
+		}
+		return $fastest ?? $result;
 	}
 
 	/**
@@ -215,8 +279,7 @@ class QuickShipD_Display {
 			return;
 		}
 
-		$calc   = QuickShipD_Calculator::from_settings( array(), $product->get_id() );
-		$result = $calc->calculate();
+		$result = self::product_result( $product );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo self::build_html( $result, $product->get_id(), 'shop' );
@@ -526,8 +589,13 @@ class QuickShipD_Display {
 		$min_date_fmt = QuickShipD_Calculator::format_date( $result['min_date'], $date_fmt );
 		$max_date_fmt = QuickShipD_Calculator::format_date( $result['max_date'], $date_fmt );
 
+		$product_context = in_array( $context, array( 'product', 'shop' ), true );
+		$date_mode       = $product_context ? $opt( 'quickshipd_product_date', 'range' ) : 'range';
+		$selected_date   = 'soonest' === $date_mode ? $min_date_fmt : $max_date_fmt;
+		$single_date     = in_array( $date_mode, array( 'soonest', 'latest' ), true );
+
 		// Build date label from template.
-		if ( $result['is_range'] ) {
+		if ( $result['is_range'] && ! $single_date ) {
 			$tpl        = $opt( 'quickshipd_text_range', 'Get it {start} – {end}' );
 			$date_label = str_replace(
 				array( '{start}', '{end}' ),
@@ -536,7 +604,10 @@ class QuickShipD_Display {
 			);
 		} else {
 			$tpl        = $opt( 'quickshipd_text_single', 'Get it by {date}' );
-			$date_label = str_replace( '{date}', $max_date_fmt, $tpl );
+			if ( 'soonest' === $date_mode && 'Get it by {date}' === $tpl ) {
+				$tpl = __( 'Get it as soon as {date}', 'quickshipd' );
+			}
+			$date_label = str_replace( '{date}', $selected_date, $tpl );
 		}
 
 		// Container inline style.
@@ -569,11 +640,14 @@ class QuickShipD_Display {
 			$show_secs      = 'yes' === $opt( 'quickshipd_show_countdown_seconds', 'yes' );
 			$countdown_fmt  = QuickShipD_Calculator::format_countdown( $result['countdown_seconds'], $show_secs );
 			$countdown_tpl  = $opt( 'quickshipd_text_countdown', 'Order within {countdown} to get it by {date}' );
+			if ( 'soonest' === $date_mode && 'Order within {countdown} to get it by {date}' === $countdown_tpl ) {
+				$countdown_tpl = __( 'Order within {countdown} to get it as soon as {date}', 'quickshipd' );
+			}
 			// Bold time uses primary color; surrounding text uses secondary color.
 			$strong_html    = '<strong style="color:' . esc_attr( $primary_color ) . '">' . esc_html( $countdown_fmt ) . '</strong>';
 			$countdown_text = str_replace(
 				array( '{countdown}', '{date}' ),
-				array( $strong_html, esc_html( $max_date_fmt ) ),
+				array( $strong_html, esc_html( $selected_date ) ),
 				esc_html( $countdown_tpl )
 			);
 			$data_secs_attr = $show_secs ? ' data-show-seconds="1"' : '';
@@ -583,6 +657,9 @@ class QuickShipD_Display {
 			$html .= '</div>';
 		}
 
+		if ( $product_context && 'yes' === $opt( 'quickshipd_product_fastest_shipping', 'no' ) ) {
+			$html .= '<div class="quickshipd-shipping-note" style="color:' . esc_attr( $secondary_color ) . '">' . esc_html__( 'With the fastest shipping option.', 'quickshipd' ) . '</div>';
+		}
 		$html .= '</div>';
 
 		return $html;
@@ -693,8 +770,7 @@ class QuickShipD_Display {
 			wp_send_json_success( array( 'html' => '' ) );
 		}
 
-		$calc   = QuickShipD_Calculator::from_settings( array(), $variation_id );
-		$result = $calc->calculate();
+		$result = self::product_result( $variation );
 
 		wp_send_json_success( array( 'html' => self::build_html( $result, $variation_id, 'product' ) ) );
 	}
@@ -739,6 +815,8 @@ class QuickShipD_Display {
 
 		// ---- Style / display settings (for live preview) ----
 		$style_keys = array(
+			'quickshipd_product_date',
+			'quickshipd_product_fastest_shipping',
 			'quickshipd_text_single',
 			'quickshipd_text_range',
 			'quickshipd_text_countdown',
@@ -810,6 +888,19 @@ class QuickShipD_Display {
 			return array();
 		}
 
+		return self::shipping_method_overrides( $method );
+	}
+
+	/**
+	 * Read delivery overrides from a shipping method instance.
+	 *
+	 * @param mixed $method Shipping method instance.
+	 * @return array Delivery days overrides.
+	 */
+	private static function shipping_method_overrides( $method ): array {
+		if ( ! is_object( $method ) ) {
+			return array();
+		}
 		// Read the saved instance settings directly. get_option() only routes to
 		// the instance values for keys present in get_instance_form_fields(),
 		// and our fields are only filtered in on admin screens.

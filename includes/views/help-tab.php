@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $qs_help_nav = array(
 	'qs-help-start'        => __( 'Quick start', 'quickshipd' ),
 	'qs-help-dates'        => __( 'How dates work', 'quickshipd' ),
+	'qs-help-product-date' => __( 'Product delivery date', 'quickshipd' ),
 	'qs-help-sameday'      => __( 'Same-day delivery', 'quickshipd' ),
 	'qs-help-where'        => __( 'Where it shows', 'quickshipd' ),
 	'qs-help-shortcode'    => __( 'Shortcode', 'quickshipd' ),
@@ -131,6 +132,25 @@ $qs_copy_button = static function ( string $qs_snippet ): void {
 		</div>
 
 		<p class="qs-note"><?php esc_html_e( 'The countdown is hidden on days you do not dispatch, because beating the cutoff on those days cannot change the date.', 'quickshipd' ); ?></p>
+	</section>
+
+	<section class="qs-card qs-help-panel" id="qs-help-product-date">
+		<h3 class="qs-card__title"><?php esc_html_e( 'Product delivery date', 'quickshipd' ); ?></h3>
+		<p class="qs-card__lead"><?php esc_html_e( 'On the Display tab, open Product delivery date to choose which date customers see on product pages, variations, and shop archives.', 'quickshipd' ); ?></p>
+		<div class="qs-grid qs-grid--2">
+			<div class="qs-tile">
+				<h4><?php esc_html_e( 'Soonest date', 'quickshipd' ); ?></h4>
+				<p><?php esc_html_e( 'Show a single earliest date, even when your delivery window is a range. The default wording becomes “Get it as soon as” and the countdown uses the same date.', 'quickshipd' ); ?></p>
+			</div>
+			<div class="qs-tile">
+				<h4><?php esc_html_e( 'Latest date or delivery range', 'quickshipd' ); ?></h4>
+				<p><?php esc_html_e( 'Latest date shows a single date at the end of the delivery window. Delivery range keeps the existing earliest-to-latest display. Your custom message templates are respected.', 'quickshipd' ); ?></p>
+			</div>
+		</div>
+		<h4><?php esc_html_e( 'Use fastest available shipping', 'quickshipd' ); ?></h4>
+		<p><?php esc_html_e( 'Enable this to use the fastest eligible WooCommerce shipping rate for one unit of the product and the customer’s destination. Configure each method’s delivery days in WooCommerce → Settings → Shipping. Local pickup is excluded. If the destination is unknown or no eligible rates are available, the estimate uses your store and product settings.', 'quickshipd' ); ?></p>
+		<p class="qs-note"><?php esc_html_e( 'The final rate can change with quantity, coupons, and cart contents. When fastest shipping is enabled, product estimates show “With the fastest shipping option.” Cart and checkout follow the selected method.', 'quickshipd' ); ?></p>
+		<p class="qs-note"><?php esc_html_e( 'The live preview shows the chosen date style using your timing settings. It does not calculate shipping rates because there is no product or customer destination in the preview.', 'quickshipd' ); ?></p>
 	</section>
 
 	<!-- Same-day dispatch and delivery -->
@@ -353,7 +373,7 @@ $qs_copy_button = static function ( string $qs_snippet ): void {
 		<div class="qs-chips">
 			<div class="qs-chip">
 				<code>{date}</code>
-				<span><?php esc_html_e( 'The single or latest delivery date', 'quickshipd' ); ?></span>
+				<span><?php esc_html_e( 'The chosen delivery date: earliest with Soonest, otherwise latest', 'quickshipd' ); ?></span>
 			</div>
 			<div class="qs-chip">
 				<code>{start}</code>

@@ -82,3 +82,9 @@
 	0%   { background-position: 200% 0; }
 	100% { background-position: -200% 0; }
 }
+
+.quickshipd-shipping-note {
+	margin-top: 4px;
+	font-size: 12px;
+	line-height: 1.5;
+}

@@ -172,4 +172,56 @@ class Test_QuickShipD_Shipping_Overrides extends QuickShipD_Test_Case {
 		$this->assertArrayHasKey( 'quickshipd_min_days', $fields );
 		$this->assertArrayHasKey( 'quickshipd_max_days', $fields );
 	}
+	/**
+	 * Eligible express rates win without changing the checkout choice.
+	 *
+	 * @test
+	 */
+	public function test_product_uses_available_rates_only(): void {
+		update_option( 'quickshipd_product_fastest_shipping', 'yes' );
+		WC()->customer->set_shipping_country( 'GB' );
+		WC()->customer->set_shipping_postcode( 'SW1A 1AA' );
+		WC()->customer->set_calculated_shipping( true );
+		$this->overrides_for( $this->instances['slow'] );
+		$product = $this->make_product();
+		$rates   = array(
+			new WC_Shipping_Rate( 'slow', 'Standard', 0, array(), 'flat_rate', $this->instances['slow'] ),
+			new WC_Shipping_Rate( 'fast', 'Express', 0, array(), 'flat_rate', $this->instances['fast'] ),
+		);
+		$filter  = static function () use ( &$rates ) {
+			return $rates;
+		};
+		add_filter( 'woocommerce_package_rates', $filter );
+		try {
+			$method = new ReflectionMethod( QuickShipD_Display::class, 'product_result' );
+			$method->setAccessible( true );
+			$result   = $method->invoke( null, $product );
+			$expected = QuickShipD_Calculator::from_settings(
+				array(
+					'min_days' => 1,
+					'max_days' => 2,
+				)
+			)->calculate();
+			$this->assertSame( $expected['min_date']->format( 'Y-m-d' ), $result['min_date']->format( 'Y-m-d' ) );
+			$this->assertSame( array( 'flat_rate:' . $this->instances['slow'] ), WC()->session->get( 'chosen_shipping_methods' ) );
+			$rates = array( $rates[0] );
+			WC()->session->__unset( 'shipping_for_package_quickshipd_product' );
+			$result   = $method->invoke( null, $product );
+			$expected = QuickShipD_Calculator::from_settings(
+				array(
+					'min_days' => 2,
+					'max_days' => 4,
+				)
+			)->calculate();
+			$this->assertSame( $expected['min_date']->format( 'Y-m-d' ), $result['min_date']->format( 'Y-m-d' ) );
+			WC()->customer->set_shipping_postcode( '' );
+			WC()->customer->set_shipping_address_1( '' );
+			WC()->customer->set_calculated_shipping( false );
+			$result   = $method->invoke( null, $product );
+			$expected = QuickShipD_Calculator::from_settings()->calculate();
+			$this->assertSame( $expected['max_date']->format( 'Y-m-d' ), $result['max_date']->format( 'Y-m-d' ) );
+		} finally {
+			remove_filter( 'woocommerce_package_rates', $filter );
+		}
+	}
 }

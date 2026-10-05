@@ -28,6 +28,8 @@ $quickshipd_options_to_delete = array(
 	'quickshipd_exclude_weekends',
 	'quickshipd_excluded_days',
 	'quickshipd_holidays',
+	'quickshipd_product_date',
+	'quickshipd_product_fastest_shipping',
 	'quickshipd_show_product',
 	'quickshipd_show_shop',
 	'quickshipd_show_cart',
