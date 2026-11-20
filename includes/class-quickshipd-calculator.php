@@ -112,6 +112,16 @@ class QuickShipD_Calculator {
 		if ( $product_id ) {
 			$meta_min = get_post_meta( $product_id, '_quickshipd_min_days', true );
 			$meta_max = get_post_meta( $product_id, '_quickshipd_max_days', true );
+			if ( ( '' === $meta_min || '' === $meta_max ) && 'product_variation' === get_post_type( $product_id ) ) {
+				// Variations inherit per-product days from the parent.
+				$parent_id = wp_get_post_parent_id( $product_id );
+				if ( '' === $meta_min ) {
+					$meta_min = get_post_meta( $parent_id, '_quickshipd_min_days', true );
+				}
+				if ( '' === $meta_max ) {
+					$meta_max = get_post_meta( $parent_id, '_quickshipd_max_days', true );
+				}
+			}
 			if ( '' !== $meta_min && is_numeric( $meta_min ) ) {
 				$min_days = (int) $meta_min;
 			}

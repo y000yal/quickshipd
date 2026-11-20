@@ -214,6 +214,29 @@ class Test_QuickShipD_Delivery_Estimate extends QuickShipD_Test_Case {
 
 	/**
 	 * @test
+	 * Variations inherit parent min/max days unless they set their own.
+	 */
+	public function test_variation_inherits_parent_min_max_days(): void {
+		$parent = new WC_Product_Variable();
+		$parent->save();
+		$variation = new WC_Product_Variation();
+		$variation->set_parent_id( $parent->get_id() );
+		$variation->save();
+		update_post_meta( $parent->get_id(), '_quickshipd_min_days', '4' );
+		update_post_meta( $parent->get_id(), '_quickshipd_max_days', '6' );
+
+		$calc = QuickShipD_Calculator::from_settings( array(), $variation->get_id() );
+		$this->assertSame( 4, $calc->get_min_days() );
+		$this->assertSame( 6, $calc->get_max_days() );
+
+		update_post_meta( $variation->get_id(), '_quickshipd_min_days', '2' );
+		$calc = QuickShipD_Calculator::from_settings( array(), $variation->get_id() );
+		$this->assertSame( 2, $calc->get_min_days() );
+		$this->assertSame( 6, $calc->get_max_days() );
+	}
+
+	/**
+	 * @test
 	 * Dates follow the site timezone, the 1.0.4 regression.
 	 */
 	public function test_dates_use_the_site_timezone(): void {
