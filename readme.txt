@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 7.0.2
 WC tested up to: 10.9.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
  
@@ -264,6 +264,10 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
  
 == Changelog ==
  
+= 1.0.9   - 20/11/2026 =
+* Fix     - Per-product minimum and maximum delivery days ignored on variable products.
+* Feature - Abilities API support so AI assistants and MCP clients can read estimates and manage settings.
+ 
 = 1.0.8   - 05/10/2026 =
 * Feature - Choose soonest, latest, or range delivery dates on product and shop pages.
 * Feature - Estimate product delivery using the fastest shipping rate available for the customer.
@@ -328,6 +332,9 @@ The plugin uses WordPress's `date_i18n()` function, so day and month names are a
  
 == Upgrade Notice ==
  
+= 1.0.9 =
+Fixes per-product delivery days being ignored on variable products. Adds AI abilities for WordPress 6.9+. Recommended for all users.
+
 = 1.0.8 =
 Adds soonest and latest product date options and optional fastest available shipping estimates. Existing settings keep the delivery range; enable the new options on the Display tab.
 
