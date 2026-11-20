@@ -116,6 +116,22 @@ final class QuickShipD_Core {
 			}
 		);
 
+		// Abilities API (WP 6.9+): agents and MCP clients call these without an admin screen.
+		add_action(
+			'wp_abilities_api_init',
+			static function (): void {
+				require_once QUICKSHIPD_PATH . 'includes/class-quickshipd-abilities.php';
+				( new QuickShipD_Abilities() )->register_abilities();
+			}
+		);
+		add_action(
+			'wp_abilities_api_categories_init',
+			static function (): void {
+				require_once QUICKSHIPD_PATH . 'includes/class-quickshipd-abilities.php';
+				( new QuickShipD_Abilities() )->register_category();
+			}
+		);
+
 		if ( ! is_admin() ) {
 			return;
 		}

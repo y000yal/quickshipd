@@ -897,7 +897,7 @@ class QuickShipD_Display {
 	 * @param mixed $method Shipping method instance.
 	 * @return array Delivery days overrides.
 	 */
-	private static function shipping_method_overrides( $method ): array {
+	public static function shipping_method_overrides( $method ): array {
 		if ( ! is_object( $method ) ) {
 			return array();
 		}
