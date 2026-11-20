@@ -159,6 +159,16 @@ QuickShipD helps you:
 * Compatible with modern WooCommerce setups
 * Lightweight and performance-friendly
  
+= AI & MCP Ready =
+ 
+On WordPress 6.9 and later, QuickShipD registers abilities that AI assistants and MCP clients can discover and call:
+ 
+* Get the estimated delivery date for a product or variation
+* Read and update store-wide delivery settings
+* Read and update per-product delivery overrides
+ 
+Settings abilities require the same permissions as the admin screens.
+ 
 = Video Tutorial =
  
 Watch the QuickShipD setup and walkthrough video:
@@ -225,7 +235,11 @@ Yes — open the product in the WooCommerce product editor, go to the **Shipping
  
 = Does it support variable products? =
  
-Yes. The delivery date is hidden until a variation is selected; then a lightweight AJAX request fetches the correct estimate for that variation.
+Yes. The delivery date is hidden until a variation is selected; then a lightweight AJAX request fetches the correct estimate for that variation. Minimum and maximum days set on the parent product apply to all its variations.
+ 
+= Does QuickShipD work with AI assistants and MCP? =
+ 
+Yes, on WordPress 6.9 or later. QuickShipD registers its abilities with the WordPress Abilities API, so MCP clients can read delivery estimates and manage settings. Changing settings requires the WooCommerce shop manager capability.
  
 = How do I set up same-day delivery? =
  

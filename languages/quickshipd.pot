@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: QuickShipD — Estimated Delivery Date for WooCommerce 1.0.8\n"
+"Project-Id-Version: QuickShipD — Estimated Delivery Date for WooCommerce 1.0.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/quickshipd\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-05T10:45:03+00:00\n"
+"POT-Creation-Date: 2026-11-20T03:31:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: quickshipd\n"
@@ -39,13 +39,80 @@ msgstr ""
 msgid "https://yoyallimbu.com.np"
 msgstr ""
 
-#: includes/class-quickshipd-admin.php:53
-msgid "QuickShipD — Delivery Dates"
-msgstr ""
-
+#: includes/class-quickshipd-abilities.php:40
 #: includes/class-quickshipd-admin.php:54
 #: includes/class-quickshipd-admin.php:442
 msgid "QuickShipD"
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:41
+msgid "Estimated delivery dates and delivery timing settings for WooCommerce."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:82
+msgid "Weekdays with no dispatch, 0 = Sunday to 6 = Saturday."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:104
+msgid "Product or variation ID."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:110
+msgid "Get delivery estimate"
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:111
+msgid "Returns the estimated delivery date range for a product or variation, using global, per-product and shipping method timing."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:120
+msgid "Optional shipping method instance ID, applies its min/max days override."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:146
+msgid "Get delivery settings"
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:147
+msgid "Returns the store-wide QuickShipD timing settings."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:159
+msgid "Update delivery settings"
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:160
+msgid "Updates store-wide QuickShipD timing settings. Only the supplied fields change."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:173
+msgid "Get product delivery settings"
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:174
+msgid "Returns the QuickShipD overrides saved on a product or variation. Null or empty means the global value applies."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:192
+msgid "Update product delivery settings"
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:193
+msgid "Sets QuickShipD overrides on a product or variation. Pass null for min_days or max_days to fall back to the global value."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:256
+#: includes/class-quickshipd-abilities.php:339
+#: includes/class-quickshipd-abilities.php:361
+msgid "Product not found."
+msgstr ""
+
+#: includes/class-quickshipd-abilities.php:312
+msgid "Minimum delivery days cannot exceed maximum."
+msgstr ""
+
+#: includes/class-quickshipd-admin.php:53
+msgid "QuickShipD — Delivery Dates"
 msgstr ""
 
 #: includes/class-quickshipd-admin.php:70
@@ -485,48 +552,48 @@ msgid "Press Ctrl+C to copy"
 msgstr ""
 
 #. translators: 1: hours, 2: minutes, 3: seconds
-#: includes/class-quickshipd-calculator.php:526
+#: includes/class-quickshipd-calculator.php:536
 #, php-format
 msgid "%1$dh %2$dm %3$ds"
 msgstr ""
 
 #. translators: 1: minutes, 2: seconds
-#: includes/class-quickshipd-calculator.php:535
+#: includes/class-quickshipd-calculator.php:545
 #, php-format
 msgid "%1$dm %2$ds"
 msgstr ""
 
 #. translators: 1: seconds
-#: includes/class-quickshipd-calculator.php:542
+#: includes/class-quickshipd-calculator.php:552
 #, php-format
 msgid "%1$ds"
 msgstr ""
 
 #. translators: 1: hours, 2: minutes
-#: includes/class-quickshipd-calculator.php:551
+#: includes/class-quickshipd-calculator.php:561
 #, php-format
 msgid "%1$dh %2$dm"
 msgstr ""
 
 #. translators: 1: minutes
-#: includes/class-quickshipd-calculator.php:558
+#: includes/class-quickshipd-calculator.php:568
 #, php-format
 msgid "%1$dm"
 msgstr ""
 
-#: includes/class-quickshipd-core.php:179
+#: includes/class-quickshipd-core.php:195
 msgid "QuickShipD: Min delivery days"
 msgstr ""
 
-#: includes/class-quickshipd-core.php:181
+#: includes/class-quickshipd-core.php:197
 msgid "Override the global minimum. Leave blank to use global."
 msgstr ""
 
-#: includes/class-quickshipd-core.php:192
+#: includes/class-quickshipd-core.php:208
 msgid "QuickShipD: Max delivery days"
 msgstr ""
 
-#: includes/class-quickshipd-core.php:194
+#: includes/class-quickshipd-core.php:210
 msgid "Override the global maximum. Leave blank to use global."
 msgstr ""
 
